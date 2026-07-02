@@ -160,7 +160,21 @@ async function fetchSheetTab(tabName) {
   });
 }
 
+/* Preferred: the admin-server API (edited from the admin dashboard). */
+async function _fetchDashboardApi() {
+  const base = (typeof MBA_API_BASE !== 'undefined') ? MBA_API_BASE : '';
+  const names = ['students', 'programs', 'enrollments', 'sessions', 'materials'];
+  const results = await Promise.all(names.map(n => fetch(base + '/api/public/' + n).then(r => r.ok ? r.json() : null).catch(() => null)));
+  const out = {};
+  names.forEach((n, i) => { out[n] = results[i]; });
+  if (names.every(n => Array.isArray(out[n]))) return out;
+  return null;
+}
+
 async function loadAllData() {
+  const apiData = await _fetchDashboardApi();
+  if (apiData) return apiData;
+
   if (!SHEET_CONFIG.SHEET_ID) return SAMPLE_DATA;      // demo / offline mode
   try {
     const t = SHEET_CONFIG.TABS;
@@ -232,4 +246,3 @@ function buildStudentView(data, email) {
 if (typeof module !== 'undefined') {
   module.exports = { SHEET_CONFIG, SAMPLE_DATA, loadAllData, checkCredentials, buildStudentView };
 }
-

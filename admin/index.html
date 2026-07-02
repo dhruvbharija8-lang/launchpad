@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>Admin Login — MBA Partner</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.44.0/tabler-icons.min.css">
+<link rel="stylesheet" href="admin.css">
+</head>
+<body>
+  <div class="login-wrap">
+    <div class="login-card">
+      <div class="login-brand">
+        <div class="login-mark">M</div>
+        <div><div class="login-title">MBA Partner</div><div class="login-sub">Admin Dashboard</div></div>
+      </div>
+      <div class="login-h1">Welcome back</div>
+      <div class="login-p">Sign in to edit courses, pricing, coupons and site content.</div>
+      <div class="login-err" id="loginErr"></div>
+      <form id="loginForm">
+        <div class="field"><label>Username</label><input id="loginUser" autocomplete="username" required/></div>
+        <div class="field"><label>Password</label><input id="loginPass" type="password" autocomplete="current-password" required/></div>
+        <button class="btn btn-primary" type="submit">Sign in</button>
+      </form>
+      <div class="login-foot">Forgot your password? Ask whoever set up this dashboard to reset it from the server's .env file.</div>
+    </div>
+  </div>
+  <script src="admin-config.js"></script>
+  <script src="admin.js"></script>
+</body>
+</html>

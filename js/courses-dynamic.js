@@ -65,13 +65,62 @@ function comboDetailHtml(c) {
   </div>`;
 }
 
-/* ---------- DYNAMIC PRICING (Google Sheet "Courses" tab) ---------- */
+/* ---------- DYNAMIC PRICING ----------
+   Two possible live sources, tried in this order:
+     1) The admin-server API (js/api-config.js) — what the admin
+        dashboard edits. This is the recommended path.
+     2) A Google Sheet "Courses" tab (legacy / no-backend option),
+        kept for teams that would rather edit a spreadsheet.
+   If neither is configured/reachable, the hardcoded COURSES array
+   above is used as-is, so the site always works. */
 const COURSES_SHEET = {
-  SHEET_ID: '',          // <-- paste your Google Sheet ID here to make pricing live
+  SHEET_ID: '',          // <-- paste your Google Sheet ID here to make pricing live via Sheets
   TAB: 'Courses'
 };
 
-async function hydrateCourses() {
+function _apiBase() { return (typeof MBA_API_BASE !== 'undefined') ? MBA_API_BASE : ''; }
+
+/* Merge admin-server course rows into the local COURSES array by id. */
+async function hydrateCoursesFromApi() {
+  if (typeof COURSES === 'undefined') return false;
+  try {
+    const res = await fetch(_apiBase() + '/api/public/courses');
+    if (!res.ok) return false;
+    const rows = await res.json();
+    if (!Array.isArray(rows) || !rows.length) return false;
+    let changed = false;
+    const EDITABLE = ['title', 'cat', 'type', 'price', 'mrp', 'off', 'badge', 'rating', 'students',
+      'level', 'hours', 'instr', 'sub', 'tagline', 'desc', 'img'];
+    rows.forEach(r => {
+      const c = COURSES.find(k => k.id === r.id);
+      if (!c) return;
+      EDITABLE.forEach(key => {
+        if (r[key] !== undefined && r[key] !== null && r[key] !== '') { c[key] = r[key]; changed = true; }
+      });
+    });
+    return changed;
+  } catch (e) {
+    console.error('Admin API course load failed — trying other sources.', e);
+    return false;
+  }
+}
+
+/* Merge admin-server combo definitions (COMBO_INCLUDES) so the admin
+   can add/edit combos without touching code. */
+async function hydrateCombosFromApi() {
+  try {
+    const res = await fetch(_apiBase() + '/api/public/combos');
+    if (!res.ok) return false;
+    const rows = await res.json();
+    if (!Array.isArray(rows) || !rows.length) return false;
+    rows.forEach(r => { if (r.comboId && Array.isArray(r.includes)) COMBO_INCLUDES[r.comboId] = r.includes; });
+    return true;
+  } catch (e) {
+    return false;
+  }
+}
+
+async function hydrateCoursesFromSheet() {
   if (!COURSES_SHEET.SHEET_ID || typeof COURSES === 'undefined') return false;
   try {
     const url = `https://docs.google.com/spreadsheets/d/${COURSES_SHEET.SHEET_ID}` +
@@ -102,7 +151,15 @@ async function hydrateCourses() {
   }
 }
 
-/* Fetch from sheet (if configured) and re-render if anything changed. */
+/* Try the admin API first, then the Sheet, then just keep the built-in prices. */
+async function hydrateCourses() {
+  const apiChanged = await hydrateCoursesFromApi();
+  await hydrateCombosFromApi();
+  const sheetChanged = await hydrateCoursesFromSheet();
+  return apiChanged || sheetChanged;
+}
+
+/* Fetch from the live source(s) (if configured/reachable) and re-render if anything changed. */
 async function initCoursesDynamic(reRender) {
   const changed = await hydrateCourses();
   if (changed && typeof reRender === 'function') reRender();

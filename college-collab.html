@@ -15,6 +15,8 @@
   <link rel="stylesheet" href="css/fonts.css" />
   <script src="js/site-nav.js"></script>
   <script src="js/nav-auth.js"></script>
+  <script src="js/api-config.js"></script>
+  <script src="js/site-settings.js"></script>
   <style>
     * {
       box-sizing: border-box;
@@ -2052,11 +2054,11 @@
               <div class="hstat-l">Students mentored</div>
             </div>
             <div class="hstat">
-              <div class="hstat-n">98<em>.7%</em></div>
+              <div class="hstat-n" data-stat="placementRate">98.7%</div>
               <div class="hstat-l">Placed in target domain</div>
             </div>
             <div class="hstat">
-              <div class="hstat-n">9.6<em>/10</em></div>
+              <div class="hstat-n"><span data-stat="rating">9.6</span><em data-stat="ratingScale">/10</em></div>
               <div class="hstat-l">Student rating</div>
             </div>
           </div>
@@ -2087,15 +2089,15 @@
   <div class="results-bar">
     <div class="results-inner">
       <div class="result-item">
-        <div class="result-n">5,000+</div>
+        <div class="result-n" data-stat="students">5,000+</div>
         <div class="result-l">Students mentored</div>
       </div>
       <div class="result-item">
-        <div class="result-n">98.7%</div>
+        <div class="result-n" data-stat="placementRate">98.7%</div>
         <div class="result-l">Placed in target domain</div>
       </div>
       <div class="result-item">
-        <div class="result-n">40+</div>
+        <div class="result-n" data-stat="campuses">40+</div>
         <div class="result-l">Campuses reached</div>
       </div>
       <div class="result-item">
@@ -2253,7 +2255,7 @@
           <div class="pvis-stat"><span class="pvis-stat-lbl">Avg. students per campus</span><span
               class="pvis-stat-val">120+</span></div>
           <div class="pvis-stat"><span class="pvis-stat-lbl">Placement success rate</span><span
-              class="pvis-stat-val">98.7%</span></div>
+              class="pvis-stat-val" data-stat="placementRate">98.7%</span></div>
           <div class="pvis-bar-wrap" style="margin-top:16px">
             <div class="pvis-bar-lbl">Students placed by domain</div>
             <div class="pvis-bar-row"><span class="pvis-bar-name">Consulting</span><span class="pvis-bar-pct">94%</span>
@@ -2714,15 +2716,4 @@
       // 3. Show success state
       btn.innerHTML = '<i class="ti ti-circle-check"></i> Sent!';
       btn.style.background = '#22c55e';
-      if (note) note.innerHTML = '✅ Enquiry sent to our team — we\'ll reach out within 24 hours.';
-      setTimeout(() => {
-        btn.disabled = false;
-        btn.innerHTML = '<i class="ti ti-send"></i> Send';
-        btn.style.background = '';
-      }, 4000);
-    }
-  </script>
-  <script src="js/chatbot-widget.js"></script>
-</body>
-
-</html>
+      if (note) note.i

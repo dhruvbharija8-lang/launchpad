@@ -10,3 +10,8 @@ Thumbs.db
 *.njsproj
 *.sln
 *.sw?
+
+# Admin server (Node backend)
+admin-server/node_modules/
+admin-server/data/db.json
+admin-server/.env

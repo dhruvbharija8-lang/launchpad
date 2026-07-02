@@ -197,6 +197,8 @@ document.addEventListener('DOMContentLoaded',function(){
 });
 </script>
 <script src="js/nav-auth.js"></script>
+<script src="js/api-config.js"></script>
+<script src="js/site-settings.js"></script>
 </head>
 <body>
 <nav class="nav">
@@ -285,9 +287,9 @@ document.addEventListener('DOMContentLoaded',function(){
     </div>
     
     <div class="trust-strip reveal">
-      <div class="trust-item"><div class="trust-num">9.6/10</div><div class="trust-lbl">Avg. rating · 700+ students</div></div>
-      <div class="trust-item"><div class="trust-num">5,000+</div><div class="trust-lbl">Student network</div></div>
-      <div class="trust-item"><div class="trust-num">98.7%</div><div class="trust-lbl">Placed in desired domain</div></div>
+      <div class="trust-item"><div class="trust-num" data-stat="ratingFull">9.6/10</div><div class="trust-lbl">Avg. rating · <span data-stat="reviews">700+</span> students</div></div>
+      <div class="trust-item"><div class="trust-num" data-stat="students">5,000+</div><div class="trust-lbl">Student network</div></div>
+      <div class="trust-item"><div class="trust-num" data-stat="placementRate">98.7%</div><div class="trust-lbl">Placed in desired domain</div></div>
       <div class="trust-item"><div class="trust-num">IIM · XLRI · FMS</div><div class="trust-lbl">Mentor schools</div></div>
     </div>
 

@@ -19,6 +19,8 @@
   <script src="js/auth.js"></script>
   <script>(function () { if (!(window.MBAauth && MBAauth.isLoggedIn())) return; var done = false; try { done = !!sessionStorage.getItem('mbaHomeRedirected'); } catch (e) { } if (done) return; try { sessionStorage.setItem('mbaHomeRedirected', '1'); } catch (e) { } location.replace('login.html'); })();</script>
   <script src="js/nav-auth.js"></script>
+  <script src="js/api-config.js"></script>
+  <script src="js/site-settings.js"></script>
 </head>
 
 <body>
@@ -136,8 +138,8 @@
           <div class="hero-card">
             <div class="stats-panel reveal">
               <div class="stat-item">
-                <div class="stat-num">9.6<span class="stat-accent">/10</span></div>
-                <div class="stat-lbl">Avg. rating by 700+ students</div>
+                <div class="stat-num"><span data-stat="rating">9.6</span><span class="stat-accent" data-stat="ratingScale">/10</span></div>
+                <div class="stat-lbl">Avg. rating by <span data-stat="reviews">700+</span> students</div>
               </div>
               <div class="stat-item" style="border-left:1px solid rgba(255,255,255,.12);padding-left:24px">
                 <div class="stat-num">5<span class="stat-accent">K+</span></div>
@@ -330,15 +332,15 @@
           <div class="collab-colleges reveal" id="collabColleges"></div>
           <div class="collab-results reveal">
             <div class="collab-result">
-              <div class="cr-n">5,000+</div>
+              <div class="cr-n" data-stat="students">5,000+</div>
               <div class="cr-l">Students mentored</div>
             </div>
             <div class="collab-result">
-              <div class="cr-n">98.7%</div>
+              <div class="cr-n" data-stat="placementRate">98.7%</div>
               <div class="cr-l">Placed in target domain</div>
             </div>
             <div class="collab-result">
-              <div class="cr-n">40+</div>
+              <div class="cr-n" data-stat="campuses">40+</div>
               <div class="cr-l">Campuses reached</div>
             </div>
             <div class="collab-result">
@@ -1063,11 +1065,11 @@
         <button class="usp-cta-ghost" id="uspLater">Maybe later</button>
       </div>
       <div class="usp-stat-strip">
-        <div class="usp-stat"><strong>5,000+</strong> students</div>
+        <div class="usp-stat"><strong data-stat="students">5,000+</strong> students</div>
         <div class="usp-stat-div"></div>
-        <div class="usp-stat"><strong>98.7%</strong> placed in target domain</div>
+        <div class="usp-stat"><strong data-stat="placementRate">98.7%</strong> placed in target domain</div>
         <div class="usp-stat-div"></div>
-        <div class="usp-stat"><strong>9.6/10</strong> avg. rating</div>
+        <div class="usp-stat"><strong data-stat="ratingFull">9.6/10</strong> avg. rating</div>
       </div>
     </div>
   </div>

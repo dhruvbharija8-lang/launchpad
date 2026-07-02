@@ -276,7 +276,19 @@ const SITE_SAMPLE = {
   ]
 };
 
-/* ---------- GOOGLE SHEETS LOADER (gviz) ---------- */
+/* ---------- ADMIN API LOADER (preferred) ---------- */
+async function _fetchAdminApi() {
+  const base = (typeof MBA_API_BASE !== 'undefined') ? MBA_API_BASE : '';
+  const names = ['placements', 'mentors', 'colleges', 'videos', 'gdpi'];
+  const results = await Promise.all(names.map(n => fetch(base + '/api/public/' + n).then(r => r.ok ? r.json() : null).catch(() => null)));
+  const out = {};
+  names.forEach((n, i) => { out[n] = results[i]; });
+  // Only use this source if every tab loaded with at least an (possibly empty) array.
+  if (names.every(n => Array.isArray(out[n]))) return out;
+  return null;
+}
+
+/* ---------- GOOGLE SHEETS LOADER (gviz) — legacy fallback ---------- */
 async function _fetchSiteTab(tabName) {
   const url = `https://docs.google.com/spreadsheets/d/${SITE_SHEET.SHEET_ID}` +
               `/gviz/tq?tqx=out:json&sheet=${encodeURIComponent(tabName)}`;
@@ -294,6 +306,12 @@ async function _fetchSiteTab(tabName) {
 let _siteDataCache = null;
 async function loadSiteData() {
   if (_siteDataCache) return _siteDataCache;
+
+  // 1) Preferred: the admin-server API (edited from the admin dashboard).
+  const apiData = await _fetchAdminApi();
+  if (apiData) { _siteDataCache = apiData; return _siteDataCache; }
+
+  // 2) Legacy: a directly-connected Google Sheet.
   if (!SITE_SHEET.SHEET_ID) { _siteDataCache = SITE_SAMPLE; return _siteDataCache; }
   try {
     const [placements, mentors, colleges, videos, gdpi] = await Promise.all([

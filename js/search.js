@@ -759,7 +759,34 @@ function renderCheckout() {
   </div></div></div>`;
   body.querySelectorAll('[data-rm]').forEach(b => b.onclick = () => removeFromCart(Number(b.dataset.rm)));
   body.querySelectorAll('.pay-opt').forEach(o => o.onclick = () => { body.querySelectorAll('.pay-opt').forEach(x => x.classList.remove('sel')); o.classList.add('sel'); });
-  document.getElementById('couponApply').onclick = () => { const code = (document.getElementById('couponInput').value || '').trim().toUpperCase(); if (code === 'MBA10') { appliedCoupon = { code, pct: 10 }; showToast('Coupon applied — 10% off'); renderCheckout(); } else if (code === 'GROUP30') { appliedCoupon = { code, pct: 30 }; showToast('Group offer applied — 30% off'); renderCheckout(); } else { showToast('Invalid coupon code'); } };
+  document.getElementById('couponApply').onclick = async () => {
+    const code = (document.getElementById('couponInput').value || '').trim().toUpperCase();
+    if (!code) return;
+    const subtotal = cart.reduce((s, c) => s + c.price, 0);
+    const applyLocalFallback = () => {
+      if (code === 'MBA10') { appliedCoupon = { code, pct: 10 }; showToast('Coupon applied — 10% off'); renderCheckout(); }
+      else if (code === 'GROUP30') { appliedCoupon = { code, pct: 30 }; showToast('Group offer applied — 30% off'); renderCheckout(); }
+      else { showToast('Invalid coupon code'); }
+    };
+    try {
+      const base = (typeof MBA_API_BASE !== 'undefined') ? MBA_API_BASE : '';
+      const res = await fetch(base + '/api/public/coupons/validate', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ code, subtotal })
+      });
+      const data = await res.json();
+      if (data.valid) {
+        const pct = data.type === 'percent' ? Number(data.value) : Math.round((data.discount / subtotal) * 100);
+        appliedCoupon = { code: data.code, pct };
+        showToast(data.message || 'Coupon applied');
+        renderCheckout();
+      } else {
+        showToast(data.message || 'Invalid coupon code');
+      }
+    } catch (e) {
+      applyLocalFallback();
+    }
+  };
   const grpBtn = document.getElementById('grpApply');
   if (grpBtn) grpBtn.onclick = () => {
     const gn = (document.getElementById('grpName').value || '').trim();
