@@ -1,0 +1,386 @@
+/* ============================================================
+   MBA PARTNER — STUDENT DASHBOARD
+   All content comes from the data layer (js/dashboard-data.js),
+   which reads from a Google Sheet (or sample data in demo mode).
+============================================================ */
+
+let DASH_DATA = null;        // raw data (all sheet tabs)
+let currentUser = null;      // built view for the logged-in student
+const SESSION_KEY = 'mbaPartnerSession';   // remembers the logged-in email
+
+// Demo buttons -> student email in the data
+const DEMO_MAP = {
+  placement:  'ananya@iimb.ac.in',
+  bundle:     'rohan@iima.ac.in',
+  finance:    'demo1@iima.ac.in',
+  marketing:  'demo2@iimb.ac.in',
+  consulting: 'demo3@iimx.ac.in',
+  tech:       'demo4@iim.ac.in'
+};
+
+// Material type -> icon + colour class
+const MAT_STYLE = {
+  pdf:   { icon: 'ti-file-text',          cls: 'pdf'   },
+  ppt:   { icon: 'ti-presentation',       cls: 'ppt'   },
+  drive: { icon: 'ti-brand-google-drive', cls: 'drive' },
+  zip:   { icon: 'ti-file-zip',           cls: 'zip'   },
+  sheet: { icon: 'ti-file-spreadsheet',   cls: 'sheet' },
+  video: { icon: 'ti-video',              cls: 'video' }
+};
+
+/* ---------- DATA BOOTSTRAP ---------- */
+async function ensureData() {
+  if (!DASH_DATA) DASH_DATA = await loadAllData();
+  return DASH_DATA;
+}
+
+function setLoading(on) {
+  let el = document.getElementById('dashLoader');
+  if (!el) {
+    el = document.createElement('div');
+    el.id = 'dashLoader';
+    el.className = 'dash-loader';
+    el.innerHTML = '<div class="dash-spinner"></div>';
+    document.body.appendChild(el);
+  }
+  el.classList.toggle('show', !!on);
+}
+
+/* ---------- SESSION PERSISTENCE ---------- */
+function saveSession(email) {
+  if (email) localStorage.setItem(SESSION_KEY, email);
+  else localStorage.removeItem(SESSION_KEY);
+}
+
+async function restoreSession() {
+  const email = localStorage.getItem(SESSION_KEY);
+  if (!email) return;
+  const acct = (window.MBAauth && MBAauth.findAccount) ? MBAauth.findAccount(email) : null;
+  if (acct) { currentUser = buildLocalView(acct); showDashboard(); return; }
+  setLoading(true);
+  await ensureData();
+  const view = buildStudentView(DASH_DATA, email);
+  setLoading(false);
+  if (!view) { saveSession(null); return; }
+  currentUser = view;
+  showDashboard();
+}
+
+function goToHomeFromDashboard() {
+  // mark that the redirect already happened this session, so Home stays viewable
+  try { sessionStorage.setItem('mbaHomeRedirected', '1'); } catch (e) {}
+  window.location.href = 'index.html';
+}
+
+/* ---------- LOGIN ---------- */
+let authMode = 'login';
+async function handleLogin() {
+  if (authMode === 'signup') { doSignup(); return; }
+  const email = document.getElementById('emailInput').value.trim();
+  const pass  = document.getElementById('passInput').value;
+  const btn   = document.getElementById('loginBtn');
+  const btnText = document.getElementById('loginBtnText');
+
+  if (!email || !pass) { showError('Please enter your email and password.'); return; }
+
+  btn.classList.add('loading');
+  btnText.textContent = 'Signing in...';
+
+  await ensureData();
+  const acctLogin = window.MBAauth ? MBAauth.login(email, pass) : { ok: false };
+  const ok = acctLogin.ok || checkCredentials(DASH_DATA, email, pass);
+
+  setTimeout(() => {
+    btn.classList.remove('loading');
+    btnText.textContent = 'Sign in to Dashboard';
+    if (!ok) { showError('No matching account. Check your details or create an account below.'); return; }
+    if (window.MBAauth && !acctLogin.ok) MBAauth.setSession(email.trim().toLowerCase(), '');
+    const ret = window.MBAauth ? MBAauth.takeReturn() : '';
+    if (ret) { location.href = ret; return; }
+    enterDashboard(email.trim().toLowerCase());
+  }, 500);
+}
+function doSignup() {
+  const nameEl = document.getElementById('nameInput');
+  const name = nameEl ? nameEl.value : '';
+  const email = document.getElementById('emailInput').value.trim();
+  const pass = document.getElementById('passInput').value;
+  const r = window.MBAauth ? MBAauth.signup(name, email, pass) : { ok: false, error: 'Auth unavailable.' };
+  if (!r.ok) { showError(r.error); return; }
+  const ret = MBAauth.takeReturn();
+  if (ret) { location.href = ret; return; }
+  enterDashboard(email.trim().toLowerCase());
+}
+function toggleAuthMode() {
+  authMode = authMode === 'login' ? 'signup' : 'login';
+  const nf = document.getElementById('nameField');
+  const bt = document.getElementById('loginBtnText');
+  const tg = document.getElementById('authToggle');
+  const h  = document.getElementById('authHeading');
+  const s  = document.getElementById('authSub');
+  document.getElementById('loginError').classList.add('hidden');
+  if (authMode === 'signup') {
+    if (nf) nf.style.display = '';
+    if (bt) bt.textContent = 'Create account';
+    if (tg) tg.innerHTML = 'Already have an account? <a>Log in</a>';
+    if (h) h.textContent = 'Create your account';
+    if (s) s.textContent = 'Sign up to enroll and access your dashboard';
+  } else {
+    if (nf) nf.style.display = 'none';
+    if (bt) bt.textContent = 'Sign in to Dashboard';
+    if (tg) tg.innerHTML = 'New to MBA Partner? <a>Create an account</a>';
+    if (h) h.textContent = 'Welcome back 👋';
+    if (s) s.textContent = 'Log in to access your student dashboard';
+  }
+}
+
+function showError(msg) {
+  document.getElementById('loginErrorMsg').textContent = msg;
+  document.getElementById('loginError').classList.remove('hidden');
+}
+
+async function demoLogin(type) {
+  const email = DEMO_MAP[type] || type;   // accepts a key or a raw email
+  setLoading(true);
+  await ensureData();
+  setLoading(false);
+  enterDashboard(email);
+}
+
+function buildLocalView(a) {
+  return {
+    name: a.name || 'Student', email: a.email, role: 'Student',
+    avatar: ((a.name || a.email || '?')[0] || '?').toUpperCase(),
+    courses: (a.courses || []).map(c => ({ type: c.type || 'Course', title: c.title, emoji: c.emoji || '📘', progress: 0, nextSession: 'Onboarding', nextDate: 'Soon' })),
+    sessions: [], materials: [],
+    cvDone: 0, cvTotal: 5, piDone: 0, piTotal: 7, gdDone: 0, gdTotal: 7
+  };
+}
+function enterDashboard(email) {
+  const acct = (window.MBAauth && MBAauth.findAccount) ? MBAauth.findAccount(email) : null;
+  const view = acct ? buildLocalView(acct) : buildStudentView(DASH_DATA, email);
+  if (!view) { showError('No student record found for ' + email + '.'); return; }
+  currentUser = view;
+  saveSession(email);
+  showDashboard();
+}
+
+function showDashboard() {
+  const loginPage = document.getElementById('loginPage');
+  const dashPage  = document.getElementById('dashPage');
+  loginPage.classList.add('hidden');
+  loginPage.classList.remove('is-exiting');
+  dashPage.classList.remove('hidden');
+  dashPage.classList.add('showing');
+  window.scrollTo({ top: 0, behavior: 'auto' });
+  document.documentElement.scrollTop = 0;
+  document.body.scrollTop = 0;
+  setTimeout(initDashboard, 60);
+}
+
+function logout() {
+  saveSession(null);
+  if (window.MBAauth) MBAauth.logout();
+  document.getElementById('dashPage').classList.add('hidden');
+  document.getElementById('dashPage').classList.remove('showing');
+  document.getElementById('loginPage').classList.remove('hidden');
+  document.getElementById('loginPage').classList.remove('is-exiting');
+  document.getElementById('emailInput').value = '';
+  document.getElementById('passInput').value = '';
+  document.getElementById('loginError').classList.add('hidden');
+  currentUser = null;
+}
+
+restoreSession();
+
+/* ---------- INIT DASHBOARD ---------- */
+function initDashboard() {
+  const u = currentUser;
+  const first = (u.name || 'Student').split(' ')[0];
+  const hr = new Date().getHours();
+  const greet = hr < 12 ? 'Good morning' : hr < 17 ? 'Good afternoon' : 'Good evening';
+  const initial = (u.avatar || first[0] || '?').toString().toUpperCase();
+
+  document.getElementById('sidebarAvatar').textContent = initial;
+  document.getElementById('topbarAvatar').textContent  = initial;
+  document.getElementById('sidebarName').textContent   = u.name;
+  document.getElementById('sidebarRole').textContent   = u.role;
+  document.getElementById('welcomeMsg').textContent    = greet + ', ' + first + '! 👋';
+
+  // dynamic welcome subtitle + session badge
+  const sub = document.getElementById('welcomeSub');
+  if (sub) {
+    sub.textContent = u.sessions.length
+      ? 'You have ' + u.sessions.length + ' upcoming session' + (u.sessions.length > 1 ? 's' : '') +
+        '. Keep up the momentum — placements are closer than they feel.'
+      : 'No sessions scheduled yet. Explore your materials and keep building your CV.';
+  }
+  const badge = document.getElementById('sessionsBadge');
+  if (badge) {
+    if (u.sessions.length) { badge.textContent = u.sessions.length; badge.style.display = ''; }
+    else badge.style.display = 'none';
+  }
+
+  renderCourseCards('overviewCourses', u.courses.slice(0, 3));
+  renderCourseCards('allCourseCards', u.courses);
+  renderSessions('overviewSessions', u.sessions.slice(0, 2));
+  renderSessions('allSessions', u.sessions);
+  renderMaterials(u.materials);
+  renderProgress(u);
+}
+
+/* ---------- RENDERERS ---------- */
+function renderCourseCards(containerId, courses) {
+  const el = document.getElementById(containerId);
+  if (!el) return;
+  if (!courses.length) { el.innerHTML = emptyState('ti-book', 'No programs yet', 'Enrolled programs will appear here.'); return; }
+  el.innerHTML = courses.map(c => `
+    <div class="course-card">
+      <div class="course-card-img">${c.emoji}</div>
+      <div class="course-card-body">
+        <div class="course-card-type">${c.type}</div>
+        <div class="course-card-title">${c.title}</div>
+        <div class="progress-bar-wrap">
+          <div class="progress-label">
+            <span>Progress</span><span style="font-weight:700;color:var(--navy)">${c.progress}%</span>
+          </div>
+          <div class="progress-bar"><div class="progress-fill" style="width:${c.progress}%"></div></div>
+        </div>
+      </div>
+      <div class="course-card-foot">
+        <div class="course-next">Next: <strong>${c.nextSession}</strong>${c.nextDate ? ' · ' + c.nextDate : ''}</div>
+        <button class="continue-btn" onclick="switchPage('materials',document.querySelector('[data-page=materials]'))">Continue →</button>
+      </div>
+    </div>`).join('');
+}
+
+function renderSessions(containerId, sessions) {
+  const el = document.getElementById(containerId);
+  if (!el) return;
+  if (!sessions.length) { el.innerHTML = emptyState('ti-calendar', 'No upcoming sessions', 'New live sessions will show up here.'); return; }
+  el.innerHTML = sessions.map(s => `
+    <div class="session-item">
+      <div class="session-date"><div class="day">${s.day}</div><div class="mon">${s.mon}</div></div>
+      <div class="session-info">
+        <div class="session-title">${s.title}</div>
+        <div class="session-meta">
+          <span><i class="ti ti-clock"></i>${s.time}</span>
+          <span><i class="ti ti-user"></i>${s.mentor}</span>
+          <span class="session-tag">${s.type}</span>
+        </div>
+      </div>
+      <button class="session-join ${s.soon ? 'soon' : ''}">${s.soon ? '🔴 Join Now' : 'Add to Cal'}</button>
+    </div>`).join('');
+}
+
+/* Materials shown DIRECTLY on the site, grouped by category, with filter chips. */
+function renderMaterials(materials) {
+  const grid = document.getElementById('materialsGrid');
+  if (!grid) return;
+
+  if (!materials.length) {
+    grid.innerHTML = emptyState('ti-folder-open', 'No materials yet', 'Study material for your programs will appear here.');
+    const fc = document.getElementById('materialFilters'); if (fc) fc.innerHTML = '';
+    const count = document.getElementById('materialCount'); if (count) count.textContent = '';
+    return;
+  }
+
+  const categories = [...new Set(materials.map(m => m.category))];
+
+  // filter chips
+  const fc = document.getElementById('materialFilters');
+  if (fc) {
+    fc.innerHTML =
+      `<button class="mat-chip active" data-cat="__all" onclick="filterMaterials('__all',this)">All (${materials.length})</button>` +
+      categories.map(cat => {
+        const n = materials.filter(m => m.category === cat).length;
+        const safe = cat.replace(/'/g, "\\'");
+        return `<button class="mat-chip" data-cat="${cat}" onclick="filterMaterials('${safe}',this)">${cat} (${n})</button>`;
+      }).join('');
+  }
+
+  const count = document.getElementById('materialCount');
+  if (count) count.textContent = `${materials.length} resources across ${categories.length} categories`;
+
+  grid.innerHTML = categories.map(cat => {
+    const items = materials.filter(m => m.category === cat);
+    return `<div class="mat-group" data-cat="${cat}">
+      <div class="mat-group-head"><i class="ti ti-folder"></i> ${cat} <span>${items.length}</span></div>
+      <div class="mat-group-grid">
+        ${items.map(m => {
+          const st = MAT_STYLE[m.type] || MAT_STYLE.drive;
+          const hasLink = m.link && m.link !== '#';
+          return `<div class="material-card" ${hasLink ? `onclick="window.open('${m.link}','_blank')"` : ''}>
+            <div class="material-ico ${st.cls}"><i class="ti ${st.icon}"></i></div>
+            <div class="material-name">${m.name}</div>
+            <div class="material-meta">${m.meta || ''}</div>
+            <div class="material-dl">${hasLink ? '<i class="ti ti-external-link"></i> Open / Download' : '<i class="ti ti-clock"></i> Coming soon'}</div>
+          </div>`;
+        }).join('')}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function filterMaterials(cat, btn) {
+  document.querySelectorAll('#materialFilters .mat-chip').forEach(c => c.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+  document.querySelectorAll('#materialsGrid .mat-group').forEach(g => {
+    g.style.display = (cat === '__all' || g.dataset.cat === cat) ? '' : 'none';
+  });
+}
+
+function renderProgress(u) {
+  // CV slots
+  let cvHtml = `<h3>CV Review Tracker <span class="tracker-sub">${u.cvDone}/${u.cvTotal} completed</span></h3><div class="cv-slots">`;
+  for (let i = 1; i <= u.cvTotal; i++) {
+    const cls  = i <= u.cvDone ? 'done' : i === u.cvDone + 1 ? 'active' : '';
+    const icon = i <= u.cvDone ? 'ti-circle-check' : i === u.cvDone + 1 ? 'ti-clock' : 'ti-circle';
+    cvHtml += `<div class="cv-slot ${cls}"><div class="cv-slot-circle"><i class="ti ${icon}"></i></div><div class="cv-slot-lbl">CV #${i}</div></div>`;
+  }
+  cvHtml += '</div>';
+  document.getElementById('cvTracker').innerHTML = cvHtml;
+
+  // PI + GD grid
+  let piHtml = '';
+  for (let i = 1; i <= u.piTotal; i++) {
+    const cls = i <= u.piDone ? 'done' : i === u.piDone + 1 ? 'scheduled' : '';
+    piHtml += `<div class="pi-item ${cls}"><i class="ti ${cls === 'done' ? 'ti-check' : cls === 'scheduled' ? 'ti-clock' : 'ti-microphone-2'}" style="font-size:16px"></i>PI #${i}</div>`;
+  }
+  for (let i = 1; i <= u.gdTotal; i++) {
+    const cls = i <= u.gdDone ? 'done' : i === u.gdDone + 1 ? 'scheduled' : '';
+    piHtml += `<div class="pi-item ${cls}"><i class="ti ${cls === 'done' ? 'ti-check' : cls === 'scheduled' ? 'ti-clock' : 'ti-users'}" style="font-size:16px"></i>GD #${i}</div>`;
+  }
+  document.getElementById('piGrid').innerHTML = piHtml;
+}
+
+function emptyState(icon, title, sub) {
+  return `<div class="dash-empty"><i class="ti ${icon}"></i><h4>${title}</h4><p>${sub}</p></div>`;
+}
+
+/* ---------- PAGE SWITCHING ---------- */
+const pageTitles = { overview: 'Overview', courses: 'My Courses', sessions: 'Sessions', materials: 'Materials & Drive', progress: 'CV & PI Progress' };
+function switchPage(page, btn) {
+  document.querySelectorAll('.dash-page').forEach(p => p.classList.remove('active'));
+  document.getElementById('page-' + page).classList.add('active');
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+  document.getElementById('topbarTitle').textContent = pageTitles[page] || page;
+  const body = document.querySelector('.dash-body'); if (body) body.scrollTop = 0;
+  closeSidebar();
+}
+
+/* ---------- MOBILE SIDEBAR ---------- */
+function openSidebar() {
+  document.getElementById('sidebar').classList.add('open');
+  document.getElementById('sidebarOverlay').classList.add('open');
+}
+function closeSidebar() {
+  document.getElementById('sidebar').classList.remove('open');
+  document.getElementById('sidebarOverlay').classList.remove('open');
+}
+
+/* ---------- KEYBOARD ---------- */
+document.addEventListener('keydown', e => {
+  if (e.key === 'Enter' && document.getElementById('passInput') === document.activeElement) handleLogin();
+});

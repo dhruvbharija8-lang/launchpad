@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>CAT College Predictor — MBA Partner</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com"/>
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="/>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css" />
+        <link rel="stylesheet" href="css/cat-predictor.css"/>
+        <link rel="stylesheet" href="css/fonts.css"/>
+  <script src="js/site-nav.js"></script>
+  <script src="js/nav-auth.js"></script>
+</head>
+
+<body>
+
+    <div class="calc-wrap">
+
+        <!-- HEADER -->
+        <div class="calc-header">
+            <a class="home-link" href="index.html"><i class="ti ti-home"></i> Go to Home</a>
+            <div class="calc-eyebrow"><i class="ti ti-calculator"></i> MBA Partner Tool</div>
+            <div class="calc-title">CAT Score & <span>College Predictor</span></div>
+            <div class="calc-sub">Enter your score, profile & category — get personalised college predictions with
+                AI-powered analysis.</div>
+            <div class="calc-badge-row">
+                <div class="calc-badge"><i class="ti ti-building-bank"></i> 30+ IIMs & Top B-Schools</div>
+                <div class="calc-badge"><i class="ti ti-sparkles"></i> AI-Powered Analysis</div>
+                <div class="calc-badge"><i class="ti ti-refresh"></i> CAT 2024–25 Data</div>
+            </div>
+        </div>
+
+        <!-- TABS -->
+        <div class="calc-tabs">
+            <button class="calc-tab active" onclick="switchTab('predictor',this)"><i class="ti ti-target-arrow"></i>
+                College Predictor</button>
+            <button class="calc-tab" onclick="switchTab('converter',this)"><i class="ti ti-arrows-exchange"></i> Score →
+                Percentile</button>
+            <button class="calc-tab" onclick="switchTab('cutoffs',this)"><i class="ti ti-list-details"></i> Cutoff
+                Table</button>
+        </div>
+
+        <!-- ===================== TAB 1: PREDICTOR ===================== -->
+        <div class="tab-panel active" id="tab-predictor">
+
+            <!-- SCORE -->
+            <div class="form-card">
+                <h3><i class="ti ti-chart-bar"></i> Your CAT Score</h3>
+                <div class="score-center">
+                    <div class="score-display" id="scoreDisplay">120</div>
+                    <div><span class="percentile-display" id="percentileDisplay">≈ 98.5 Percentile</span></div>
+                </div>
+                <div class="slider-wrap">
+                    <input type="range" class="f-slider" id="scoreSlider" min="0" max="198" value="120"
+                        oninput="updateScore(this.value)" />
+                </div>
+                <div class="slider-labels"><span>0</span><span>50</span><span>100</span><span>150</span><span>198</span>
+                </div>
+
+                <!-- Sectional scores -->
+                <div class="form-grid-3" style="margin-top:20px">
+                    <div class="f-group">
+                        <label class="f-label">VARC Score (out of 66)</label>
+                        <input class="f-input" type="number" id="varc" min="0" max="66" value="40"
+                            placeholder="e.g. 40" />
+                        <span class="f-hint">≈ <span id="varcPct">97</span> percentile</span>
+                    </div>
+                    <div class="f-group">
+                        <label class="f-label">DILR Score (out of 66)</label>
+                        <input class="f-input" type="number" id="dilr" min="0" max="66" value="42"
+                            placeholder="e.g. 42" />
+                        <span class="f-hint">≈ <span id="dilrPct">97</span> percentile</span>
+                    </div>
+                    <div class="f-group">
+                        <label class="f-label">QA Score (out of 66)</label>
+                        <input class="f-input" type="number" id="qa" min="0" max="66" value="38"
+                            placeholder="e.g. 38" />
+                        <span class="f-hint">≈ <span id="qaPct">96</span> percentile</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- PROFILE -->
+            <div class="form-card">
+                <h3><i class="ti ti-user-circle"></i> Your Profile</h3>
+                <div class="form-grid">
+                    <div class="f-group">
+                        <label class="f-label">Gender</label>
+                        <select class="f-select" id="gender">
+                            <option value="male">Male</option>
+                            <option value="female">Female</option>
+                            <option value="other">Other / Non-binary</option>
+                        </select>
+                    </div>
+                    <div class="f-group">
+                        <label class="f-label">Category</label>
+                        <select class="f-select" id="category">
+                            <option value="general">General</option>
+                            <option value="ncobc">NC-OBC</option>
+                            <option value="sc">SC</option>
+                            <option value="st">ST</option>
+                            <option value="ews">EWS</option>
+                            <option value="pwd">PwD</option>
+                        </select>
+                    </div>
+                    <div class="f-group">
+                        <label class="f-label">Work Experience</label>
+                        <select class="f-select" id="workex">
+                            <option value="0">Fresher (0 months)</option>
+                            <option value="12">6–12 months</option>
+                            <option value="24" selected>13–24 months</option>
+                            <option value="36">25–36 months</option>
+                            <option value="48">37–48 months</option>
+                            <option value="60">48+ months</option>
+                        </select>
+                    </div>
+                    <div class="f-group">
+                        <label class="f-label">Background</label>
+                        <select class="f-select" id="background">
+                            <option value="engineer">Engineer (B.Tech/B.E.)</option>
+                            <option value="noneng">Non-Engineer (Science/Commerce/Arts)</option>
+                            <option value="doctor">Doctor (MBBS/BDS)</option>
+                            <option value="law">Law Graduate</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ACADEMICS -->
+            <div class="form-card">
+                <h3><i class="ti ti-school"></i> Academic Background</h3>
+                <div class="form-grid-3">
+                    <div class="f-group">
+                        <label class="f-label">Class 10th %</label>
+                        <input class="f-input" type="number" id="tenth" min="0" max="100" value="88"
+                            placeholder="e.g. 88" />
+                    </div>
+                    <div class="f-group">
+                        <label class="f-label">Class 12th %</label>
+                        <input class="f-input" type="number" id="twelfth" min="0" max="100" value="85"
+                            placeholder="e.g. 85" />
+                    </div>
+                    <div class="f-group">
+                        <label class="f-label">Graduation CGPA/% </label>
+                        <input class="f-input" type="number" id="grad" min="0" max="100" value="78"
+                            placeholder="e.g. 78 or 8.2" />
+                    </div>
+                </div>
+                <div class="f-group" style="margin-top:14px">
+                    <label class="f-label">Academic gaps or backlogs?</label>
+                    <select class="f-select" id="gaps">
+                        <option value="none">No gaps or backlogs</option>
+                        <option value="gap1">1 year gap (explained)</option>
+                        <option value="backlog">Backlogs cleared</option>
+                        <option value="both">Gap + backlogs</option>
+                    </select>
+                </div>
+            </div>
+
+            <button class="predict-btn" id="predictBtn" onclick="runPredictor()">
+                <i class="ti ti-sparkles"></i> Predict My Colleges
+            </button>
+
+            <!-- RESULTS -->
+            <div id="resultsSection" style="display:none;margin-top:24px"></div>
+
+        </div>
+
+        <!-- ===================== TAB 2: SCORE CONVERTER ===================== -->
+        <div class="tab-panel" id="tab-converter">
+            <div class="form-card">
+                <h3><i class="ti ti-arrows-exchange"></i> CAT Raw Score → Percentile Converter</h3>
+                <p
+                    style="font-size:13px;color:var(--ink2);font-family:'Inter',sans-serif;margin-bottom:20px;line-height:1.6">
+                    Based on CAT 2024 actual data. Exact percentile varies slightly by slot and year, but these are
+                    highly accurate estimates.</p>
+
+                <div class="f-group" style="max-width:280px;margin-bottom:20px">
+                    <label class="f-label">Enter your raw score</label>
+                    <input class="f-input" type="number" id="convScore" min="0" max="198"
+                        placeholder="Enter score (0–198)" oninput="updateConverter(this.value)" />
+                </div>
+                <div id="convResult" style="display:none;margin-bottom:24px">
+                    <div
+                        style="background:var(--orange-light);border:1px solid rgba(255,139,2,.25);border-radius:12px;padding:16px 20px;display:flex;align-items:center;gap:14px">
+                        <i class="ti ti-chart-line" style="font-size:28px;color:var(--orange)"></i>
+                        <div>
+                            <div style="font-size:24px;font-weight:900;color:var(--navy);letter-spacing:-.03em"
+                                id="convPercentileResult">—</div>
+                            <div style="font-size:12px;color:var(--ink2);font-family:'Inter',sans-serif" id="convNote">—
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="converter-grid">
+                <div class="conv-card">
+                    <h4>Score → Percentile (General)</h4>
+                    <table class="conv-table">
+                        <thead>
+                            <tr>
+                                <th>Raw Score</th>
+                                <th>Percentile</th>
+                                <th>Rating</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>180–198</td>
+                                <td>99.9–100</td>
+                                <td><span class="percentile-pill p-excellent">Top 0.1%</span></td>
+                            </tr>
+                            <tr>
+                                <td>155–179</td>
+                                <td>99.5–99.8</td>
+                                <td><span class="percentile-pill p-excellent">Excellent</span></td>
+                            </tr>
+                            <tr>
+                                <td>130–154</td>
+                                <td>98.5–99.4</td>
+                                <td><span class="percentile-pill p-excellent">Excellent</span></td>
+                            </tr>
+                            <tr>
+                                <td>110–129</td>
+                                <td>96–98.4</td>
+                                <td><span class="percentile-pill p-good">Very Good</span></td>
+                            </tr>
+                            <tr>
+                                <td>95–109</td>
+                                <td>93–95.9</td>
+                                <td><span class="percentile-pill p-good">Good</span></td>
+                            </tr>
+                            <tr>
+                                <td>80–94</td>
+                                <td>88–92.9</td>
+                                <td><span class="percentile-pill p-good">Good</span></td>
+                            </tr>
+                            <tr>
+                                <td>65–79</td>
+                                <td>80–87.9</td>
+                                <td><span class="percentile-pill p-average">Average</span></td>
+                            </tr>
+                            <tr>
+                                <td>50–64</td>
+                                <td>70–79.9</td>
+                                <td><span class="percentile-pill p-average">Below Avg</span></td>
+                            </tr>
+                            <tr>
+                                <td>Below 50</td>
+                                <td>Below 70</td>
+                                <td><span class="percentile-pill p-below">Low</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="conv-card">
+                    <h4>Sectional Percentile Guide</h4>
+                    <table class="conv-table">
+                        <thead>
+                            <tr>
+                                <th>Section Score (/66)</th>
+                                <th>≈ Sectional %ile</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>58–66</td>
+                                <td>99+</td>
+                            </tr>
+                            <tr>
+                                <td>50–57</td>
+                                <td>97–98.9</td>
+                            </tr>
+                            <tr>
+                                <td>44–49</td>
+                                <td>94–96.9</td>
+                            </tr>
+                            <tr>
+                                <td>38–43</td>
+                                <td>90–93.9</td>
+                            </tr>
+                            <tr>
+                                <td>32–37</td>
+                                <td>85–89.9</td>
+                            </tr>
+                            <tr>
+                                <td>26–31</td>
+                                <td>75–84.9</td>
+                            </tr>
+                            <tr>
+                                <td>20–25</td>
+                                <td>60–74.9</td>
+                            </tr>
+                            <tr>
+                                <td>Below 20</td>
+                                <td>Below 60</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <p
+                        style="font-size:11px;color:var(--ink3);margin-top:12px;font-family:'Inter',sans-serif;line-height:1.5">
+                        Note: Sectional cutoffs are mandatory at IIMs. Even a 99.9 overall with one weak section =
+                        rejection.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- ===================== TAB 3: CUTOFFS ===================== -->
+        <div class="tab-panel" id="tab-cutoffs">
+            <div class="form-card" style="margin-bottom:16px">
+                <h3><i class="ti ti-filter"></i> Filter by Category</h3>
+                <div style="display:flex;gap:8px;flex-wrap:wrap">
+                    <button class="calc-tab active" style="flex:none;padding:8px 16px;font-size:12px"
+                        onclick="filterCutoffs('all',this)">All</button>
+                    <button class="calc-tab" style="flex:none;padding:8px 16px;font-size:12px"
+                        onclick="filterCutoffs('general',this)">General</button>
+                    <button class="calc-tab" style="flex:none;padding:8px 16px;font-size:12px"
+                        onclick="filterCutoffs('ncobc',this)">NC-OBC</button>
+                    <button class="calc-tab" style="flex:none;padding:8px 16px;font-size:12px"
+                        onclick="filterCutoffs('sc',this)">SC</button>
+                    <button class="calc-tab" style="flex:none;padding:8px 16px;font-size:12px"
+                        onclick="filterCutoffs('st',this)">ST</button>
+                </div>
+            </div>
+            <div class="cutoffs-table-wrap">
+                <table class="cutoffs-table" id="cutoffTable"></table>
+            </div>
+        </div>
+
+    </div>
+
+    <script src="js/cat-predictor.js"></script>
+</body>
+
+</html>

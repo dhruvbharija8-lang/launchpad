@@ -1,0 +1,1119 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>MBA Partner — Get Mentored. Get Placed.</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@400;500;600;700;800&display=swap"
+    rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css" />
+  <link rel="stylesheet" href="css/home.css">
+  <link rel="stylesheet" href="css/chatbot-widget.css" />
+  <link rel="stylesheet" href="css/fonts.css" />
+  <script src="js/auth.js"></script>
+  <script>(function () { if (!(window.MBAauth && MBAauth.isLoggedIn())) return; var done = false; try { done = !!sessionStorage.getItem('mbaHomeRedirected'); } catch (e) { } if (done) return; try { sessionStorage.setItem('mbaHomeRedirected', '1'); } catch (e) { } location.replace('login.html'); })();</script>
+  <script src="js/nav-auth.js"></script>
+</head>
+
+<body>
+
+  <nav class="nav">
+    <div class="wrap nav-in">
+      <div class="brand" onclick="goHome()">
+        <div class="brand-mark">M</div>
+        <div class="brand-text">
+          <div class="brand-name">MBA Partner</div>
+          <div class="brand-tag">Initiative by Alumni of Old IIMs</div>
+        </div>
+      </div>
+      <div class="nav-links">
+        <button class="nav-a active-link" onclick="goHome()">Home</button>
+        <button class="nav-a" onclick="window.location.href='courses.html'">
+          Courses
+        </button>
+        <button class="nav-a" onclick="window.location.href='testimonials.html'">Testimonials</button>
+        <div class="nav-free-res">
+          <button class="nav-a nav-free-btn"><i class="ti ti-book-download"
+              style="font-size:14px;margin-right:4px"></i>Free Resources<i
+              class="ti ti-chevron-down nav-free-chev"></i></button>
+          <div class="nav-free-menu">
+            <a class="nav-free-item" href="brochure.html"><i class="ti ti-notebook"></i><span>Brochures</span></a>
+            <a class="nav-free-item" href="https://documents1.netlify.app/" target="_blank"><i
+                class="ti ti-book-2"></i><span>Compendium</span></a>
+            <a class="nav-free-item" href="#free-sessions"><i class="ti ti-player-play-filled"></i><span>Free
+                Session</span></a>
+            <a class="nav-free-item" href="https://documents1.netlify.app/" target="_blank"><i
+                class="ti ti-file-cv"></i><span>Sample CV</span></a>
+          </div>
+        </div>
+        <button class="nav-a" onclick="window.location.href='college-collab.html'">College Collab</button>
+        <button class="nav-a" onclick="window.location.href='enroll.html'">Enroll &amp; Refer</button>
+        <div class="nav-sep"></div>
+        <button class="nav-login" id="loginBtn">Login</button>
+        <a class="nav-call" href="tel:+917042732092">Call Us</a>
+        <button class="cart-btn" id="cartBtn" aria-label="Cart">
+          <i class="ti ti-shopping-cart" style="font-size:18px"></i>
+          <span class="cart-count" id="cartCount">0</span>
+        </button>
+      </div>
+      <button class="mobile-menu-btn" id="mobileMenuBtn" aria-label="Menu">
+        <i class="ti ti-menu-2"></i>
+      </button>
+      <button class="cart-btn" id="cartBtnMobile" aria-label="Cart" style="display:none">
+        <i class="ti ti-shopping-cart" style="font-size:18px"></i>
+        <span class="cart-count" id="cartCountMobile">0</span>
+      </button>
+    </div>
+    <div class="mobile-nav" id="mobileNav">
+      <button class="mobile-nav-a" onclick="goHome();closeMobileNav()">Home</button>
+      <button class="mobile-nav-a" onclick="window.location.href='courses.html';closeMobileNav()">Courses</button>
+      <button class="mobile-nav-a" onclick="window.location.href='enroll.html';closeMobileNav()">Enroll &amp;
+        Refer</button>
+      <button class="mobile-nav-a"
+        onclick="window.location.href='testimonials.html';closeMobileNav()">Testimonials</button>
+      <button class="mobile-nav-a mobile-free-btn" id="mobileFreeResBtn"><i class="ti ti-book-download"></i> Free
+        Resources <i class="ti ti-chevron-down" id="mobileFreeIcon"
+          style="font-size:12px;transition:.2s;margin-left:auto"></i></button>
+      <div class="mobile-free-sub" id="mobileFreeMenu">
+        <a class="mobile-nav-a" href="brochure.html" style="padding-left:28px"><i class="ti ti-notebook"></i> Brochures</a>
+        <a class="mobile-nav-a" href="https://documents1.netlify.app/" target="_blank" style="padding-left:28px"><i
+            class="ti ti-book-2"></i> Compendium</a>
+        <a class="mobile-nav-a" href="#free-sessions" onclick="closeMobileNav()" style="padding-left:28px"><i
+            class="ti ti-player-play-filled"></i> Free Session</a>
+        <a class="mobile-nav-a" href="https://documents1.netlify.app/" target="_blank" style="padding-left:28px"><i
+            class="ti ti-file-cv"></i> Sample CV</a>
+      </div>
+      <button class="mobile-nav-a" onclick="window.location.href='college-collab.html';closeMobileNav()">College
+        Collab</button>
+      <div class="mobile-nav-btns">
+        <button class="nav-login" id="loginBtnMobile" style="flex:1">Login</button>
+        <a class="nav-call" href="tel:+917042732092" style="flex:1;text-align:center">Call Us</a>
+      </div>
+    </div>
+  </nav>
+
+  <div class="ticker" id="tickerBar">
+    <div class="ticker-inner" id="tickerInner"></div>
+  </div>
+
+  <div class="view active" id="view-home">
+
+    <div class="persona-strip">
+      <div class="persona-toggle">
+        <button class="persona-btn active" id="btn-mba" onclick="switchPersona('mba')">MBA Student</button>
+        <button class="persona-btn" id="btn-cat" onclick="switchPersona('cat')">CAT / OMETs Aspirant</button>
+      </div>
+    </div>
+
+    <div class="persona-view active" id="pview-mba">
+      <section class="hero">
+        <div class="hero-bg-glow"></div>
+        <div class="wrap hero-grid">
+          <div class="hero-content">
+            <div class="hero-eyebrow" style="text-transform: none;"><i class="ti ti-building-bank"></i> INITIATIVE BY
+              ALUMNI OF OLD IIMs</div>
+            <h1 class="hero-h1">Get Mentored.<br>Get <span class="accent">Placed.</span></h1>
+            <p class="hero-sub">Join 5,000+ MBA students getting Placements Bootcamp, Live Projects Across Domains and
+              Case Competition Wins — all mentored by alumni from IIM, XLRI & FMS.</p>
+            <div class="hero-ctas">
+              <button class="btn-primary" onclick="goToCourses()"><i class="ti ti-bolt"></i> Explore Courses</button>
+              <a class="btn-ghost" href="testimonials.html"><i class="ti ti-star"></i> Testimonials</a>
+            </div>
+            <div class="hero-social">
+              <span class="hero-social-lbl">Explore</span>
+              <a class="social-chip" href="college-collab.html"><i
+                  class="ti ti-school"></i> College Collab</a>
+              <a class="social-chip" href="brochure.html"><i
+                  class="ti ti-book-download"></i> Free Material</a>
+            </div>
+          </div>
+          <div class="hero-card">
+            <div class="stats-panel reveal">
+              <div class="stat-item">
+                <div class="stat-num">9.6<span class="stat-accent">/10</span></div>
+                <div class="stat-lbl">Avg. rating by 700+ students</div>
+              </div>
+              <div class="stat-item" style="border-left:1px solid rgba(255,255,255,.12);padding-left:24px">
+                <div class="stat-num">5<span class="stat-accent">K+</span></div>
+                <div class="stat-lbl">Student network &amp; growing</div>
+              </div>
+              <div class="stat-item" style="padding-top:24px;border-top:1px solid rgba(255,255,255,.12)">
+                <div class="stat-num">98<span class="stat-accent">.7%</span></div>
+                <div class="stat-lbl">Placed in desired domain</div>
+              </div>
+              <div class="stat-item"
+                style="padding-top:24px;border-top:1px solid rgba(255,255,255,.12);border-left:1px solid rgba(255,255,255,.12);padding-left:24px">
+                <div class="stat-num" style="font-size:22px">Top<span class="stat-accent"> 1%</span></div>
+                <div class="stat-lbl">Mentors from IIM A/B/C/L, XLRI, FMS &amp; more</div>
+              </div>
+              <div style="grid-column:1/-1;border-top:1px solid rgba(255,255,255,.12);padding-top:18px;margin-top:4px">
+                <div
+                  style="font-size:11px;color:rgba(255,255,255,.4);margin-bottom:8px;font-weight:600;letter-spacing:.05em">
+                  20+ MENTOR SCHOOLS</div>
+                <div class="school-pills">
+                  <span class="school-pill">IIM Ahmedabad</span>
+                  <span class="school-pill">IIM Bangalore</span>
+                  <span class="school-pill">IIM Calcutta</span>
+                  <span class="school-pill">IIM Lucknow</span>
+                  <span class="school-pill">IIM Kozhikode</span>
+                  <span class="school-pill">IIM Indore</span>
+                  <span class="school-pill">IIM Raipur</span>
+                  <span class="school-pill">IIM Udaipur</span>
+                  <span class="school-pill">IIM Kashipur</span>
+                  <span class="school-pill">IIM Shillong</span>
+                  <span class="school-pill">IIM Trichy</span>
+                  <span class="school-pill">IIM Ranchi</span>
+                  <span class="school-pill">IIM Jammu</span>
+                  <span class="school-pill">IIM Sambalpur</span>
+                  <span class="school-pill">XLRI Jamshedpur</span>
+                  <span class="school-pill">XLRI Delhi</span>
+                  <span class="school-pill">FMS Delhi</span>
+                  <span class="school-pill">JBIMS</span>
+                  <span class="school-pill">MDI Gurgaon</span>
+                  <span class="school-pill">SPJIMR</span>
+                  <span class="school-pill">DSE</span>
+                  <span class="school-pill">IIFT Delhi</span>
+                  <span class="school-pill">SIBM Pune</span>
+                  <span class="school-pill">NMIMS Mumbai</span>
+                  <span class="school-pill">IMT Ghaziabad</span>
+                  <span class="school-pill">SCMHRD</span>
+                  <span class="school-pill">XIMB</span>
+                  <span class="school-pill">TAPMI</span>
+                  <span class="school-pill">GIM Goa</span>
+                  <span class="school-pill">GLIM Chennai</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="how-sec">
+        <div class="wrap">
+          <div class="how-header">
+            <div class="sec-label">How it works</div>
+            <h2 class="sec-h">From Day 1 to Dream Placement</h2>
+            <p class="sec-sub">A structured, end-to-end track that takes you from onboarding to offer letter.</p>
+          </div>
+          <div class="steps-grid">
+            <div class="step-card reveal">
+              <div class="step-num">1</div>
+              <i class="ti ti-file-cv step-icon"></i>
+              <div class="step-title">CV Audit &amp; Profiling</div>
+              <div class="step-body">Mentors review your existing profile, identify gaps, and set a personalized roadmap
+                to a shortlist-worthy CV.</div>
+            </div>
+            <div class="step-card reveal" style="transition-delay:.1s">
+              <div class="step-num">2</div>
+              <i class="ti ti-briefcase step-icon"></i>
+              <div class="step-title">Live Projects Across Domains</div>
+              <div class="step-body">Work on real deliverables with Prodmark Consultants over 1–2 months, adding
+                powerful, verifiable CV points.</div>
+            </div>
+            <div class="step-card reveal" style="transition-delay:.2s">
+              <div class="step-num">3</div>
+              <i class="ti ti-trophy step-icon"></i>
+              <div class="step-title">Case Competition Mastery</div>
+              <div class="step-body">Learn from an AIR 1 mentor with 30+ winning PPTs, frameworks, and presentation
+                techniques that beat the crowd.</div>
+            </div>
+            <div class="step-card reveal" style="transition-delay:.3s">
+              <div class="step-num">4</div>
+              <i class="ti ti-users step-icon"></i>
+              <div class="step-title">Placement Bootcamp</div>
+              <div class="step-body">Intensive mock PIs, GDs, domain sessions, ATS-optimised resume building and AI profiling tools — everything for Day-1 readiness.</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="hof-sec">
+        <div class="wrap">
+          <div class="hof-header">
+            <div class="sec-label" style="text-align:center">Hall of Fame</div>
+            <h2 class="sec-h" style="text-align:center">From Classroom to Corporate</h2>
+            <p class="sec-sub" style="text-align:center;max-width:520px;margin:12px auto 0">Congratulations to our Hall
+              of Famers for turning ambition into top-tier offers with the guidance of MBA Partner!</p>
+          </div>
+          <div class="hof-grid reveal" id="hofGrid"></div>
+        </div>
+      </section>
+
+      <section class="benefits-sec">
+        <div class="wrap">
+          <div class="benefits-grid">
+            <div class="benefits-left">
+              <div class="sec-label">Why MBA Partner</div>
+              <h2 class="sec-h">Why Students Choose Us</h2>
+              <p class="sec-sub">Committee PORs and graduation internships alone are no longer enough. We close the gap.
+              </p>
+              <div class="benefits-list">
+                <div class="benefit-item reveal">
+                  <div class="benefit-icon"><i class="ti ti-certificate"></i></div>
+                  <div class="benefit-text">
+                    <h4>Verifiable CV Points</h4>
+                    <p>Real consulting deliverables you can list with confidence, not just participation certificates.
+                    </p>
+                  </div>
+                </div>
+                <div class="benefit-item reveal" style="transition-delay:.1s">
+                  <div class="benefit-icon"><i class="ti ti-users"></i></div>
+                  <div class="benefit-text">
+                    <h4>Top 1% Mentors</h4>
+                    <p>Personalized guidance from alumni of IIM A/B/C, XLRI, FMS and other top B-schools.</p>
+                  </div>
+                </div>
+                <div class="benefit-item reveal" style="transition-delay:.2s">
+                  <div class="benefit-icon"><i class="ti ti-target-arrow"></i></div>
+                  <div class="benefit-text">
+                    <h4>Domain-Specific Prep</h4>
+                    <p>Tailored coaching across Finance, Marketing, Strategy, Operations, HR — for any role you target.
+                    </p>
+                  </div>
+                </div>
+                <div class="benefit-item reveal" style="transition-delay:.3s">
+                  <div class="benefit-icon"><i class="ti ti-network"></i></div>
+                  <div class="benefit-text">
+                    <h4>5,000+ Student Network</h4>
+                    <p>A peer community that shares insights, referrals, and real-time placement intel.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="benefits-right reveal" id="benefitsCards"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- MENTORS -->
+      <section class="mentors-sec">
+        <div class="wrap">
+          <div class="mentors-head">
+            <div>
+              <div class="sec-label">Meet the mentors</div>
+              <h2 class="sec-h">Top <span class="accent">Mentors</span> This Season</h2>
+              <p class="sec-sub">90% of our mentors were once our students — they know exactly what the journey feels
+                like from both sides.</p>
+            </div>
+            <div class="mentors-pills">
+              <span class="mentor-pill"><i class="ti ti-award"></i> 90% were our students</span>
+              <span class="mentor-pill alt"><i class="ti ti-users"></i> 5,000+ mentored</span>
+            </div>
+          </div>
+          <div class="mentors-grid reveal" id="mentorsGrid"></div>
+          <div class="mentor-apply-band reveal">
+            <div class="mentor-apply-text">
+              <h3>Were you mentored here? Now mentor the next batch.</h3>
+              <p>Most of our mentors started exactly where you are. Share a 60-second intro on why you'd be a great
+                mentor.</p>
+            </div>
+            <button class="btn-primary" id="openApply"><i class="ti ti-user-plus"></i> Apply to be a mentor</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- COLLEGE COLLAB -->
+      <section class="collab-sec">
+        <div class="wrap">
+          <div class="how-header">
+            <div class="sec-label">College Collaborations</div>
+            <h2 class="sec-h">Trusted Across India's Top B-Schools</h2>
+            <p class="sec-sub">Active tie-ups with leading campuses — bringing live projects, mentorship and placement
+              prep to their students.</p>
+          </div>
+          <div class="collab-colleges reveal" id="collabColleges"></div>
+          <div class="collab-results reveal">
+            <div class="collab-result">
+              <div class="cr-n">5,000+</div>
+              <div class="cr-l">Students mentored</div>
+            </div>
+            <div class="collab-result">
+              <div class="cr-n">98.7%</div>
+              <div class="cr-l">Placed in target domain</div>
+            </div>
+            <div class="collab-result">
+              <div class="cr-n">40+</div>
+              <div class="cr-l">Campuses reached</div>
+            </div>
+            <div class="collab-result">
+              <div class="cr-n">MBB · Amazon · Accenture</div>
+              <div class="cr-l">Among recruiters</div>
+            </div>
+          </div>
+          <div class="collab-cta reveal">
+            <div class="collab-cta-text">
+              <h3>Want to bring MBA Partner to your college?</h3>
+              <p>Live projects, case-competition prep and placement bootcamps for your campus. Get in touch for current
+                tie-ups and past results.</p>
+            </div>
+            <div class="collab-cta-actions">
+              <a class="collab-btn primary" href="college-collab.html"><i class="ti ti-school"></i> College Collab</a>
+              <a class="collab-btn ghost" href="tel:+917042732092"><i class="ti ti-phone"></i> +91 70427 32092</a>
+              <a class="collab-btn ghost" href="mailto:bharat.kapoor@prodmarkconsulting.in"><i class="ti ti-mail"></i>
+                Email us</a>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- FREE SESSIONS -->
+      <section class="free-sec" id="free-sessions">
+        <div class="wrap">
+          <div style="text-align:center">
+            <div class="sec-label">Free Sessions</div>
+            <h2 class="sec-h">Free Masterclasses on YouTube</h2>
+            <p class="sec-sub" style="max-width:520px;margin:12px auto 0">Our most-loved sessions — watch anytime, no
+              sign-up needed.</p>
+          </div>
+          <div class="free-grid">
+            <a class="free-card" href="https://www.youtube.com/watch?v=zZXBRobYRCE&t=34s" target="_blank"
+              rel="noopener">
+              <div class="free-thumb"><img src="https://img.youtube.com/vi/zZXBRobYRCE/hqdefault.jpg" alt="" /><span
+                  class="free-play"><i class="ti ti-player-play-filled"></i></span></div>
+              <div class="free-body">
+                <div class="free-title">B-School Comparison &amp; CV Skeleton</div>
+                <div class="free-meta"><i class="ti ti-brand-youtube"></i> Watch on YouTube</div>
+              </div>
+            </a>
+            <a class="free-card" href="https://www.youtube.com/watch?v=eIgTrOVCyRw" target="_blank" rel="noopener">
+              <div class="free-thumb"><img src="https://img.youtube.com/vi/eIgTrOVCyRw/hqdefault.jpg" alt="" /><span
+                  class="free-play"><i class="ti ti-player-play-filled"></i></span></div>
+              <div class="free-body">
+                <div class="free-title">MBA Game Plan</div>
+                <div class="free-meta"><i class="ti ti-brand-youtube"></i> Watch on YouTube</div>
+              </div>
+            </a>
+            <a class="free-card" href="https://www.youtube.com/watch?v=OhVg0Wf9JzU" target="_blank" rel="noopener">
+              <div class="free-thumb"><img src="https://img.youtube.com/vi/OhVg0Wf9JzU/hqdefault.jpg" alt="" /><span
+                  class="free-play"><i class="ti ti-player-play-filled"></i></span></div>
+              <div class="free-body">
+                <div class="free-title">HR Contacts (Demo)</div>
+                <div class="free-meta"><i class="ti ti-brand-youtube"></i> Watch on YouTube</div>
+              </div>
+            </a>
+          </div>
+        </div>
+      </section>
+
+      <section class="resources-sec">
+        <div class="wrap">
+          <div style="text-align:center">
+            <div class="sec-label">Free Resources</div>
+            <h2 class="sec-h">Start Learning, For Free</h2>
+            <p class="sec-sub" style="max-width:500px;margin:12px auto 0">Premium resources curated by IIM alumni —
+              yours to download, no strings attached.</p>
+          </div>
+          <div class="resources-grid">
+            <div class="res-card reveal">
+              <div class="res-icon"><i class="ti ti-book-2"></i></div>
+              <div>
+                <div class="res-title">Case Competition Compendiums</div>
+                <p class="res-body">30+ winning case PPTs, frameworks and best-practice decks from AIR 1 mentors. The
+                  fastest way to learn what juries reward.</p>
+              </div>
+              <a class="res-link" href="https://documents1.netlify.app/" target="_blank">Download free <i
+                  class="ti ti-arrow-right"></i></a>
+            </div>
+            <div class="res-card reveal" style="transition-delay:.1s">
+              <div class="res-icon"><i class="ti ti-file-cv"></i></div>
+              <div>
+                <div class="res-title">Sample CVs from Top B-Schools</div>
+                <p class="res-body">Real CVs from students placed at Amazon, Accenture, Kearney, Pine Labs and more —
+                  see exactly what shortlisted profiles look like.</p>
+              </div>
+              <a class="res-link" href="https://documents1.netlify.app/" target="_blank">Download free <i
+                  class="ti ti-arrow-right"></i></a>
+            </div>
+            <div class="res-card reveal" style="transition-delay:.2s">
+              <div class="res-icon"><i class="ti ti-message-circle"></i></div>
+              <div>
+                <div class="res-title">Community &amp; Peer Network</div>
+                <p class="res-body">Join the MBA Partner WhatsApp and Telegram communities for live placement intel,
+                  peer support, and announcements on new cohorts.</p>
+              </div>
+              <div style="display:flex;gap:12px;flex-wrap:wrap">
+                <a class="res-link" href="https://chat.whatsapp.com/EdyvGJbQoV9Jj6eC0slSx9" target="_blank">WhatsApp <i
+                    class="ti ti-arrow-right"></i></a>
+                <a class="res-link" href="https://t.me/+IrnzgXdUKqsyOTZl" target="_blank">Telegram <i
+                    class="ti ti-arrow-right"></i></a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <div class="persona-view" id="pview-cat">
+      <section class="hero" style="background:linear-gradient(140deg, #101c4f 0%, #172a72 60%, var(--navy) 100%);">
+        <div class="hero-bg-glow"></div>
+        <div class="wrap hero-grid">
+          <div class="hero-content">
+            <div class="hero-eyebrow"><i class="ti ti-rosette"></i> Mentored by 99+ Percentilers</div>
+            <h1 class="hero-h1">Crack CAT & Top OMETs.<br>Master your <span class="accent">GDPI.</span></h1>
+            <p class="hero-sub">Comprehensive prep, mentorship from IIM alumni, and foolproof GDPI strategies to get you
+              into your dream B-School.</p>
+            <div class="hero-ctas">
+              <a class="btn-primary" href="cat-portal.html"><i class="ti ti-clipboard-list"></i> CAT Prep Portal</a>
+              <a class="btn-ghost" href="cat-predictor.html"><i class="ti ti-target-arrow"></i> CAT College
+                Predictor</a>
+              <a class="btn-ghost" href="exam-predictor.html"><i class="ti ti-school"></i> Exam &amp; College
+                Predictor</a>
+              <a class="btn-ghost" href="#" target="_blank"><i class="ti ti-brand-whatsapp"></i> Join CAT Community</a>
+            </div>
+            <div class="hero-social">
+              <span class="hero-social-lbl">Community</span>
+              <a class="social-chip" href="#" target="_blank"><i class="ti ti-brand-whatsapp"></i> WhatsApp</a>
+              <a class="social-chip" href="#" target="_blank"><i class="ti ti-brand-telegram"></i> Telegram</a>
+            </div>
+          </div>
+          <div class="hero-card">
+            <div class="stats-panel reveal">
+              <div class="stat-item">
+                <div class="stat-num">99<span class="stat-accent">+</span></div>
+                <div class="stat-lbl">Mentors are Top Percentilers</div>
+              </div>
+              <div class="stat-item" style="border-left:1px solid rgba(255,255,255,.12);padding-left:24px">
+                <div class="stat-num">500<span class="stat-accent">+</span></div>
+                <div class="stat-lbl">IIM Calls Secured</div>
+              </div>
+              <div class="stat-item" style="padding-top:24px;border-top:1px solid rgba(255,255,255,.12)">
+                <div class="stat-num">1<span class="stat-accent">-on-1</span></div>
+                <div class="stat-lbl">Personalized GDPI Coaching</div>
+              </div>
+              <div class="stat-item"
+                style="padding-top:24px;border-top:1px solid rgba(255,255,255,.12);border-left:1px solid rgba(255,255,255,.12);padding-left:24px">
+                <div class="stat-num" style="font-size:22px">End<span class="stat-accent">-to-End</span></div>
+                <div class="stat-lbl">Profile Building & SOP Prep</div>
+              </div>
+              <div style="grid-column:1/-1;border-top:1px solid rgba(255,255,255,.12);padding-top:18px;margin-top:4px">
+                <div
+                  style="font-size:11px;color:rgba(255,255,255,.4);margin-bottom:8px;font-weight:600;letter-spacing:.05em">
+                  TARGET B-SCHOOLS</div>
+                <div class="school-pills">
+                  <span class="school-pill">IIM BLACKI</span>
+                  <span class="school-pill">XLRI</span>
+                  <span class="school-pill">FMS</span>
+                  <span class="school-pill">SPJIMR</span>
+                  <span class="school-pill">MDI</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="how-sec">
+        <div class="wrap">
+          <div class="how-header">
+            <div class="sec-label">The Strategy</div>
+            <h2 class="sec-h">Your Roadmap to IIMs</h2>
+            <p class="sec-sub">From syllabus completion to final interview conversion, we walk the path with you.</p>
+          </div>
+          <div class="steps-grid">
+            <div class="step-card reveal">
+              <div class="step-num">1</div>
+              <i class="ti ti-books step-icon"></i>
+              <div class="step-title">Conceptual Clarity</div>
+              <div class="step-body">Master Quant, DILR, and VARC with curated masterclasses and structured materials
+                designed by 99+ percentilers.</div>
+            </div>
+            <div class="step-card reveal" style="transition-delay:.1s">
+              <div class="step-num">2</div>
+              <i class="ti ti-target step-icon"></i>
+              <div class="step-title">Mock Tests & Analysis</div>
+              <div class="step-body">Attempt high-quality mocks that simulate CAT conditions, followed by rigorous
+                1-on-1 performance analysis.</div>
+            </div>
+            <div class="step-card reveal" style="transition-delay:.2s">
+              <div class="step-num">3</div>
+              <i class="ti ti-chart-arrows step-icon"></i>
+              <div class="step-title">Profile Building</div>
+              <div class="step-body">Identify gaps in your profile. Work on certifications and live projects that make
+                your IIM application stand out.</div>
+            </div>
+            <div class="step-card reveal" style="transition-delay:.3s">
+              <div class="step-num">4</div>
+              <i class="ti ti-message-2 step-icon"></i>
+              <div class="step-title">GDPI & WAT Bootcamp</div>
+              <div class="step-body">Intensive Mock PIs with actual IIM alumni panels, GD practice, and WAT framing
+                techniques to clear the final hurdle.</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="benefits-sec" style="background:linear-gradient(135deg, #101c4f 0%, #172a72 100%);">
+        <div class="wrap">
+          <div class="benefits-grid">
+            <div class="benefits-left">
+              <div class="sec-label">Why CAT Aspirants Choose Us</div>
+              <h2 class="sec-h">Beyond Just Formulas</h2>
+              <p class="sec-sub">Securing an IIM seat requires more than academic prep. We build your complete profile.
+              </p>
+              <div class="benefits-list">
+                <div class="benefit-item reveal">
+                  <div class="benefit-icon"><i class="ti ti-microphone-2"></i></div>
+                  <div class="benefit-text">
+                    <h4>Mock PI with IIM Panels</h4>
+                    <p>Practice interviews with actual alumni from your target colleges to eliminate blind spots.</p>
+                  </div>
+                </div>
+                <div class="benefit-item reveal" style="transition-delay:.1s">
+                  <div class="benefit-icon"><i class="ti ti-writing"></i></div>
+                  <div class="benefit-text">
+                    <h4>SOP & WAT Frameworks</h4>
+                    <p>Learn how to craft compelling Statements of Purpose and structure your WAT essays under time
+                      pressure.</p>
+                  </div>
+                </div>
+                <div class="benefit-item reveal" style="transition-delay:.2s">
+                  <div class="benefit-icon"><i class="ti ti-bulb"></i></div>
+                  <div class="benefit-text">
+                    <h4>Current Affairs Mastery</h4>
+                    <p>Weekly digests and curated topics to ensure you dominate any Group Discussion.</p>
+                  </div>
+                </div>
+                <div class="benefit-item reveal" style="transition-delay:.3s">
+                  <div class="benefit-icon"><i class="ti ti-id"></i></div>
+                  <div class="benefit-text">
+                    <h4>Form Filling Assistance</h4>
+                    <p>Strategic guidance on selecting specializations, filling out forms to highlight strengths, and
+                      targeting the right colleges.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="benefits-right reveal">
+              <div class="b-card">
+                <div class="b-card-avatar">A</div>
+                <div class="b-card-info">
+                  <div class="b-role">Converted IIM Ahmedabad</div>
+                  <h4>Ananya K.</h4>
+                  <div class="b-school">99.8%ile</div>
+                  <div class="b-card-quote">"The Mock PI panel was tougher than the actual IIM A interview. It made the
+                    real thing feel like a breeze!"</div>
+                </div>
+              </div>
+              <div class="b-card">
+                <div class="b-card-avatar">R</div>
+                <div class="b-card-info">
+                  <div class="b-role">Converted XLRI Jamshedpur</div>
+                  <h4>Rohan M.</h4>
+                  <div class="b-school">XAT 99.4%ile</div>
+                  <div class="b-card-quote">"Their GD material and current affairs coverage gave me the exact talking
+                    points I needed."</div>
+                </div>
+              </div>
+              <div class="b-card">
+                <div class="b-card-avatar">S</div>
+                <div class="b-card-info">
+                  <div class="b-role">Converted FMS Delhi</div>
+                  <h4>Sneha T.</h4>
+                  <div class="b-school">CAT 99.6%ile</div>
+                  <div class="b-card-quote">"The profile building guidance helped me justify my gap year beautifully in
+                    the interview."</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- GDPI FLAGSHIP STUDENTS (CAT/OMETs) -->
+      <section class="collab-sec">
+        <div class="wrap">
+          <div class="how-header">
+            <div class="sec-label">GDPI Flagship</div>
+            <h2 class="sec-h">Students We've Mentored for GDPI</h2>
+            <p class="sec-sub">Aspirants who took our GDPI Flagship and solved our free sectionals — now headed to
+              India's top B-schools.</p>
+          </div>
+          <div class="gdpi-cards-grid" id="gdpiGrid"></div>
+        </div>
+      </section>
+
+      <section class="resources-sec">
+        <div class="wrap">
+          <div style="text-align:center">
+            <div class="sec-label">Free Prep Material</div>
+            <h2 class="sec-h">Your Arsenal for CAT</h2>
+            <p class="sec-sub" style="max-width:500px;margin:12px auto 0">Downloadable frameworks and guides crafted by
+              99+ percentilers.</p>
+          </div>
+          <div class="resources-grid">
+            <div class="res-card reveal">
+              <div class="res-icon"><i class="ti ti-math-function"></i></div>
+              <div>
+                <div class="res-title">Quant Formula Booklets</div>
+                <p class="res-body">A comprehensive cheat sheet of all essential formulas, shortcuts, and theorems for
+                  Arithmetic, Algebra, and Geometry.</p>
+              </div>
+              <a class="res-link" href="#" target="_blank">Download free <i class="ti ti-arrow-right"></i></a>
+            </div>
+            <div class="res-card reveal" style="transition-delay:.1s">
+              <div class="res-icon"><i class="ti ti-news"></i></div>
+              <div>
+                <div class="res-title">Top 50 GD Topics 2024</div>
+                <p class="res-body">Curated list of highly probable Group Discussion topics with balanced arguments and
+                  data points to use.</p>
+              </div>
+              <a class="res-link" href="#" target="_blank">Download free <i class="ti ti-arrow-right"></i></a>
+            </div>
+            <div class="res-card reveal" style="transition-delay:.2s">
+              <div class="res-icon"><i class="ti ti-list-check"></i></div>
+              <div>
+                <div class="res-title">SOP Writing Framework</div>
+                <p class="res-body">A step-by-step template on how to connect your past experiences with your future MBA
+                  goals logically and impactfully.</p>
+              </div>
+              <a class="res-link" href="#" target="_blank">Download free <i class="ti ti-arrow-right"></i></a>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+    <div class="wrap">
+      <div class="cta-banner reveal">
+        <div>
+          <h2>Ready to land your dream placement?</h2>
+          <p>Join 5,000+ students who've already transformed their MBA journey with MBA Partner.</p>
+        </div>
+        <div class="cta-btns">
+          <button class="btn-white" onclick="goToCourses()">Browse courses</button>
+          <a class="btn-ghost-white" href="https://chat.whatsapp.com/EdyvGJbQoV9Jj6eC0slSx9" target="_blank"><i
+              class="ti ti-brand-whatsapp"></i> Join community</a>
+        </div>
+      </div>
+    </div>
+
+    <section class="contact-sec">
+      <div class="wrap">
+        <div class="contact-grid">
+          <div class="contact-info">
+            <div class="sec-label">Get in Touch</div>
+            <h2 class="sec-h">Set Up an Enquiry</h2>
+            <p class="sec-sub">Have questions about our programs? Reach out and a mentor will get back to you within 24
+              hours.</p>
+            <div class="contact-chips">
+              <a class="contact-chip" href="https://chat.whatsapp.com/EdyvGJbQoV9Jj6eC0slSx9" target="_blank">
+                <div class="contact-chip-icon whatsapp"><i class="ti ti-brand-whatsapp"></i></div>
+                <div class="contact-chip-info">
+                  <h4>WhatsApp Community</h4>
+                  <p>Join 5,000+ students for live updates</p>
+                </div>
+              </a>
+              <a class="contact-chip" href="https://t.me/+IrnzgXdUKqsyOTZl" target="_blank">
+                <div class="contact-chip-icon telegram"><i class="ti ti-brand-telegram"></i></div>
+                <div class="contact-chip-info">
+                  <h4>Telegram Channel</h4>
+                  <p>Announcements and resources</p>
+                </div>
+              </a>
+              <a class="contact-chip" href="tel:+917042732092">
+                <div class="contact-chip-icon phone"><i class="ti ti-phone"></i></div>
+                <div class="contact-chip-info">
+                  <h4>+91 70427 32092</h4>
+                  <p>Mon – Sat, 9 AM – 8 PM IST</p>
+                </div>
+              </a>
+            </div>
+          </div>
+          <div class="contact-form reveal">
+            <h3>Send us a message</h3>
+            <div class="field"><label>Your name</label><input placeholder="Ananya Sharma" /></div>
+            <div class="field-row">
+              <div class="field"><label>Email</label><input type="email" placeholder="you@email.com" /></div>
+              <div class="field"><label>Phone</label><input placeholder="+91 …" /></div>
+            </div>
+            <div class="field"><label>College / Target B-School</label><input placeholder="IIM Ahmedabad" /></div>
+            <div class="field"><label>Message</label><textarea
+                placeholder="Tell us what you're looking for…"></textarea></div>
+            <button class="submit-btn" onclick="showToast('Message sent! We will be in touch within 24 hours.')">Submit
+              enquiry</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <footer class="footer">
+      <div class="wrap">
+        <div class="footer-grid">
+          <div class="footer-brand">
+            <div class="brand" style="cursor:default">
+              <div class="brand-mark">M</div>
+              <div class="brand-text">
+                <div class="brand-name">MBA Partner</div>
+                <div class="brand-tag">Initiative by Alumni of Old IIMs</div>
+              </div>
+            </div>
+            <p>We help MBA students get placed at their dream companies through Live Projects Across Domains, Case
+              Competition Prep, and expert-mentored Placements Bootcamp.</p>
+          </div>
+          <div class="footer-col">
+            <h4>Programs</h4>
+            <div class="footer-links">
+              <a onclick="goToCourses();return false;" href="#">Placement Bootcamp</a>
+              <a onclick="goToCourses();return false;" href="#">Live Projects</a>
+              <a onclick="goToCourses();return false;" href="#">Case Competitions</a>
+              <a onclick="goToCourses();return false;" href="#">Certifications</a>
+              <a onclick="goToCourses();return false;" href="#">Combo Bundles</a>
+            </div>
+          </div>
+          <div class="footer-col">
+            <h4>Resources</h4>
+            <div class="footer-links">
+              <a href="https://documents1.netlify.app/" target="_blank">Compendiums</a>
+              <a href="https://documents1.netlify.app/" target="_blank">Sample CVs</a>
+              <a href="https://www.mbapartner.in/testimonials" target="_blank">Testimonials</a>
+            </div>
+          </div>
+          <div class="footer-col">
+            <h4>Connect</h4>
+            <div class="footer-links">
+              <a href="https://chat.whatsapp.com/EdyvGJbQoV9Jj6eC0slSx9" target="_blank">WhatsApp Community</a>
+              <a href="https://t.me/+IrnzgXdUKqsyOTZl" target="_blank">Telegram Channel</a>
+              <a href="tel:+917042732092">+91 70427 32092</a>
+            </div>
+          </div>
+        </div>
+        <div class="footer-bottom">
+          <p>© 2026 MBA Partner. Initiative by Alumni of Old IIMs. All rights reserved.</p>
+          <div class="footer-social">
+            <a href="https://chat.whatsapp.com/EdyvGJbQoV9Jj6eC0slSx9" target="_blank" title="WhatsApp"
+              class="whatsapp"><i class="ti ti-brand-whatsapp"></i></a>
+            <a href="https://t.me/+IrnzgXdUKqsyOTZl" target="_blank" title="Telegram" class="telegram"><i
+                class="ti ti-brand-telegram"></i></a>
+            <a href="https://documents1.netlify.app/?open=instagram" target="_blank" title="Instagram" class="instagram"><i
+                class="ti ti-brand-instagram"></i></a>
+            <a href="https://documents1.netlify.app/?open=linkedin" target="_blank" title="LinkedIn" class="linkedin"><i
+                class="ti ti-brand-linkedin"></i></a>
+          </div>
+        </div>
+      </div>
+    </footer>
+  </div>
+
+  <div class="view" id="view-detail">
+    <nav class="nav" style="position:relative;top:auto">
+    </nav>
+    <div class="wrap">
+      <div class="dt-head">
+        <div class="dt-crumb"><a onclick="goHome()">Home</a> <i class="ti ti-chevron-right" style="font-size:13px"></i>
+          <a onclick="goToCourses()">Courses</a> <i class="ti ti-chevron-right" style="font-size:13px"></i> <span
+            id="bcTitle"></span>
+        </div>
+        <div class="dt-type" id="dType"></div>
+        <div class="dt-title" id="dTitle"></div>
+        <div class="dt-tagline" id="dTagline"></div>
+        <div class="dt-rating" id="dRating"></div>
+        <div class="dt-banner"><img id="dBanner" alt="" /></div>
+      </div>
+      <div class="dt-grid">
+        <div>
+          <div class="dt-block">
+            <h3>Overview</h3>
+            <div class="dt-desc" id="dDesc"></div>
+          </div>
+          <div class="dt-block">
+            <h3>What's included</h3>
+            <div class="feat-list" id="dFeats"></div>
+          </div>
+          <div class="dt-block">
+            <h3>Curriculum</h3>
+            <div id="dCurriculum"></div>
+          </div>
+          <div class="dt-block">
+            <h3>Meet your mentors</h3>
+            <div class="mentor-grid" id="dMentors"></div>
+          </div>
+          <div class="dt-block">
+            <h3>FAQs</h3>
+            <div class="faq-list" id="dFaq"></div>
+          </div>
+        </div>
+        <div>
+          <div class="buy">
+            <div class="buy-vis"><img id="buyImg" alt="" /></div>
+            <div class="buy-pad">
+              <div id="dVariants"></div>
+              <div class="buy-price-row" id="dPriceRow"></div>
+              <div class="buy-urgency"><i class="ti ti-flame"></i> Next cohort starting soon · limited slots</div>
+              <div class="buy-note" id="dNote">One-time payment · Lifetime access</div>
+              <button class="buy-enroll" id="dEnroll">Enroll now</button>
+              <button class="buy-cart" id="dCart">Add to cart</button>
+              <div class="buy-incl">
+                <div><i class="ti ti-certificate"></i> Certificate + CV points</div>
+                <div><i class="ti ti-users"></i> Mentored by IIM alumni</div>
+                <div><i class="ti ti-headset"></i> Community &amp; support access</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="related-sec reveal">
+        <h3 class="related-h">You might also like</h3>
+        <div class="grid" id="dRelated"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="view" id="view-checkout">
+    <div class="wrap">
+      <div class="dt-crumb" style="padding-top:40px"><a onclick="goHome()">Home</a> <i class="ti ti-chevron-right"
+          style="font-size:13px"></i> <a onclick="goToCourses()">Courses</a> <i class="ti ti-chevron-right"
+          style="font-size:13px"></i> <span>Checkout</span></div>
+      <div id="checkoutBody"></div>
+    </div>
+  </div>
+
+  <div class="drawer-overlay" id="drawerOverlay"></div>
+  <aside class="cart-drawer" id="cartDrawer" aria-label="Cart">
+    <div class="cart-drawer-head"><span>Your cart</span><button class="drawer-close" id="drawerClose">&times;</button>
+    </div>
+    <div class="cart-drawer-body" id="cartDrawerBody"></div>
+    <div class="cart-drawer-foot" id="cartDrawerFoot"></div>
+  </aside>
+
+  <div class="tmodal" id="testiModal">
+    <div class="tmodal-box" role="dialog" aria-modal="true">
+      <div class="tmodal-head">
+        <div>
+          <div class="tmodal-eyebrow">MBA Partner Community</div>
+          <div class="tmodal-title">Student Testimonials &amp; Hall of Fame</div>
+        </div>
+        <button class="tmodal-close" id="testiModalClose">&times;</button>
+      </div>
+      <div class="tmodal-body">
+        <div class="tmodal-sec-label">What Students Say</div>
+        <div class="tmodal-grid" id="modalTestiGrid"></div>
+        <div class="tmodal-divider"></div>
+        <div class="tmodal-sec-label">🏆 Hall of Fame — From Classroom to Corporate</div>
+        <div class="tmodal-grid" id="hofModalGrid"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal" id="modal">
+    <div class="modal-box" role="dialog" aria-modal="true">
+      <div class="modal-ico" id="modalIco"><i class="ti ti-info-circle"></i></div>
+      <div class="modal-title" id="modalTitle"></div>
+      <div class="modal-text" id="modalText"></div>
+      <div class="modal-actions">
+        <button class="modal-btn ghost" id="modalClose">Close</button>
+        <button class="modal-btn primary" id="modalAction">Continue</button>
+      </div>
+    </div>
+  </div>
+  <div class="toast-wrap" id="toastWrap"></div>
+
+
+  <script src="js/site-data.js"></script>
+  <script src="js/courses-dynamic.js"></script>
+  <script src="js/main.js"></script>
+  <script>
+    (async function () {
+      if (typeof loadSiteData !== 'function') return;
+      const data = await loadSiteData();
+      const el = document.getElementById('mentorsGrid');
+      const domIcon = { Consulting: 'ti-chart-arrows', Finance: 'ti-coin', 'Product Management': 'ti-bulb', Marketing: 'ti-speakerphone', HR: 'ti-users', Operations: 'ti-settings-2' };
+      if (el) el.innerHTML = (data.mentors || []).map(m => `
+      <div class="mentor-card">
+        <div class="mentor-top">
+          <div class="mentor-av">${(m.Name || '?').trim().charAt(0)}</div>
+          <a class="mentor-li" href="${m.LinkedIn || '#'}" target="_blank" rel="noopener"><i class="ti ti-brand-linkedin"></i></a>
+        </div>
+        <div class="mentor-name">${m.Name}</div>
+        <div class="mentor-school">${m.School}</div>
+        <div class="mentor-co"><span class="mentor-co-lbl">Placed at</span><span><i class="ti ${domIcon[m.Domain] || 'ti-briefcase'}"></i> ${m.Company}</span></div>
+        <div class="mentor-dom">${m.Domain}</div>
+      </div>`).join('') +
+        `<div class="mentor-more"><div class="mentor-more-n">25+</div><div class="mentor-more-l">more mentors across top B-Schools</div></div>`;
+      const cEl = document.getElementById('collabColleges');
+      if (cEl) cEl.innerHTML = (data.colleges || []).map(c => `<div class="collab-college"><i class="ti ti-building-bank"></i> ${c.Name}</div>`).join('');
+      const gEl = document.getElementById('gdpiGrid');
+      if (gEl) gEl.innerHTML = (data.gdpi || []).map(g => `<div class="gdpi-tcard reveal"><div class="gdpi-tcard-stars">★★★★★</div><p class="gdpi-tcard-quote">&ldquo;${g.Quote || ''}&rdquo;</p><div class="gdpi-tcard-footer"><div><div class="gdpi-tcard-name">${g.Name}</div><div class="gdpi-tcard-college">${g.College}</div></div><span class="gdpi-tcard-badge">GDPI</span></div></div>`).join('');
+    })();
+  </script>
+
+  <!-- APPLY TO BE A MENTOR -->
+  <div class="apply-modal" id="applyModal">
+    <div class="apply-box" role="dialog" aria-modal="true">
+      <button class="apply-x" id="applyClose" aria-label="Close">&times;</button>
+      <div id="applyForm">
+        <div class="apply-head">
+          <div class="apply-ico"><i class="ti ti-school"></i></div>
+          <h3>Apply to be a mentor</h3>
+          <p>90% of our mentors were once our students. Tell us about you and share a 60-second intro.</p>
+        </div>
+        <div class="afield"><label>Full name</label><input id="amName" placeholder="Your name" /></div>
+        <div class="afield-row">
+          <div class="afield"><label>Email</label><input id="amEmail" type="email" placeholder="you@email.com" /></div>
+          <div class="afield"><label>B-School / Company</label><input id="amSchool" placeholder="IIM … / Company" />
+          </div>
+        </div>
+        <div class="afield"><label>60-second intro video link</label><input id="amVideo"
+            placeholder="YouTube / Drive / Loom link (optional)" /></div>
+        <div class="afield"><label>Why do you want to mentor?</label><textarea id="amWhy" rows="3"
+            placeholder="In a few lines…"></textarea></div>
+        <div class="apply-err" id="amErr"></div>
+        <button class="apply-submit" id="amSubmit"><i class="ti ti-send"></i> Submit application</button>
+      </div>
+      <div id="applySuccess" class="apply-success" style="display:none">
+        <div class="apply-ico ok"><i class="ti ti-circle-check"></i></div>
+        <h3>Application received!</h3>
+        <p>Thanks — our team will review your intro and reach out. You can also email <a
+            href="mailto:bharat.kapoor@prodmarkconsulting.in">bharat.kapoor@prodmarkconsulting.in</a>.</p>
+        <button class="apply-submit" id="applyDone">Done</button>
+      </div>
+    </div>
+  </div>
+  <script>
+    (function () {
+      const modal = document.getElementById('applyModal'); if (!modal) return;
+      const open = () => { modal.classList.add('open'); document.body.style.overflow = 'hidden'; };
+      const close = () => { modal.classList.remove('open'); document.body.style.overflow = ''; };
+      const ob = document.getElementById('openApply'); if (ob) ob.onclick = open;
+      const xc = document.getElementById('applyClose'); if (xc) xc.onclick = close;
+      modal.addEventListener('click', e => { if (e.target === modal) close(); });
+      document.addEventListener('keydown', e => { if (e.key === 'Escape') close(); });
+      const sub = document.getElementById('amSubmit');
+      if (sub) sub.onclick = () => {
+        const name = (document.getElementById('amName').value || '').trim();
+        const email = (document.getElementById('amEmail').value || '').trim();
+        const why = (document.getElementById('amWhy').value || '').trim();
+        const err = document.getElementById('amErr');
+        if (!name || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email) || !why) {
+          err.textContent = 'Please add your name, a valid email, and why you want to mentor.';
+          err.style.display = 'block'; return;
+        }
+        err.style.display = 'none';
+        // To capture applications, POST these fields to a Google Apps Script web-app URL
+        // here and append them to a "MentorApplications" sheet tab.
+        document.getElementById('applyForm').style.display = 'none';
+        document.getElementById('applySuccess').style.display = 'block';
+      };
+      const done = document.getElementById('applyDone');
+      if (done) done.onclick = () => {
+        close(); setTimeout(() => {
+          document.getElementById('applyForm').style.display = '';
+          document.getElementById('applySuccess').style.display = 'none';
+          ['amName', 'amEmail', 'amSchool', 'amVideo', 'amWhy'].forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
+          const err = document.getElementById('amErr'); if (err) err.style.display = 'none';
+        }, 200);
+      };
+    })();
+  </script>
+
+  <!-- ===== USP WELCOME POPUP (shows once per visitor) ===== -->
+  <div class="usp-overlay" id="uspOverlay">
+    <div class="usp-popup" id="uspPopup" role="dialog" aria-modal="true" aria-label="Why MBA Partner">
+      <button class="usp-close" id="uspClose" aria-label="Close"><i class="ti ti-x"></i></button>
+      <div class="usp-header">
+        <div class="usp-eyebrow"><i class="ti ti-rosette-discount-check"></i> Why students choose us</div>
+        <h2 class="usp-title">Your MBA placement edge<br>starts <span>right here.</span></h2>
+        <p class="usp-subtitle">Join 5,000+ MBA students from IIM, XLRI &amp; FMS who landed offers at India's top
+          firms.</p>
+      </div>
+      <div class="usp-grid">
+        <div class="usp-item">
+          <div class="usp-ico"><i class="ti ti-file-cv"></i></div>
+          <div>
+            <div class="usp-item-title">ATS-optimised CVs</div>
+            <div class="usp-item-desc">High-impact keywords and recruiter-ready formats that get you shortlisted.</div>
+          </div>
+        </div>
+        <div class="usp-item">
+          <div class="usp-ico"><i class="ti ti-trophy"></i></div>
+          <div>
+            <div class="usp-item-title">Case competition wins</div>
+            <div class="usp-item-desc">Mentored by AIR 1 — 30+ winning decks, frameworks and techniques.</div>
+          </div>
+        </div>
+        <div class="usp-item">
+          <div class="usp-ico"><i class="ti ti-briefcase"></i></div>
+          <div>
+            <div class="usp-item-title">Live Projects Across Domains</div>
+            <div class="usp-item-desc">Real deliverables with Prodmark — verifiable CV bullets in 4–8 weeks.</div>
+          </div>
+        </div>
+        <div class="usp-item">
+          <div class="usp-ico"><i class="ti ti-building-factory-2"></i></div>
+          <div>
+            <div class="usp-item-title">Internship &amp; placement prep</div>
+            <div class="usp-item-desc">Domain-focused mock PIs, GDs and bootcamps — built for Day-1.</div>
+          </div>
+        </div>
+      </div>
+      <div class="usp-results">
+        <div class="usp-results-lbl">Our students placed at</div>
+        <div class="usp-companies">
+          <span class="usp-company star">MBB</span><span class="usp-company">Amazon</span><span
+            class="usp-company">Accenture</span><span class="usp-company">Kearney</span><span class="usp-company">Pine
+            Labs</span><span class="usp-company">BCG</span>
+        </div>
+      </div>
+      <div class="usp-footer">
+        <button class="usp-cta-primary" id="uspExplore"><i class="ti ti-bolt"></i> Explore courses</button>
+        <button class="usp-cta-ghost" id="uspLater">Maybe later</button>
+      </div>
+      <div class="usp-stat-strip">
+        <div class="usp-stat"><strong>5,000+</strong> students</div>
+        <div class="usp-stat-div"></div>
+        <div class="usp-stat"><strong>98.7%</strong> placed in target domain</div>
+        <div class="usp-stat-div"></div>
+        <div class="usp-stat"><strong>9.6/10</strong> avg. rating</div>
+      </div>
+    </div>
+  </div>
+  <script>
+    (function () {
+      var KEY = 'mbaUspSeen';
+      var overlay = document.getElementById('uspOverlay');
+      if (!overlay) return;
+      var seen = null; try { seen = sessionStorage.getItem(KEY); } catch (e) { }
+      function dismiss() { overlay.classList.remove('usp-open'); try { sessionStorage.setItem(KEY, '1'); } catch (e) { } }
+      if (!seen) { setTimeout(function () { overlay.classList.add('usp-open'); }, 1400); }
+      var c = document.getElementById('uspClose'); if (c) c.onclick = dismiss;
+      var l = document.getElementById('uspLater'); if (l) l.onclick = dismiss;
+      var ex = document.getElementById('uspExplore'); if (ex) ex.onclick = function () { dismiss(); if (typeof goToCourses === 'function') goToCourses(); else window.location.href = 'courses.html'; };
+      overlay.addEventListener('click', function (e) { if (e.target === overlay) dismiss(); });
+      document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && overlay.classList.contains('usp-open')) dismiss(); });
+    })();
+  </script>
+  <!-- FLOATING SOCIAL RAIL -->
+  <div class="float-social" id="floatSocial">
+    <a class="float-social-btn whatsapp" href="https://chat.whatsapp.com/EdyvGJbQoV9Jj6eC0slSx9" target="_blank"
+      aria-label="WhatsApp Community" title="Join WhatsApp Community">
+      <i class="ti ti-brand-whatsapp"></i><span class="float-social-label">WhatsApp</span>
+    </a>
+    <a class="float-social-btn instagram" href="https://documents1.netlify.app/?open=instagram" target="_blank"
+      aria-label="Follow on Instagram" title="Follow on Instagram">
+      <i class="ti ti-brand-instagram"></i><span class="float-social-label">Instagram</span>
+    </a>
+    <a class="float-social-btn linkedin" href="https://documents1.netlify.app/?open=linkedin" target="_blank" aria-label="LinkedIn"
+      title="Connect on LinkedIn">
+      <i class="ti ti-brand-linkedin"></i><span class="float-social-label">LinkedIn</span>
+    </a>
+    <a class="float-social-btn youtube" href="https://documents1.netlify.app/?open=youtube" target="_blank" aria-label="YouTube"
+      title="Watch on YouTube">
+      <i class="ti ti-brand-youtube"></i><span class="float-social-label">YouTube</span>
+    </a>
+  </div>
+  <script>
+    (function () {
+      var mfBtn = document.getElementById('mobileFreeResBtn');
+      var mfMenu = document.getElementById('mobileFreeMenu');
+      var mfIcon = document.getElementById('mobileFreeIcon');
+      if (mfBtn && mfMenu) { mfBtn.onclick = function () { var open = mfMenu.classList.toggle('open'); if (mfIcon) mfIcon.style.transform = open ? 'rotate(180deg)' : ''; }; }
+    })();
+  </script>
+  <script src="js/chatbot-widget.js"></script>
+</body>
+
+</html>

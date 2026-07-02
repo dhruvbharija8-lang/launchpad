@@ -1,0 +1,2728 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>College Collaborations — MBA Partner</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@400;500;600;700;800&display=swap"
+    rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css" />
+  <link rel="stylesheet" href="css/chatbot-widget.css" />
+  <link rel="stylesheet" href="css/fonts.css" />
+  <script src="js/site-nav.js"></script>
+  <script src="js/nav-auth.js"></script>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0
+    }
+
+    :root {
+      --navy: #1B2A6B;
+      --navy2: #223278;
+      --navy-light: #2B3D8A;
+      --orange: #FF8B02;
+      --orange-dark: #D97400;
+      --orange-light: #FFF3E0;
+      --ink: #111114;
+      --ink2: #5A6070;
+      --ink3: #9AA0B0;
+      --bg: #F6F7FB;
+      --surface: #fff;
+      --surface2: #F0F2F8;
+      --line: #E0E4F0;
+      --r: 16px;
+      --ease: cubic-bezier(.4, 0, .2, 1);
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, sans-serif;
+      background: var(--bg);
+      color: var(--ink);
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden
+    }
+
+    a {
+      text-decoration: none;
+      color: inherit
+    }
+
+    button {
+      cursor: pointer;
+      font-family: inherit
+    }
+
+    .wrap {
+      max-width: 1140px;
+      margin: 0 auto;
+      padding: 0 32px
+    }
+
+    @keyframes fadeUp {
+      from {
+        opacity: 0;
+        transform: translateY(28px)
+      }
+
+      to {
+        opacity: 1;
+        transform: none
+      }
+    }
+
+    @keyframes pulse-ring {
+      0% {
+        box-shadow: 0 0 0 0 rgba(255, 139, 2, .4)
+      }
+
+      70% {
+        box-shadow: 0 0 0 14px rgba(255, 139, 2, 0)
+      }
+
+      100% {
+        box-shadow: 0 0 0 0 rgba(255, 139, 2, 0)
+      }
+    }
+
+    @keyframes scrollLeft {
+      0% {
+        transform: translateX(0)
+      }
+
+      100% {
+        transform: translateX(-50%)
+      }
+    }
+
+    @keyframes spin {
+      to {
+        transform: rotate(360deg)
+      }
+    }
+
+    .reveal {
+      opacity: 0;
+      transform: translateY(24px);
+      transition: opacity .6s var(--ease), transform .6s var(--ease)
+    }
+
+    .reveal.in {
+      opacity: 1;
+      transform: none
+    }
+
+    /* NAV */
+    .nav {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: var(--navy);
+      border-bottom: 1px solid rgba(255, 255, 255, .08);
+      box-shadow: 0 2px 20px rgba(27, 42, 107, .25)
+    }
+
+    .nav-in {
+      display: flex;
+      align-items: center;
+      gap: 18px;
+      height: 68px
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-shrink: 0;
+      cursor: pointer
+    }
+
+    .brand-mark {
+      width: 42px;
+      height: 42px;
+      background: var(--orange);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      font-weight: 900;
+      font-size: 19px;
+      box-shadow: 0 4px 14px rgba(255, 139, 2, .4)
+    }
+
+    .brand-name {
+      font-size: 16px;
+      font-weight: 800;
+      color: #fff
+    }
+
+    .brand-tag {
+      font-size: 9.5px;
+      color: rgba(255, 255, 255, .5);
+      font-weight: 500;
+      line-height: 1.3
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 2px;
+      margin-left: auto
+    }
+
+    .nav-a {
+      font-size: 13px;
+      font-weight: 500;
+      color: rgba(255, 255, 255, .75);
+      padding: 8px 13px;
+      border-radius: 8px;
+      border: none;
+      background: transparent;
+      cursor: pointer;
+      transition: .2s;
+      white-space: nowrap
+    }
+
+    .nav-a:hover,
+    .nav-a.active {
+      color: #fff;
+      background: rgba(255, 255, 255, .1)
+    }
+
+    .nav-call {
+      font-size: 13px;
+      font-weight: 700;
+      background: var(--orange);
+      color: #fff;
+      padding: 9px 20px;
+      border-radius: 30px;
+      border: none;
+      transition: .2s;
+      white-space: nowrap;
+      display: inline-flex;
+      align-items: center
+    }
+
+    .nav-call:hover {
+      background: var(--orange-dark)
+    }
+
+    .mobile-menu-btn {
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 8px;
+      background: transparent;
+      border: none;
+      color: rgba(255, 255, 255, .8);
+      font-size: 22px
+    }
+
+    .mobile-nav {
+      display: none;
+      background: var(--navy2);
+      border-top: 1px solid rgba(255, 255, 255, .1);
+      padding: 16px 18px 20px;
+      flex-direction: column;
+      gap: 6px
+    }
+
+    .mobile-nav.open {
+      display: flex
+    }
+
+    .mobile-nav-a {
+      font-size: 14px;
+      font-weight: 500;
+      color: rgba(255, 255, 255, .8);
+      padding: 11px 14px;
+      border-radius: 10px;
+      display: block;
+      transition: .2s;
+      border: none;
+      background: transparent;
+      cursor: pointer;
+      text-align: left;
+      width: 100%
+    }
+
+    .mobile-nav-a:hover {
+      background: rgba(255, 255, 255, .08);
+      color: #fff
+    }
+
+    /* FREE RESOURCES DROPDOWN */
+    .nav-free-res {
+      position: relative;
+      display: inline-flex;
+      align-items: center
+    }
+
+    .nav-free-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 13px;
+      font-weight: 500;
+      color: rgba(255, 255, 255, .75);
+      padding: 8px 13px;
+      border-radius: 8px;
+      border: none;
+      background: transparent;
+      cursor: pointer;
+      transition: .2s;
+      white-space: nowrap
+    }
+
+    .nav-free-btn:hover,
+    .nav-free-res:hover .nav-free-btn {
+      color: #fff;
+      background: rgba(255, 255, 255, .1)
+    }
+
+    .nav-free-chev {
+      font-size: 11px;
+      margin-left: 2px;
+      transition: transform .2s
+    }
+
+    .nav-free-res:hover .nav-free-chev {
+      transform: rotate(180deg)
+    }
+
+    .nav-free-menu {
+      position: absolute;
+      top: calc(100% + 8px);
+      left: 0;
+      min-width: 190px;
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, .16);
+      padding: 6px;
+      opacity: 0;
+      visibility: hidden;
+      transform: translateY(-6px) scale(.97);
+      transition: opacity .2s ease, transform .2s ease, visibility .2s;
+      z-index: 200
+    }
+
+    .nav-free-res:hover .nav-free-menu {
+      opacity: 1;
+      visibility: visible;
+      transform: translateY(0) scale(1)
+    }
+
+    .nav-free-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 14px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 600;
+      color: #1B2A6B;
+      transition: .15s;
+      text-decoration: none
+    }
+
+    .nav-free-item:hover {
+      background: #F0F2F8;
+      color: #FF8B02
+    }
+
+    .nav-free-item i {
+      font-size: 16px;
+      color: #FF8B02
+    }
+
+    .mobile-free-sub {
+      display: none;
+      overflow: hidden;
+      flex-direction: column;
+      gap: 2px
+    }
+
+    .mobile-free-sub.open {
+      display: flex
+    }
+
+    .mobile-free-btn {
+      display: flex;
+      align-items: center;
+      gap: 8px
+    }
+
+    .mobile-free-btn i:first-child {
+      color: rgba(255, 255, 255, .8)
+    }
+
+    /* FLOATING SOCIAL RAIL */
+    .float-social {
+      position: fixed;
+      right: 0;
+      top: 50%;
+      transform: translateY(-50%);
+      z-index: 90;
+      display: flex;
+      flex-direction: column;
+      gap: 0
+    }
+
+    .float-social-btn {
+      display: flex;
+      align-items: center;
+      gap: 0;
+      padding: 13px 12px;
+      color: #fff;
+      font-size: 20px;
+      cursor: pointer;
+      text-decoration: none;
+      position: relative;
+      overflow: hidden;
+      transition: padding .25s cubic-bezier(.4, 0, .2, 1), gap .25s;
+      white-space: nowrap;
+      margin-bottom: 2px
+    }
+
+    .float-social-label {
+      font-size: 12px;
+      font-weight: 700;
+      max-width: 0;
+      overflow: hidden;
+      transition: max-width .3s ease, opacity .3s;
+      opacity: 0;
+      font-family: 'Inter', sans-serif
+    }
+
+    .float-social-btn:hover .float-social-label {
+      max-width: 100px;
+      opacity: 1
+    }
+
+    .float-social-btn:hover {
+      padding-right: 18px;
+      gap: 8px
+    }
+
+    .float-social-btn.whatsapp {
+      background: #25D366;
+      border-radius: 12px 0 0 12px
+    }
+
+    .float-social-btn.whatsapp:hover {
+      background: #1ebe5d
+    }
+
+    .float-social-btn.instagram {
+      background: linear-gradient(135deg, #f09433, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888);
+      border-radius: 12px 0 0 12px
+    }
+
+    .float-social-btn.instagram:hover {
+      filter: brightness(1.1)
+    }
+
+    .float-social-btn.linkedin {
+      background: #0A66C2;
+      border-radius: 12px 0 0 12px
+    }
+
+    .float-social-btn.linkedin:hover {
+      background: #0955a3
+    }
+
+    .float-social-btn.youtube {
+      background: #FF0000;
+      border-radius: 12px 0 0 12px
+    }
+
+    .float-social-btn.youtube:hover {
+      background: #d90000
+    }
+
+    .float-social-btn i {
+      font-size: 20px;
+      flex-shrink: 0;
+      transition: transform .2s
+    }
+
+    .float-social-btn:hover i {
+      transform: scale(1.1)
+    }
+
+    @media(max-width:600px) {
+      .float-social {
+        top: auto;
+        bottom: 80px;
+        transform: none
+      }
+    }
+
+    /* HERO */
+    .hero {
+      background: linear-gradient(140deg, var(--navy) 0%, #1B2F8A 55%, #0e1d52 100%);
+      padding: 90px 0 80px;
+      position: relative;
+      overflow: hidden
+    }
+
+    .hero::before {
+      content: "";
+      position: absolute;
+      width: 800px;
+      height: 800px;
+      background: radial-gradient(circle, rgba(255, 139, 2, .09) 0%, transparent 65%);
+      top: -250px;
+      right: -150px;
+      border-radius: 50%;
+      pointer-events: none
+    }
+
+    .hero::after {
+      content: "";
+      position: absolute;
+      width: 500px;
+      height: 500px;
+      background: radial-gradient(circle, rgba(43, 61, 138, .4) 0%, transparent 65%);
+      bottom: -120px;
+      left: -80px;
+      border-radius: 50%;
+      pointer-events: none
+    }
+
+    .hero-inner {
+      display: grid;
+      grid-template-columns: 1fr 420px;
+      align-items: center;
+      gap: 64px;
+      position: relative;
+      z-index: 1
+    }
+
+    .hero-eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--orange);
+      text-transform: uppercase;
+      letter-spacing: .12em;
+      margin-bottom: 20px;
+      background: rgba(255, 139, 2, .1);
+      border: 1px solid rgba(255, 139, 2, .28);
+      padding: 6px 16px;
+      border-radius: 30px;
+      animation: fadeUp .5s both
+    }
+
+    .hero-h1 {
+      font-size: 54px;
+      font-weight: 900;
+      line-height: 1.02;
+      letter-spacing: -.04em;
+      color: #fff;
+      margin-bottom: 18px;
+      animation: fadeUp .5s .08s both
+    }
+
+    .hero-h1 em {
+      color: var(--orange);
+      font-style: normal
+    }
+
+    .hero-sub {
+      font-size: 17px;
+      color: rgba(255, 255, 255, .7);
+      line-height: 1.68;
+      font-family: 'Inter', sans-serif;
+      max-width: 520px;
+      animation: fadeUp .5s .16s both;
+      margin-bottom: 36px
+    }
+
+    .hero-ctas {
+      display: flex;
+      gap: 14px;
+      flex-wrap: wrap;
+      animation: fadeUp .5s .24s both;
+      position: relative;
+      z-index: 2
+    }
+
+    .btn-primary {
+      font-size: 14px;
+      font-weight: 700;
+      background: var(--orange);
+      color: #fff;
+      padding: 13px 26px;
+      border-radius: 30px;
+      border: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      transition: .2s;
+      cursor: pointer
+    }
+
+    .btn-primary:hover {
+      background: var(--orange-dark);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(255, 139, 2, .35)
+    }
+
+    .btn-ghost {
+      font-size: 14px;
+      font-weight: 600;
+      background: transparent;
+      color: rgba(255, 255, 255, .85);
+      padding: 12px 22px;
+      border-radius: 30px;
+      border: 1.5px solid rgba(255, 255, 255, .3);
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      transition: .2s;
+      cursor: pointer;
+      position: relative;
+      z-index: 2
+    }
+
+    .btn-ghost:hover {
+      background: rgba(255, 255, 255, .08);
+      border-color: rgba(255, 255, 255, .6)
+    }
+
+    .hero-visual {
+      animation: fadeUp .5s .3s both
+    }
+
+    .hero-stats-card {
+      background: transparent;
+      border: none;
+      border-radius: 0;
+      padding: 0;
+      backdrop-filter: none;
+      box-shadow: none
+    }
+
+    .hstat-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1px;
+      background: rgba(255, 255, 255, .1);
+      border-radius: 14px;
+      overflow: hidden;
+      margin-bottom: 24px
+    }
+
+    .hstat {
+      background: rgba(255, 255, 255, .05);
+      padding: 20px;
+      text-align: center
+    }
+
+    .hstat-n {
+      font-size: 26px;
+      font-weight: 900;
+      letter-spacing: -.04em;
+      color: #fff;
+      line-height: 1
+    }
+
+    .hstat-n em {
+      color: var(--orange);
+      font-style: normal
+    }
+
+    .hstat-l {
+      font-size: 11px;
+      color: rgba(255, 255, 255, .5);
+      margin-top: 5px;
+      font-weight: 500;
+      line-height: 1.4
+    }
+
+    .company-pills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px
+    }
+
+    .company-pill {
+      font-size: 11px;
+      font-weight: 700;
+      color: rgba(255, 255, 255, .8);
+      background: rgba(255, 255, 255, .08);
+      border: 1px solid rgba(255, 255, 255, .14);
+      padding: 5px 12px;
+      border-radius: 20px
+    }
+
+    .company-pill.gold {
+      background: rgba(255, 139, 2, .15);
+      border-color: rgba(255, 139, 2, .3);
+      color: var(--orange)
+    }
+
+    /* MARQUEE */
+    .marquee-sec {
+      background: var(--navy);
+      padding: 0;
+      overflow: hidden;
+      position: relative;
+      border-top: 1px solid rgba(255, 255, 255, .07)
+    }
+
+    .marquee-sec::before,
+    .marquee-sec::after {
+      content: "";
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      width: 100px;
+      z-index: 2;
+      pointer-events: none
+    }
+
+    .marquee-sec::before {
+      left: 0;
+      background: linear-gradient(90deg, var(--navy), transparent)
+    }
+
+    .marquee-sec::after {
+      right: 0;
+      background: linear-gradient(270deg, var(--navy), transparent)
+    }
+
+    .marquee-track {
+      display: flex;
+      padding: 18px 0;
+      animation: scrollLeft 28s linear infinite
+    }
+
+    .m-college {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      background: rgba(255, 255, 255, .06);
+      border: 1px solid rgba(255, 255, 255, .1);
+      padding: 9px 18px;
+      border-radius: 30px;
+      margin-right: 12px;
+      flex-shrink: 0;
+      font-size: 13px;
+      font-weight: 600;
+      color: rgba(255, 255, 255, .75);
+      white-space: nowrap
+    }
+
+    .m-college i {
+      color: var(--orange);
+      font-size: 14px
+    }
+
+    /* RESULTS BAR */
+    .results-bar {
+      background: var(--orange);
+      padding: 22px 0
+    }
+
+    .results-inner {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0;
+      flex-wrap: wrap
+    }
+
+    .result-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 0 40px;
+      position: relative
+    }
+
+    .result-item+.result-item::before {
+      content: "";
+      position: absolute;
+      left: 0;
+      top: 50%;
+      transform: translateY(-50%);
+      height: 32px;
+      width: 1px;
+      background: rgba(255, 255, 255, .3)
+    }
+
+    .result-n {
+      font-size: 28px;
+      font-weight: 900;
+      color: #fff;
+      letter-spacing: -.03em;
+      line-height: 1
+    }
+
+    .result-l {
+      font-size: 12px;
+      color: rgba(255, 255, 255, .8);
+      font-weight: 500;
+      margin-top: 3px
+    }
+
+    /* SECTIONS */
+    .offer-sec {
+      padding: 88px 0
+    }
+
+    .sec-label {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .1em;
+      color: var(--orange);
+      margin-bottom: 10px
+    }
+
+    .sec-h {
+      font-size: 38px;
+      font-weight: 800;
+      letter-spacing: -.03em;
+      color: var(--navy);
+      line-height: 1.1
+    }
+
+    .sec-sub {
+      font-size: 16px;
+      color: var(--ink2);
+      line-height: 1.6;
+      margin-top: 10px;
+      font-family: 'Inter', sans-serif
+    }
+
+    .offer-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 22px;
+      margin-top: 52px
+    }
+
+    .offer-card {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      padding: 32px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      transition: transform .25s var(--ease), box-shadow .25s, border-color .2s;
+      position: relative;
+      overflow: hidden
+    }
+
+    .offer-card::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: var(--orange);
+      opacity: 0;
+      transition: .2s
+    }
+
+    .offer-card:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 20px 48px rgba(27, 42, 107, .1);
+      border-color: rgba(255, 139, 2, .3)
+    }
+
+    .offer-card:hover::before {
+      opacity: 1
+    }
+
+    .offer-icon {
+      width: 52px;
+      height: 52px;
+      border-radius: 14px;
+      background: var(--orange-light);
+      color: var(--orange-dark);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px
+    }
+
+    .offer-title {
+      font-size: 18px;
+      font-weight: 800;
+      color: var(--navy);
+      letter-spacing: -.01em
+    }
+
+    .offer-body {
+      font-size: 14px;
+      color: var(--ink2);
+      line-height: 1.7;
+      font-family: 'Inter', sans-serif
+    }
+
+    .offer-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 7px;
+      margin-top: auto
+    }
+
+    .offer-tag {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--navy);
+      background: var(--surface2);
+      border: 1px solid var(--line);
+      padding: 4px 10px;
+      border-radius: 20px
+    }
+
+    /* COLLEGES GRID */
+    .colleges-sec {
+      padding: 80px 0;
+      background: linear-gradient(160deg, var(--navy) 0%, #1B2F8A 60%, #0e1d52 100%);
+      position: relative;
+      overflow: hidden
+    }
+
+    .colleges-sec::before {
+      content: "";
+      position: absolute;
+      width: 700px;
+      height: 700px;
+      background: radial-gradient(circle, rgba(255, 139, 2, .07) 0%, transparent 65%);
+      top: -200px;
+      right: -100px;
+      border-radius: 50%;
+      pointer-events: none
+    }
+
+    .colleges-sec .sec-label {
+      color: rgba(255, 255, 255, .45)
+    }
+
+    .colleges-sec .sec-h {
+      color: #fff
+    }
+
+    .colleges-sec .sec-sub {
+      color: rgba(255, 255, 255, .6)
+    }
+
+    .colleges-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+      margin-top: 48px
+    }
+
+    .college-card {
+      background: rgba(255, 255, 255, .06);
+      border: 1px solid rgba(255, 255, 255, .1);
+      border-radius: 16px;
+      padding: 22px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      transition: transform .22s var(--ease), background .2s, border-color .2s;
+      cursor: default
+    }
+
+    .college-card:hover {
+      transform: translateY(-4px);
+      background: rgba(255, 255, 255, .1);
+      border-color: rgba(255, 139, 2, .3)
+    }
+
+    .college-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      background: rgba(255, 139, 2, .15);
+      border: 1px solid rgba(255, 139, 2, .25);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--orange);
+      font-size: 18px
+    }
+
+    .college-name {
+      font-size: 14px;
+      font-weight: 700;
+      color: #fff;
+      line-height: 1.3
+    }
+
+    .college-city {
+      font-size: 12px;
+      color: rgba(255, 255, 255, .45);
+      font-family: 'Inter', sans-serif;
+      display: flex;
+      align-items: center;
+      gap: 5px
+    }
+
+    .college-city i {
+      font-size: 12px;
+      color: rgba(255, 139, 2, .6)
+    }
+
+    .college-badge {
+      font-size: 10px;
+      font-weight: 700;
+      color: var(--orange);
+      background: rgba(255, 139, 2, .14);
+      border: 1px solid rgba(255, 139, 2, .22);
+      padding: 3px 8px;
+      border-radius: 20px;
+      align-self: flex-start;
+      margin-top: auto
+    }
+
+    /* PROCESS */
+    .process-sec {
+      padding: 88px 0
+    }
+
+    .process-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 60px;
+      align-items: center;
+      margin-top: 56px
+    }
+
+    .process-steps {
+      display: flex;
+      flex-direction: column;
+      gap: 0
+    }
+
+    .process-step {
+      display: flex;
+      gap: 20px;
+      padding: 24px 0;
+      border-bottom: 1px solid var(--line);
+      position: relative
+    }
+
+    .process-step:last-child {
+      border-bottom: none
+    }
+
+    .step-marker {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      flex-shrink: 0
+    }
+
+    .step-dot {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: var(--orange-light);
+      border: 2px solid rgba(255, 139, 2, .3);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      font-weight: 800;
+      color: var(--orange-dark);
+      flex-shrink: 0;
+      transition: .2s
+    }
+
+    .process-step:hover .step-dot {
+      background: var(--orange);
+      border-color: var(--orange);
+      color: #fff;
+      animation: pulse-ring 1s
+    }
+
+    .step-line {
+      width: 2px;
+      flex: 1;
+      background: var(--line);
+      margin: 6px auto 0
+    }
+
+    .process-step:last-child .step-line {
+      display: none
+    }
+
+    .step-title {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--navy);
+      margin-bottom: 6px
+    }
+
+    .step-body {
+      font-size: 14px;
+      color: var(--ink2);
+      line-height: 1.65;
+      font-family: 'Inter', sans-serif
+    }
+
+    .process-vis {
+      background: linear-gradient(135deg, var(--navy) 0%, #1B2F8A 100%);
+      border-radius: 24px;
+      padding: 36px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px
+    }
+
+    .pvis-title {
+      font-size: 13px;
+      font-weight: 700;
+      color: rgba(255, 255, 255, .45);
+      text-transform: uppercase;
+      letter-spacing: .08em;
+      margin-bottom: 8px
+    }
+
+    .pvis-stat {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: rgba(255, 255, 255, .06);
+      border: 1px solid rgba(255, 255, 255, .1);
+      border-radius: 12px;
+      padding: 16px 20px
+    }
+
+    .pvis-stat-lbl {
+      font-size: 13px;
+      color: rgba(255, 255, 255, .6);
+      font-family: 'Inter', sans-serif
+    }
+
+    .pvis-stat-val {
+      font-size: 20px;
+      font-weight: 800;
+      color: var(--orange)
+    }
+
+    .pvis-bar-wrap {
+      margin-top: 4px
+    }
+
+    .pvis-bar-lbl {
+      font-size: 12px;
+      color: rgba(255, 255, 255, .45);
+      margin-bottom: 8px;
+      font-family: 'Inter', sans-serif
+    }
+
+    .pvis-bar {
+      height: 7px;
+      background: rgba(255, 255, 255, .08);
+      border-radius: 4px;
+      overflow: hidden;
+      margin-bottom: 8px
+    }
+
+    .pvis-fill {
+      height: 100%;
+      border-radius: 4px;
+      background: linear-gradient(90deg, var(--orange), #ffb347);
+      transition: width 1.2s var(--ease)
+    }
+
+    .pvis-bar-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 4px
+    }
+
+    .pvis-bar-name {
+      font-size: 11px;
+      color: rgba(255, 255, 255, .55);
+      font-family: 'Inter', sans-serif
+    }
+
+    .pvis-bar-pct {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--orange)
+    }
+
+    /* PRICING */
+    .pricing-sec {
+      padding: 88px 0;
+      background: var(--bg)
+    }
+
+    .pricing-disclaimer {
+      display: inline-flex;
+      align-items: center;
+      gap: 9px;
+      background: rgba(255, 139, 2, .08);
+      border: 1px solid rgba(255, 139, 2, .25);
+      border-radius: 30px;
+      padding: 10px 20px;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--orange-dark)
+    }
+
+    .pricing-disclaimer i {
+      font-size: 16px;
+      color: var(--orange);
+      flex-shrink: 0
+    }
+
+    .pricing-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+      margin-top: 44px
+    }
+
+    .price-card {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      padding: 28px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      position: relative;
+      overflow: hidden;
+      transition: transform .22s var(--ease), box-shadow .22s, border-color .2s
+    }
+
+    .price-card::after {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: var(--line);
+      transition: background .2s
+    }
+
+    .price-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 16px 44px rgba(27, 42, 107, .1);
+      border-color: rgba(255, 139, 2, .3)
+    }
+
+    .price-card:hover::after {
+      background: var(--orange)
+    }
+
+    .price-card.featured {
+      border: 2px solid var(--orange);
+      background: linear-gradient(160deg, #fff 0%, #fff8ef 100%)
+    }
+
+    .price-card.featured::after {
+      background: var(--orange)
+    }
+
+    .price-badge {
+      position: absolute;
+      top: 18px;
+      right: 18px;
+      font-size: 10px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: .07em;
+      background: var(--orange);
+      color: #fff;
+      padding: 3px 10px;
+      border-radius: 20px
+    }
+
+    .price-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      background: var(--orange-light);
+      color: var(--orange-dark);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      flex-shrink: 0
+    }
+
+    .price-name {
+      font-size: 16px;
+      font-weight: 800;
+      color: var(--navy);
+      line-height: 1.25;
+      padding-right: 56px
+    }
+
+    .price-amount {
+      font-size: 30px;
+      font-weight: 900;
+      color: var(--navy);
+      letter-spacing: -.04em;
+      line-height: 1
+    }
+
+    .price-amount span {
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--ink3);
+      margin-left: 2px;
+      letter-spacing: 0
+    }
+
+    .price-desc {
+      font-size: 13px;
+      color: var(--ink2);
+      line-height: 1.65;
+      font-family: 'Inter', sans-serif;
+      flex: 1
+    }
+
+    .price-dynamic {
+      font-size: 11px;
+      color: var(--ink3);
+      font-family: 'Inter', sans-serif;
+      font-style: italic;
+      border-top: 1px solid var(--line);
+      padding-top: 10px;
+      margin-top: 4px;
+      display: flex;
+      align-items: center;
+      gap: 5px
+    }
+
+    .price-dynamic i {
+      color: var(--orange);
+      font-size: 12px;
+      flex-shrink: 0
+    }
+
+    /* Collab discount styles */
+    .price-collab-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      background: linear-gradient(90deg, #22c55e, #16a34a);
+      color: #fff;
+      font-size: 10px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: .07em;
+      padding: 3px 10px;
+      border-radius: 20px;
+      margin-bottom: 4px
+    }
+
+    .price-collab-tag i {
+      font-size: 11px
+    }
+
+    .price-orig {
+      font-size: 14px;
+      color: var(--ink3);
+      font-family: 'Inter', sans-serif;
+      text-decoration: line-through;
+      margin-bottom: 2px
+    }
+
+    .price-new {
+      font-size: 30px;
+      font-weight: 900;
+      color: var(--orange);
+      letter-spacing: -.04em;
+      line-height: 1
+    }
+
+    .price-new span {
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--ink3);
+      margin-left: 2px;
+      letter-spacing: 0
+    }
+
+    .price-saving {
+      font-size: 11px;
+      font-weight: 700;
+      color: #16a34a;
+      font-family: 'Inter', sans-serif;
+      margin-top: 2px
+    }
+
+    /* TESTIMONIALS */
+    .testi-strip {
+      background: var(--surface2);
+      border-top: 1px solid var(--line);
+      border-bottom: 1px solid var(--line);
+      padding: 64px 0
+    }
+
+    .testi-cards {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+      margin-top: 44px;
+      justify-content: center
+    }
+
+    .tc {
+      flex: 1 1 calc(33.333% - 14px);
+      min-width: 260px;
+      max-width: 380px;
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      padding: 28px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px
+    }
+
+    .tc-stars {
+      display: flex;
+      gap: 3px;
+      color: #F59E0B;
+      font-size: 13px
+    }
+
+    .tc-q {
+      font-size: 14px;
+      color: var(--ink2);
+      line-height: 1.7;
+      font-family: 'Inter', sans-serif
+    }
+
+    .tc-bot {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-top: 4px;
+      border-top: 1px solid var(--line);
+      padding-top: 14px
+    }
+
+    .tc-av {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--orange), var(--orange-dark));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 14px;
+      color: #fff;
+      flex-shrink: 0
+    }
+
+    .tc-name {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--navy)
+    }
+
+    .tc-role {
+      font-size: 12px;
+      color: var(--ink3);
+      font-family: 'Inter', sans-serif
+    }
+
+    /* CTA / COLLAB FORM */
+    .coll-form-sec {
+      padding: 96px 0;
+      background: linear-gradient(160deg, var(--navy) 0%, #1B2F8A 60%, #0e1d52 100%);
+      position: relative;
+      overflow: hidden
+    }
+
+    .coll-form-sec::before {
+      content: "";
+      position: absolute;
+      width: 700px;
+      height: 700px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(255, 139, 2, .09) 0%, transparent 70%);
+      top: -250px;
+      right: -150px;
+      pointer-events: none
+    }
+
+    .coll-form-sec::after {
+      content: "";
+      position: absolute;
+      width: 400px;
+      height: 400px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(91, 208, 138, .06) 0%, transparent 70%);
+      bottom: -150px;
+      left: -80px;
+      pointer-events: none
+    }
+
+    .coll-form-inner {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 72px;
+      align-items: center;
+      position: relative;
+      z-index: 1
+    }
+
+    .coll-pitch h2 {
+      font-size: 38px;
+      font-weight: 900;
+      letter-spacing: -.03em;
+      color: #fff;
+      line-height: 1.12
+    }
+
+    .coll-pitch h2 span {
+      color: var(--orange);
+      font-style: italic
+    }
+
+    .coll-pitch p {
+      font-size: 16px;
+      color: rgba(255, 255, 255, .65);
+      margin-top: 14px;
+      line-height: 1.7;
+      font-family: 'Inter', sans-serif
+    }
+
+    .coll-perks {
+      margin-top: 28px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px
+    }
+
+    .coll-perk {
+      display: flex;
+      align-items: flex-start;
+      gap: 14px
+    }
+
+    .coll-perk-icon {
+      width: 38px;
+      height: 38px;
+      border-radius: 10px;
+      background: rgba(255, 139, 2, .12);
+      border: 1px solid rgba(255, 139, 2, .2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--orange);
+      font-size: 18px;
+      flex-shrink: 0
+    }
+
+    .coll-perk-text h4 {
+      font-size: 14px;
+      font-weight: 700;
+      color: #fff
+    }
+
+    .coll-perk-text p {
+      font-size: 13px;
+      color: rgba(255, 255, 255, .5);
+      font-family: 'Inter', sans-serif;
+      margin-top: 2px
+    }
+
+    .coll-form-box {
+      background: #fff;
+      border-radius: 24px;
+      padding: 40px;
+      box-shadow: 0 24px 80px rgba(0, 0, 0, .3)
+    }
+
+    .coll-form-title {
+      font-size: 20px;
+      font-weight: 800;
+      color: var(--navy);
+      margin-bottom: 4px
+    }
+
+    .coll-form-sub {
+      font-size: 13px;
+      color: var(--ink3);
+      font-family: 'Inter', sans-serif;
+      margin-bottom: 24px
+    }
+
+    .coll-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px
+    }
+
+    .coll-field {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      margin-bottom: 14px
+    }
+
+    .coll-field label {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--navy);
+      text-transform: uppercase;
+      letter-spacing: .06em
+    }
+
+    .coll-field label span {
+      color: var(--ink3);
+      font-weight: 400;
+      text-transform: none;
+      letter-spacing: 0
+    }
+
+    .coll-field input,
+    .coll-field select,
+    .coll-field textarea {
+      width: 100%;
+      padding: 11px 14px;
+      border: 1.5px solid #E2E6EF;
+      border-radius: 10px;
+      font-size: 14px;
+      color: var(--navy);
+      font-family: 'Inter', sans-serif;
+      outline: none;
+      transition: .2s;
+      background: #fff;
+      box-sizing: border-box
+    }
+
+    .coll-field input:focus,
+    .coll-field select:focus,
+    .coll-field textarea:focus {
+      border-color: var(--orange);
+      box-shadow: 0 0 0 3px rgba(255, 139, 2, .12)
+    }
+
+    .coll-field textarea {
+      resize: none;
+      height: 70px
+    }
+
+    .coll-field select {
+      appearance: none;
+      cursor: pointer
+    }
+
+    .coll-submit {
+      width: 100%;
+      padding: 14px;
+      background: var(--orange);
+      color: #fff;
+      border: none;
+      border-radius: 12px;
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: .2s;
+      margin-top: 4px;
+      font-family: inherit
+    }
+
+    .coll-submit:hover {
+      background: var(--orange-dark);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(255, 139, 2, .35)
+    }
+
+    .coll-submit-note {
+      font-size: 11px;
+      color: var(--ink3);
+      text-align: center;
+      margin-top: 10px;
+      font-family: 'Inter', sans-serif
+    }
+
+    .btn-white {
+      font-size: 14px;
+      font-weight: 700;
+      background: #fff;
+      color: var(--orange-dark);
+      padding: 14px 28px;
+      border-radius: 30px;
+      border: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      white-space: nowrap;
+      transition: .2s;
+      cursor: pointer
+    }
+
+    .btn-white:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, .15)
+    }
+
+    .btn-ghost-white {
+      font-size: 14px;
+      font-weight: 600;
+      background: transparent;
+      color: #fff;
+      padding: 13px 24px;
+      border-radius: 30px;
+      border: 2px solid rgba(255, 255, 255, .5);
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      white-space: nowrap;
+      transition: .2s
+    }
+
+    .btn-ghost-white:hover {
+      background: rgba(255, 255, 255, .15)
+    }
+
+    /* FOOTER */
+    .footer {
+      background: var(--navy);
+      padding: 52px 0 32px
+    }
+
+    .footer-grid {
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr 1fr;
+      gap: 48px;
+      margin-bottom: 44px
+    }
+
+    .footer-brand p {
+      font-size: 13px;
+      color: rgba(255, 255, 255, .55);
+      line-height: 1.7;
+      font-family: 'Inter', sans-serif;
+      max-width: 260px;
+      margin-top: 14px
+    }
+
+    .footer-col h4 {
+      font-size: 12px;
+      font-weight: 700;
+      color: rgba(255, 255, 255, .4);
+      text-transform: uppercase;
+      letter-spacing: .09em;
+      margin-bottom: 16px
+    }
+
+    .footer-links {
+      display: flex;
+      flex-direction: column;
+      gap: 10px
+    }
+
+    .footer-links a {
+      font-size: 13px;
+      color: rgba(255, 255, 255, .65);
+      transition: .2s
+    }
+
+    .footer-links a:hover {
+      color: #fff
+    }
+
+    .footer-bottom {
+      border-top: 1px solid rgba(255, 255, 255, .1);
+      padding-top: 28px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 14px
+    }
+
+    .footer-bottom p {
+      font-size: 12px;
+      color: rgba(255, 255, 255, .4);
+      font-family: 'Inter', sans-serif
+    }
+
+    .footer-social {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .footer-social a {
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      font-size: 20px;
+      transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1), filter 0.2s;
+    }
+
+    .footer-social a:hover {
+      transform: translateY(-3px);
+      filter: brightness(1.1);
+      color: #fff;
+    }
+
+    .footer-social a.whatsapp {
+      background: #25D366;
+    }
+
+    .footer-social a.telegram {
+      background: #0088cc;
+    }
+
+    .footer-social a.instagram {
+      background: linear-gradient(135deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%);
+    }
+
+    .footer-social a.linkedin {
+      background: #0077B5;
+    }
+
+    /* Toast */
+    .toast-wrap {
+      position: fixed;
+      bottom: 28px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 600;
+      pointer-events: none
+    }
+
+    .toast {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      background: var(--navy);
+      color: #fff;
+      font-size: 14px;
+      font-weight: 500;
+      padding: 13px 22px;
+      border-radius: 30px;
+      opacity: 0;
+      transform: translateY(10px);
+      transition: .3s;
+      pointer-events: auto
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateY(0)
+    }
+
+    .toast i {
+      color: #5BD08A;
+      font-size: 17px
+    }
+
+    /* Responsive */
+    @media(max-width:1024px) {
+      .colleges-grid {
+        grid-template-columns: repeat(3, 1fr)
+      }
+
+      .footer-grid {
+        grid-template-columns: 1fr 1fr;
+        gap: 32px
+      }
+
+      .pricing-grid {
+        grid-template-columns: repeat(2, 1fr)
+      }
+    }
+
+    @media(max-width:900px) {
+      .nav-links {
+        display: none
+      }
+
+      .mobile-menu-btn {
+        display: flex
+      }
+
+      .hero-inner {
+        grid-template-columns: 1fr
+      }
+
+      .hero-visual {
+        display: none
+      }
+
+      .hero-h1 {
+        font-size: 40px
+      }
+
+      .offer-grid {
+        grid-template-columns: 1fr 1fr
+      }
+
+      .colleges-grid {
+        grid-template-columns: 1fr 1fr
+      }
+
+      .process-grid {
+        grid-template-columns: 1fr
+      }
+
+      .process-vis {
+        display: none
+      }
+
+      .testi-cards {
+        grid-template-columns: 1fr 1fr
+      }
+
+      .coll-form-inner {
+        grid-template-columns: 1fr;
+        gap: 40px
+      }
+
+      .coll-pitch h2 {
+        font-size: 28px
+      }
+    }
+
+    @media(max-width:600px) {
+      .wrap {
+        padding: 0 18px
+      }
+
+      .hero-h1 {
+        font-size: 32px
+      }
+
+      .offer-grid {
+        grid-template-columns: 1fr
+      }
+
+      .colleges-grid {
+        grid-template-columns: 1fr
+      }
+
+      .testi-cards {
+        grid-template-columns: 1fr
+      }
+
+      .result-item {
+        padding: 0 18px
+      }
+
+      .result-n {
+        font-size: 22px
+      }
+
+      .coll-form-box {
+        padding: 28px 20px
+      }
+
+      .coll-row {
+        grid-template-columns: 1fr
+      }
+
+      .footer-grid {
+        grid-template-columns: 1fr
+      }
+
+      .sec-h {
+        font-size: 28px
+      }
+
+      .pricing-grid {
+        grid-template-columns: 1fr
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- NAV -->
+  <nav class="nav">
+    <div class="wrap nav-in">
+      <div class="brand" onclick="window.location.href='index.html'">
+        <div class="brand-mark">M</div>
+        <div class="brand-text">
+          <div class="brand-name">MBA Partner</div>
+          <div class="brand-tag">Initiative by Alumni of Old IIMs</div>
+        </div>
+      </div>
+      <div class="nav-links">
+        <button class="nav-a" onclick="window.location.href='index.html'">Home</button>
+        <button class="nav-a" onclick="window.location.href='courses.html'">Courses</button>
+        <button class="nav-a" onclick="window.location.href='testimonials.html'">Testimonials</button>
+        <div class="nav-free-res">
+          <button class="nav-a nav-free-btn"><i class="ti ti-book-download"
+              style="font-size:14px;margin-right:4px"></i>Free Resources<i
+              class="ti ti-chevron-down nav-free-chev"></i></button>
+          <div class="nav-free-menu">
+            <a class="nav-free-item" href="https://documents1.netlify.app/" target="_blank"><i
+                class="ti ti-file-cv"></i><span>Sample CV</span></a>
+            <a class="nav-free-item" href="https://documents1.netlify.app/" target="_blank"><i
+                class="ti ti-book-2"></i><span>Compendium</span></a>
+            <a class="nav-free-item" href="index.html#free-sessions"><i class="ti ti-player-play-filled"></i><span>Free
+                Session</span></a>
+            <a class="nav-free-item" href="brochure.html"><i class="ti ti-book"></i><span>Brochures</span></a>
+          </div>
+        </div>
+        <button class="nav-a active">College Collab</button>
+        <a class="nav-call" href="tel:+917042732092">Call Us</a>
+      </div>
+      <button class="mobile-menu-btn" id="mobileMenuBtn" aria-label="Menu"
+        onclick="document.getElementById('mobileNav').classList.toggle('open')">
+        <i class="ti ti-menu-2"></i>
+      </button>
+    </div>
+    <div class="mobile-nav" id="mobileNav">
+      <button class="mobile-nav-a" onclick="window.location.href='index.html'">Home</button>
+      <button class="mobile-nav-a" onclick="window.location.href='courses.html'">Courses</button>
+      <button class="mobile-nav-a" onclick="window.location.href='testimonials.html'">Testimonials</button>
+      <button class="mobile-nav-a mobile-free-btn" id="mobileFreeResBtn"><i class="ti ti-book-download"></i> Free
+        Resources <i class="ti ti-chevron-down" id="mobileFreeIcon"
+          style="font-size:12px;transition:.2s;margin-left:auto"></i></button>
+      <div class="mobile-free-sub" id="mobileFreeMenu">
+        <a class="mobile-nav-a" href="https://documents1.netlify.app/" target="_blank" style="padding-left:28px"><i
+            class="ti ti-file-cv"></i> Sample CV</a>
+        <a class="mobile-nav-a" href="https://documents1.netlify.app/" target="_blank" style="padding-left:28px"><i
+            class="ti ti-book-2"></i> Compendium</a>
+        <a class="mobile-nav-a" href="index.html#free-sessions" style="padding-left:28px"><i
+            class="ti ti-player-play-filled"></i> Free Session</a>
+        <a class="mobile-nav-a" href="brochure.html" onclick="closeMobileNav()" style="padding-left:28px"><i
+            class="ti ti-book"></i> Brochures</a>
+      </div>
+      <button class="mobile-nav-a" style="color:#fff;background:rgba(255,255,255,.08)">College Collab</button>
+      <a class="mobile-nav-a" href="tel:+917042732092" style="color:var(--orange)"><i class="ti ti-phone"></i> Call
+        Us</a>
+    </div>
+  </nav>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="wrap hero-inner">
+      <div>
+        <div class="hero-eyebrow"><i class="ti ti-building-community"></i> College Collaborations</div>
+        <h1 class="hero-h1">Bring MBA Partner<br>to Your <em>Campus.</em></h1>
+        <p class="hero-sub">Live Projects Across Domains, Case Competition Prep, and Placements Bootcamp — all mentored
+          by alumni from IIM A/B/C, XLRI and FMS. Active tie-ups with 40+ campuses from across India.</p>
+        <div class="hero-ctas">
+          <a class="btn-primary" href="#collabForm"
+            onclick="event.preventDefault();document.getElementById('collabForm').scrollIntoView({behavior:'smooth'})"><i
+              class="ti ti-forms"></i> Fill the Form</a>
+          <a class="btn-ghost" href="tel:+917042732092"><i class="ti ti-phone"></i> Call to Collaborate</a>
+          <a class="btn-ghost" href="mailto:bharat.kapoor@prodmarkconsulting.in"><i class="ti ti-mail"></i> Email Us</a>
+        </div>
+      </div>
+      <div class="hero-visual">
+        <div class="hero-stats-card">
+          <div class="hstat-grid">
+            <div class="hstat">
+              <div class="hstat-n">40<em>+</em></div>
+              <div class="hstat-l">Campuses reached</div>
+            </div>
+            <div class="hstat">
+              <div class="hstat-n">5K<em>+</em></div>
+              <div class="hstat-l">Students mentored</div>
+            </div>
+            <div class="hstat">
+              <div class="hstat-n">98<em>.7%</em></div>
+              <div class="hstat-l">Placed in target domain</div>
+            </div>
+            <div class="hstat">
+              <div class="hstat-n">9.6<em>/10</em></div>
+              <div class="hstat-l">Student rating</div>
+            </div>
+          </div>
+          <div
+            style="font-size:10px;color:rgba(255,255,255,.35);text-transform:uppercase;letter-spacing:.08em;font-weight:700;margin-bottom:10px">
+            Recruiters our students land at</div>
+          <div class="company-pills">
+            <span class="company-pill gold">MBB</span>
+            <span class="company-pill">Amazon</span>
+            <span class="company-pill">Accenture</span>
+            <span class="company-pill">Kearney</span>
+            <span class="company-pill">BCG</span>
+            <span class="company-pill">Pine Labs</span>
+            <span class="company-pill">Nomura</span>
+            <span class="company-pill">Deloitte</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- MARQUEE -->
+  <section class="marquee-sec">
+    <div class="marquee-track" id="marqueeTrack"></div>
+  </section>
+
+  <!-- RESULTS BAR -->
+  <div class="results-bar">
+    <div class="results-inner">
+      <div class="result-item">
+        <div class="result-n">5,000+</div>
+        <div class="result-l">Students mentored</div>
+      </div>
+      <div class="result-item">
+        <div class="result-n">98.7%</div>
+        <div class="result-l">Placed in target domain</div>
+      </div>
+      <div class="result-item">
+        <div class="result-n">40+</div>
+        <div class="result-l">Campuses reached</div>
+      </div>
+      <div class="result-item">
+        <div class="result-n">MBB · Amazon · Accenture</div>
+        <div class="result-l">Among top recruiters</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- WHAT WE BRING -->
+  <section class="offer-sec">
+    <div class="wrap">
+      <div style="text-align:center;max-width:620px;margin:0 auto">
+        <div class="sec-label">What we bring</div>
+        <h2 class="sec-h">End-to-End Placement Infrastructure<br>for Your Campus</h2>
+        <p class="sec-sub">We don't sell workshops. We embed a full placement-readiness track — from live projects to
+          mock PIs — tailored to your batch profile and timeline.</p>
+      </div>
+      <div class="offer-grid">
+        <div class="offer-card reveal">
+          <div class="offer-icon"><i class="ti ti-briefcase"></i></div>
+          <div class="offer-title">Live Consulting Projects</div>
+          <div class="offer-body">Real deliverables with Prodmark Consultants over 4–8 weeks. Students walk away with
+            verifiable, high-impact CV bullets — not participation certificates.</div>
+          <div class="offer-tags"><span class="offer-tag">Strategy</span><span class="offer-tag">Marketing</span><span
+              class="offer-tag">Finance</span><span class="offer-tag">Operations</span></div>
+        </div>
+        <div class="offer-card reveal" style="transition-delay:.08s">
+          <div class="offer-icon"><i class="ti ti-trophy"></i></div>
+          <div class="offer-title">Case Competition Prep</div>
+          <div class="offer-body">Mentored by AIR 1. 30+ winning PPTs, live frameworks, and presentation techniques.
+            We've helped students win competitions across IIM A, XLRI, FMS and more.</div>
+          <div class="offer-tags"><span class="offer-tag">Frameworks</span><span class="offer-tag">Deck
+              Building</span><span class="offer-tag">Mock Rounds</span></div>
+        </div>
+        <div class="offer-card reveal" style="transition-delay:.16s">
+          <div class="offer-icon"><i class="ti ti-users"></i></div>
+          <div class="offer-title">Placement Bootcamp</div>
+          <div class="offer-body">Intensive mock PIs, GDs, ATS-optimised CV building, and domain-specific prep — all
+            built for Day-1 readiness and personalised to each student's target role.</div>
+          <div class="offer-tags"><span class="offer-tag">Mock PI</span><span class="offer-tag">Group
+              Discussions</span><span class="offer-tag">CV Review</span></div>
+        </div>
+        <div class="offer-card reveal" style="transition-delay:.24s">
+          <div class="offer-icon"><i class="ti ti-file-cv"></i></div>
+          <div class="offer-title">CV Audit &amp; Profiling</div>
+          <div class="offer-body">1-on-1 mentor review to identify profile gaps and set a shortlist-worthy roadmap.
+            ATS-friendly formats with keywords that get past screeners at MBB, Big4, and top startups.</div>
+          <div class="offer-tags"><span class="offer-tag">ATS Optimisation</span><span class="offer-tag">Gap
+              Analysis</span></div>
+        </div>
+        <div class="offer-card reveal" style="transition-delay:.32s">
+          <div class="offer-icon"><i class="ti ti-certificate"></i></div>
+          <div class="offer-title">Domain Certifications</div>
+          <div class="offer-body">Short-form, mentor-designed certifications across Finance, Marketing, Consulting, and
+            more — that students can list with confidence and interviewers actually recognise.</div>
+          <div class="offer-tags"><span class="offer-tag">Consulting</span><span class="offer-tag">Finance</span><span
+              class="offer-tag">Marketing</span><span class="offer-tag">HR</span></div>
+        </div>
+        <div class="offer-card reveal" style="transition-delay:.4s">
+          <div class="offer-icon"><i class="ti ti-network"></i></div>
+          <div class="offer-title">5,000+ Student Network</div>
+          <div class="offer-body">Students join a live peer community with placement intel, senior referrals, and mentor
+            access — a permanent advantage that outlasts the program.</div>
+          <div class="offer-tags"><span class="offer-tag">WhatsApp Community</span><span class="offer-tag">Peer
+              Referrals</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- COLLEGES GRID -->
+  <section class="colleges-sec">
+    <div class="wrap">
+      <div style="text-align:center;max-width:600px;margin:0 auto">
+        <div class="sec-label">Partner Campuses</div>
+        <h2 class="sec-h">Trusted Across India's Top B-Schools</h2>
+        <p class="sec-sub">Active collaborations bringing live mentorship and placement prep to students across the
+          country.</p>
+      </div>
+      <div class="colleges-grid reveal" id="collegesGrid"></div>
+    </div>
+  </section>
+
+  <!-- HOW IT WORKS -->
+  <section class="process-sec">
+    <div class="wrap">
+      <div>
+        <div class="sec-label">How a Collaboration Works</div>
+        <h2 class="sec-h">From First Call to Batch Placed</h2>
+        <p class="sec-sub">A streamlined onboarding process — most colleges are fully set up within a week.</p>
+      </div>
+      <div class="process-grid">
+        <div class="process-steps">
+          <div class="process-step reveal">
+            <div class="step-marker">
+              <div class="step-dot">1</div>
+              <div class="step-line"></div>
+            </div>
+            <div class="step-content">
+              <div class="step-title">Discovery Call</div>
+              <div class="step-body">We understand your batch size, placement timeline, target domains, and what's
+                already being done on campus. No assumptions — we build around your reality.</div>
+            </div>
+          </div>
+          <div class="process-step reveal" style="transition-delay:.1s">
+            <div class="step-marker">
+              <div class="step-dot">2</div>
+              <div class="step-line"></div>
+            </div>
+            <div class="step-content">
+              <div class="step-title">Custom Program Design</div>
+              <div class="step-body">Our team designs a tailored module mix — live projects, bootcamps, certifications —
+                scoped to your batch's needs and packed into your academic calendar.</div>
+            </div>
+          </div>
+          <div class="process-step reveal" style="transition-delay:.2s">
+            <div class="step-marker">
+              <div class="step-dot">3</div>
+              <div class="step-line"></div>
+            </div>
+            <div class="step-content">
+              <div class="step-title">Mentor Allocation</div>
+              <div class="step-body">Students are matched with Top 1% IIM/XLRI/FMS alumni mentors based on their target
+                domain and profile gaps — not assigned randomly.</div>
+            </div>
+          </div>
+          <div class="process-step reveal" style="transition-delay:.3s">
+            <div class="step-marker">
+              <div class="step-dot">4</div>
+              <div class="step-line"></div>
+            </div>
+            <div class="step-content">
+              <div class="step-title">Execution &amp; Tracking</div>
+              <div class="step-body">Real-time progress tracking, weekly check-ins, and a dedicated point of contact for
+                your TPO. We stay accountable through every placement cycle.</div>
+            </div>
+          </div>
+          <div class="process-step reveal" style="transition-delay:.4s">
+            <div class="step-marker">
+              <div class="step-dot">5</div>
+              <div class="step-line"></div>
+            </div>
+            <div class="step-content">
+              <div class="step-title">Placement Season Support</div>
+              <div class="step-body">Last-mile intensive mock PIs, urgent CV fixes, and on-call mentor support
+                throughout recruitment season — because Day-1 preparation ends when the last offer is signed.</div>
+            </div>
+          </div>
+        </div>
+        <div class="process-vis reveal" style="transition-delay:.1s">
+          <div class="pvis-title">Collaboration at a glance</div>
+          <div class="pvis-stat"><span class="pvis-stat-lbl">Avg. setup time</span><span class="pvis-stat-val">5–7
+              days</span></div>
+          <div class="pvis-stat"><span class="pvis-stat-lbl">Avg. students per campus</span><span
+              class="pvis-stat-val">120+</span></div>
+          <div class="pvis-stat"><span class="pvis-stat-lbl">Placement success rate</span><span
+              class="pvis-stat-val">98.7%</span></div>
+          <div class="pvis-bar-wrap" style="margin-top:16px">
+            <div class="pvis-bar-lbl">Students placed by domain</div>
+            <div class="pvis-bar-row"><span class="pvis-bar-name">Consulting</span><span class="pvis-bar-pct">94%</span>
+            </div>
+            <div class="pvis-bar">
+              <div class="pvis-fill" style="width:94%"></div>
+            </div>
+            <div class="pvis-bar-row"><span class="pvis-bar-name">Finance</span><span class="pvis-bar-pct">97%</span>
+            </div>
+            <div class="pvis-bar">
+              <div class="pvis-fill" style="width:97%"></div>
+            </div>
+            <div class="pvis-bar-row"><span class="pvis-bar-name">Marketing</span><span class="pvis-bar-pct">99%</span>
+            </div>
+            <div class="pvis-bar">
+              <div class="pvis-fill" style="width:99%"></div>
+            </div>
+            <div class="pvis-bar-row"><span class="pvis-bar-name">HR &amp; Operations</span><span
+                class="pvis-bar-pct">96%</span></div>
+            <div class="pvis-bar">
+              <div class="pvis-fill" style="width:96%"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PRICING -->
+  <section class="pricing-sec">
+    <div class="wrap">
+      <div style="text-align:center;max-width:680px;margin:0 auto">
+        <div class="sec-label">Pricing</div>
+        <h2 class="sec-h">Transparent Fees, Flexible Options</h2>
+        <p class="sec-sub">All prices below are exclusive to <strong>College Collaborations</strong> — 40% off the
+          standard rate. Pick exactly what your batch needs.</p>
+        <div
+          style="display:inline-flex;align-items:center;gap:8px;background:linear-gradient(90deg,#22c55e,#16a34a);color:#fff;font-size:13px;font-weight:700;padding:7px 18px;border-radius:30px;margin-top:16px">
+          <i class="ti ti-percentage"></i> 40% Collab Discount applied on all prices below
+        </div>
+      </div>
+      <div style="display:flex;justify-content:center;margin-top:24px">
+        <div class="pricing-disclaimer reveal">
+          <i class="ti ti-adjustments-horizontal"></i>
+          Fees are dynamic — final pricing may vary based on batch size, campus, and program customisation. Call us for
+          a tailored quote.
+        </div>
+      </div>
+      <div class="pricing-grid" id="pricingGrid"></div>
+    </div>
+  </section>
+
+  <!-- TESTIMONIALS -->
+  <section class="testi-strip">
+    <div class="wrap">
+      <div style="text-align:center">
+        <div class="sec-label">What They Say</div>
+        <h2 class="sec-h">Hear from Students &amp; Campus Coordinators</h2>
+        <p style="font-size:15px;color:var(--ink2);font-family:'Inter',sans-serif;margin-top:10px">Voices from our
+          active partner campuses</p>
+      </div>
+      <div class="testi-cards">
+        <div class="tc reveal">
+          <div class="tc-stars"><i class="ti ti-star-filled"></i><i class="ti ti-star-filled"></i><i
+              class="ti ti-star-filled"></i><i class="ti ti-star-filled"></i><i class="ti ti-star-filled"></i></div>
+          <div class="tc-q">"The live consulting project gave me something none of my batchmates had — a real
+            deliverable I could walk an interviewer through. It turned my PI at a top consulting firm into a 15-minute
+            case discussion on my own work."</div>
+          <div class="tc-bot">
+            <div class="tc-av">S</div>
+            <div>
+              <div class="tc-name">Siddharth R.</div>
+              <div class="tc-role">IIM Raipur · Placed in Consulting</div>
+            </div>
+          </div>
+        </div>
+        <div class="tc reveal" style="transition-delay:.1s">
+          <div class="tc-stars"><i class="ti ti-star-filled"></i><i class="ti ti-star-filled"></i><i
+              class="ti ti-star-filled"></i><i class="ti ti-star-filled"></i><i class="ti ti-star-filled"></i></div>
+          <div class="tc-q">"As placement coordinator, bringing MBA Partner to IIM Kashipur was a strategic call. The
+            mock PI quality and domain-specific prep was miles ahead of what we'd arranged in previous years — results
+            spoke for themselves."</div>
+          <div class="tc-bot">
+            <div class="tc-av">N</div>
+            <div>
+              <div class="tc-name">Nisha A.</div>
+              <div class="tc-role">Placement Coordinator · IIM Kashipur</div>
+            </div>
+          </div>
+        </div>
+        <div class="tc reveal" style="transition-delay:.2s">
+          <div class="tc-stars"><i class="ti ti-star-filled"></i><i class="ti ti-star-filled"></i><i
+              class="ti ti-star-filled"></i><i class="ti ti-star-filled"></i><i class="ti ti-star-filled"></i></div>
+          <div class="tc-q">"The case competition prep from an AIR 1 mentor changed how I structured my thinking. We
+            reached the finals of a national competition — that would not have happened without the frameworks and mock
+            rounds MBA Partner put us through."</div>
+          <div class="tc-bot">
+            <div class="tc-av">T</div>
+            <div>
+              <div class="tc-name">Tanvi M.</div>
+              <div class="tc-role">IIM Udaipur · Strategy &amp; Consulting Track</div>
+            </div>
+          </div>
+        </div>
+        <div class="tc reveal" style="transition-delay:.3s">
+          <div class="tc-stars"><i class="ti ti-star-filled"></i><i class="ti ti-star-filled"></i><i
+              class="ti ti-star-filled"></i><i class="ti ti-star-filled"></i><i class="ti ti-star-filled"></i></div>
+          <div class="tc-q">"JBIMS students are sharp, but placement prep has always been self-driven. MBA Partner
+            filled that gap — structured GD practice, ATS-optimised CV help, and mentors who actually came from top
+            firms. Very different from what's usually available."</div>
+          <div class="tc-bot">
+            <div class="tc-av">K</div>
+            <div>
+              <div class="tc-name">Karan P.</div>
+              <div class="tc-role">JBIMS Mumbai · Finance &amp; Banking Track</div>
+            </div>
+          </div>
+        </div>
+        <div class="tc reveal" style="transition-delay:.4s">
+          <div class="tc-stars"><i class="ti ti-star-filled"></i><i class="ti ti-star-filled"></i><i
+              class="ti ti-star-filled"></i><i class="ti ti-star-filled"></i><i class="ti ti-star-filled"></i></div>
+          <div class="tc-q">"At DSE the competition for finance and consulting roles is intense. The CV audit alone made
+            a visible difference — my profile went from generic to shortlist-worthy. The mock PIs gave me the confidence
+            to walk into any room."</div>
+          <div class="tc-bot">
+            <div class="tc-av">A</div>
+            <div>
+              <div class="tc-name">Aisha V.</div>
+              <div class="tc-role">Delhi School of Economics · Placed in Finance</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- COLLAB FORM -->
+  <section class="coll-form-sec" id="collabForm">
+    <div class="wrap">
+      <div class="coll-form-inner reveal">
+
+        <!-- Left pitch -->
+        <div class="coll-pitch">
+          <h2>Bring your college <span>on board</span></h2>
+          <p>Tell us about your MBA college and we'll set up a free onboarding call to design a mentorship plan that
+            fits your batch size and curriculum.</p>
+          <div class="coll-perks">
+            <div class="coll-perk">
+              <div class="coll-perk-icon"><i class="ti ti-percentage"></i></div>
+              <div class="coll-perk-text">
+                <h4>40% Collab Discount</h4>
+                <p>Students from partner colleges get 40% off on all programs — exclusive to campus tie-ups.</p>
+              </div>
+            </div>
+            <div class="coll-perk">
+              <div class="coll-perk-icon"><i class="ti ti-calendar"></i></div>
+              <div class="coll-perk-text">
+                <h4>Flexible Scheduling</h4>
+                <p>Sessions planned around your academic calendar.</p>
+              </div>
+            </div>
+            <div class="coll-perk">
+              <div class="coll-perk-icon"><i class="ti ti-link"></i></div>
+              <div class="coll-perk-text">
+                <h4>Dedicated Coordinator</h4>
+                <p>One point of contact for your TPO/placement cell.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right form -->
+        <div class="coll-form-box">
+          <div class="coll-form-title">College Collaboration Form</div>
+          <div class="coll-form-sub">Takes less than 2 minutes</div>
+
+          <div class="coll-field">
+            <label>College name</label>
+            <input type="text" id="cc_college" placeholder="e.g. XYZ Institute of Management">
+          </div>
+
+          <div class="coll-row">
+            <div class="coll-field">
+              <label>Contact person</label>
+              <input type="text" id="cc_name" placeholder="Full name">
+            </div>
+            <div class="coll-field">
+              <label>Designation <span>(optional)</span></label>
+              <input type="text" id="cc_desig" placeholder="e.g. TPO / Dean">
+            </div>
+          </div>
+
+          <div class="coll-row">
+            <div class="coll-field">
+              <label>Email</label>
+              <input type="email" id="cc_email" placeholder="you@college.edu">
+            </div>
+            <div class="coll-field">
+              <label>Phone</label>
+              <input type="tel" id="cc_phone" placeholder="+91 98765 43210">
+            </div>
+          </div>
+
+          <div class="coll-row">
+            <div class="coll-field">
+              <label>City</label>
+              <input type="text" id="cc_city" placeholder="e.g. Mumbai">
+            </div>
+            <div class="coll-field">
+              <label>State</label>
+              <input type="text" id="cc_state" placeholder="e.g. Maharashtra">
+            </div>
+          </div>
+
+          <div class="coll-field">
+            <label>Approx. batch size</label>
+            <select id="cc_batch">
+              <option value="" disabled selected>Select range</option>
+              <option>Under 50</option>
+              <option>50 – 100</option>
+              <option>100 – 200</option>
+              <option>200 – 400</option>
+              <option>400+</option>
+            </select>
+          </div>
+
+          <div class="coll-field">
+            <label>What are you looking for? <span>(optional)</span></label>
+            <textarea id="cc_need"
+              placeholder="e.g. guest sessions, case study workshops, placement tie-up…"></textarea>
+          </div>
+
+          <button class="coll-submit" id="collSubmitBtn" onclick="submitCollabForm()">
+            <i class="ti ti-send"></i> Send
+          </button>
+          <div class="coll-submit-note" id="collSubmitNote">We'll respond within 24 hours — also check WhatsApp.</div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <div class="wrap">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <div class="brand" style="cursor:default">
+            <div class="brand-mark">M</div>
+            <div class="brand-text">
+              <div class="brand-name">MBA Partner</div>
+              <div class="brand-tag">Initiative by Alumni of Old IIMs</div>
+            </div>
+          </div>
+          <p>We help MBA students get placed at dream companies through Live Projects Across Domains, Case Competition
+            Prep, and expert-mentored Placements Bootcamp.</p>
+        </div>
+        <div class="footer-col">
+          <h4>Programs</h4>
+          <div class="footer-links">
+            <a href="courses.html">Placement Bootcamp</a>
+            <a href="courses.html">Live Projects</a>
+            <a href="courses.html">Case Competitions</a>
+            <a href="courses.html">Certifications</a>
+          </div>
+        </div>
+        <div class="footer-col">
+          <h4>Resources</h4>
+          <div class="footer-links">
+            <a href="https://documents1.netlify.app/" target="_blank">Compendiums</a>
+            <a href="https://documents1.netlify.app/" target="_blank">Sample CVs</a>
+            <a href="testimonials.html">Testimonials</a>
+          </div>
+        </div>
+        <div class="footer-col">
+          <h4>Connect</h4>
+          <div class="footer-links">
+            <a href="https://chat.whatsapp.com/EdyvGJbQoV9Jj6eC0slSx9" target="_blank">WhatsApp Community</a>
+            <a href="https://t.me/+IrnzgXdUKqsyOTZl" target="_blank">Telegram Channel</a>
+            <a href="tel:+917042732092">+91 70427 32092</a>
+          </div>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>&#169; 2026 MBA Partner. Initiative by Alumni of Old IIMs. All rights reserved.</p>
+        <div class="footer-social">
+          <a href="https://chat.whatsapp.com/EdyvGJbQoV9Jj6eC0slSx9" target="_blank" class="whatsapp"><i
+              class="ti ti-brand-whatsapp"></i></a>
+          <a href="https://t.me/+IrnzgXdUKqsyOTZl" target="_blank" class="telegram"><i class="ti ti-brand-telegram"></i></a>
+          <a href="https://documents1.netlify.app/?open=instagram" target="_blank" class="instagram"><i class="ti ti-brand-instagram"></i></a>
+          <a href="https://documents1.netlify.app/?open=linkedin" target="_blank" class="linkedin"><i class="ti ti-brand-linkedin"></i></a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <div class="toast-wrap" id="toastWrap"></div>
+
+  <!-- FLOATING SOCIAL RAIL -->
+  <div class="float-social" id="floatSocial">
+    <a class="float-social-btn whatsapp" href="https://chat.whatsapp.com/EdyvGJbQoV9Jj6eC0slSx9" target="_blank"
+      aria-label="WhatsApp Community" title="Join WhatsApp Community">
+      <i class="ti ti-brand-whatsapp"></i><span class="float-social-label">WhatsApp</span>
+    </a>
+    <a class="float-social-btn instagram" href="https://documents1.netlify.app/?open=instagram" target="_blank"
+      aria-label="Follow on Instagram" title="Follow on Instagram">
+      <i class="ti ti-brand-instagram"></i><span class="float-social-label">Instagram</span>
+    </a>
+    <a class="float-social-btn linkedin" href="https://documents1.netlify.app/?open=linkedin" target="_blank" aria-label="LinkedIn"
+      title="Connect on LinkedIn">
+      <i class="ti ti-brand-linkedin"></i><span class="float-social-label">LinkedIn</span>
+    </a>
+    <a class="float-social-btn youtube" href="https://documents1.netlify.app/?open=youtube" target="_blank" aria-label="YouTube"
+      title="Watch on YouTube">
+      <i class="ti ti-brand-youtube"></i><span class="float-social-label">YouTube</span>
+    </a>
+  </div>
+
+  <script>
+    const colleges = [
+      { name: "IIM Raipur", city: "Raipur", badge: "Active" },
+      { name: "IIM Kashipur", city: "Kashipur", badge: "Active" },
+      { name: "IIM Udaipur", city: "Udaipur", badge: "Active" },
+      { name: "JBIMS", city: "Mumbai", badge: "Active" },
+      { name: "DSE", city: "Delhi", badge: "Active" }
+    ];
+
+    const grid = document.getElementById('collegesGrid');
+    if (grid) {
+      grid.innerHTML = colleges.map(c => `
+    <div class="college-card">
+      <div class="college-icon"><i class="ti ti-building-bank"></i></div>
+      <div class="college-name">${c.name}</div>
+      <div class="college-city"><i class="ti ti-map-pin"></i>${c.city}</div>
+      <div class="college-badge">${c.badge}</div>
+    </div>
+  `).join('') + `
+    <a class="college-card" style="border:1.5px dashed rgba(255,139,2,.3);background:rgba(255,139,2,.05);cursor:pointer;text-decoration:none" onclick="document.getElementById('collabForm').scrollIntoView({behavior:'smooth'});return false;" href="#collabForm">
+      <div class="college-icon" style="background:rgba(255,139,2,.1)"><i class="ti ti-plus"></i></div>
+      <div class="college-name" style="color:rgba(255,255,255,.7)">Your College</div>
+      <div class="college-city" style="color:rgba(255,255,255,.35)"><i class="ti ti-forms" style="color:rgba(255,139,2,.5)"></i>Fill the form</div>
+      <div class="college-badge" style="color:rgba(255,255,255,.5);background:rgba(255,255,255,.05);border-color:rgba(255,255,255,.12);cursor:pointer">Join us</div>
+    </a>
+  `;
+    }
+
+    const track = document.getElementById('marqueeTrack');
+    if (track) {
+      const set = colleges.map(c => `<div class="m-college"><i class="ti ti-building-bank"></i>${c.name}</div>`).join('');
+      track.innerHTML = set + set;
+    }
+
+    // Pricing data (rawPrice in ₹ for 40% collab discount calc)
+    const pricing = [
+      { name: "Flagship Bundle", badge: "Best Value", rawPrice: 13999, icon: "ti ti-package", desc: "Everything in one — Bootcamp Master, Live Projects (2 domains), Case Competition prep, CV Audit, and full network access. Complete placement readiness.", featured: true },
+      { name: "Bootcamp + Live Project", badge: "Popular", rawPrice: 11499, icon: "ti ti-bolt", desc: "Placement Bootcamp Master paired with a live consulting project — strong CV bullet plus end-to-end interview prep in one go.", featured: false },
+      { name: "Bootcamp + Case Combo", badge: "", rawPrice: 9499, icon: "ti ti-layout-board", desc: "Bootcamp combined with Case Competition prep. Ideal for consulting aspirants targeting both PI rounds and national competitions.", featured: false },
+      { name: "Placement Bootcamp Master", badge: "", rawPrice: 7499, icon: "ti ti-rocket", desc: "Full-length mock PIs, GDs, ATS-optimised CV building, and domain-specific prep. Built for Day-1 readiness, tailored to your target role.", featured: false },
+      { name: "Live Project — 2 Domains", badge: "", rawPrice: 7500, icon: "ti ti-briefcase", desc: "Real consulting deliverables across two domains over 4–8 weeks. Two strong, verifiable CV bullets from actual client work.", featured: false },
+      { name: "Placement Bootcamp Mini", badge: "", rawPrice: 5499, icon: "ti ti-users", desc: "Core placement prep — mock PIs, GD practice, and a CV review pass. For students who need focused, fast-track readiness.", featured: false },
+      { name: "Live Project — 1 Domain", badge: "", rawPrice: 4000, icon: "ti ti-briefcase", desc: "One focused consulting project with Prodmark Consultants. A high-impact CV entry that interviewers actually ask about.", featured: false },
+      { name: "Case Competitions Prep", badge: "", rawPrice: 3499, icon: "ti ti-trophy", desc: "Frameworks from AIR 1, 30+ winning decks, live mock rounds, and presentation coaching for students targeting national competitions.", featured: false },
+      { name: "Power BI Certification", badge: "", rawPrice: 1499, icon: "ti ti-chart-bar", desc: "Hands-on Power BI certification for Analytics, Consulting, and Marketing aspirants. Build dashboards and walk into interviews with proof of skill.", featured: false },
+      { name: "Advanced Excel Certification", badge: "", rawPrice: 1199, icon: "ti ti-table", desc: "Mentor-designed certification covering advanced Excel for Finance and Analytics roles. Recognised by interviewers at Big 4 and top startups.", featured: false },
+    ];
+
+    const pricingGrid = document.getElementById('pricingGrid');
+    if (pricingGrid) {
+      pricingGrid.innerHTML = pricing.map((p, i) => {
+        const orig = p.rawPrice;
+        const disc = Math.round(orig * 0.6);  // 40% off
+        const saving = orig - disc;
+        const fmt = n => '\u20B9' + n.toLocaleString('en-IN');
+        return `
+    <div class="price-card${p.featured ? ' featured' : ''} reveal" style="transition-delay:${(i % 3) * 0.07}s">
+      ${p.badge ? `<div class="price-badge">${p.badge}</div>` : ''}
+      <div class="price-icon"><i class="${p.icon}"></i></div>
+      <div class="price-name">${p.name}</div>
+      <div class="price-collab-tag"><i class="ti ti-building-community"></i> Collab Price — 40% Off</div>
+      <div class="price-orig">${fmt(orig)} onwards</div>
+      <div class="price-new">${fmt(disc)}<span>onwards</span></div>
+      <div class="price-saving">You save ${fmt(saving)} per student</div>
+      <div class="price-desc">${p.desc}</div>
+      <div class="price-dynamic"><i class="ti ti-info-circle"></i>Fees are dynamic — final amount varies by batch size &amp; campus.</div>
+    </div>`;
+      }).join('');
+    }
+
+    // Reveal on scroll
+    const observer = new IntersectionObserver(entries => {
+      entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('in'); });
+    }, { threshold: .12 });
+    document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+    // Mobile Free Resources toggle
+    (function () {
+      const mfBtn = document.getElementById('mobileFreeResBtn');
+      const mfMenu = document.getElementById('mobileFreeMenu');
+      const mfIcon = document.getElementById('mobileFreeIcon');
+      if (mfBtn && mfMenu) { mfBtn.onclick = function () { const open = mfMenu.classList.toggle('open'); if (mfIcon) mfIcon.style.transform = open ? 'rotate(180deg)' : ''; }; }
+    })();
+
+    // College Collab Form — Email + WhatsApp submission
+    async function submitCollabForm() {
+      const college = (document.getElementById('cc_college') || {}).value || '';
+      const name = (document.getElementById('cc_name') || {}).value || '';
+      const desig = (document.getElementById('cc_desig') || {}).value || '';
+      const email = (document.getElementById('cc_email') || {}).value || '';
+      const phone = (document.getElementById('cc_phone') || {}).value || '';
+      const city = (document.getElementById('cc_city') || {}).value || '';
+      const state = (document.getElementById('cc_state') || {}).value || '';
+      const batch = (document.getElementById('cc_batch') || {}).value || '';
+      const need = (document.getElementById('cc_need') || {}).value || '';
+
+      if (!college.trim()) { alert('Please enter your college name.'); return; }
+      if (!name.trim()) { alert('Please enter a contact person name.'); return; }
+      if (!phone.trim()) { alert('Please enter a phone number so we can reach you.'); return; }
+
+      const btn = document.getElementById('collSubmitBtn');
+      const note = document.getElementById('collSubmitNote');
+      btn.disabled = true;
+      btn.innerHTML = '<i class="ti ti-loader-2" style="animation:spin .8s linear infinite"></i> Sending…';
+
+      // 1. Send email via FormSubmit AJAX
+      try {
+        const fd = new FormData();
+        fd.append('College Name', college);
+        fd.append('Contact Person', name + (desig ? ' (' + desig + ')' : ''));
+        fd.append('Email', email || '—');
+        fd.append('Phone', phone);
+        fd.append('City', city || '—');
+        fd.append('State', state || '—');
+        fd.append('Batch Size', batch || '—');
+        fd.append('Looking For', need || '—');
+        fd.append('_subject', '🏫 College Collaboration Enquiry — ' + college);
+        fd.append('_captcha', 'false');
+        fd.append('_template', 'table');
+        await fetch('https://formsubmit.co/ajax/bharat.kapoor@prodmarkconsulting.in', {
+          method: 'POST',
+          headers: { 'Accept': 'application/json' },
+          body: fd
+        });
+      } catch (e) { /* silent — still send WhatsApp */ }
+
+      // 2. Also open WhatsApp
+      const lines = [
+        '🏫 *College Collaboration Enquiry*', '',
+        `*College:* ${college}`,
+        `*Contact:* ${name}${desig ? ' (' + desig + ')' : ''}`,
+        email ? `*Email:* ${email}` : '',
+        `*Phone:* ${phone}`,
+        (city || state) ? `*City/State:* ${[city, state].filter(Boolean).join(', ')}` : '',
+        batch ? `*Batch size:* ${batch}` : '',
+        need ? `*Looking for:* ${need}` : '',
+      ].filter(Boolean);
+      window.open('https://wa.me/917042732092?text=' + encodeURIComponent(lines.join('\n')), '_blank');
+
+      // 3. Show success state
+      btn.innerHTML = '<i class="ti ti-circle-check"></i> Sent!';
+      btn.style.background = '#22c55e';
+      if (note) note.innerHTML = '✅ Enquiry sent to our team — we\'ll reach out within 24 hours.';
+      setTimeout(() => {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="ti ti-send"></i> Send';
+        btn.style.background = '';
+      }, 4000);
+    }
+  </script>
+  <script src="js/chatbot-widget.js"></script>
+</body>
+
+</html>

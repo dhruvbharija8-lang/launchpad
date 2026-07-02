@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>CAT / OMETs Prep Portal — MBA Partner</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css"/>
+<link rel="stylesheet" href="css/cat-portal.css">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="css/fonts.css"/>
+  <link rel="stylesheet" href="css/chatbot-widget.css"/>
+  <script src="js/site-nav.js"></script>
+<script src="js/nav-auth.js"></script>
+</head>
+<body>
+
+<nav class="cp-nav">
+  <div class="cp-wrap cp-nav-in">
+    <a class="cp-brand" href="index.html"><div class="cp-brand-mark">M</div><div><div class="cp-brand-name">MBA Partner</div><div class="cp-brand-tag">CAT / OMETs Prep</div></div></a>
+    <div class="cp-nav-links">
+      <a href="index.html">Home</a>
+      <a href="cat-predictor.html">College Predictor</a>
+      <a href="exam-predictor.html">Exam Predictor</a>
+      <a class="cp-nav-call" href="tel:+917042732092">Call Us</a>
+    </div>
+  </div>
+</nav>
+
+<!-- HERO -->
+<header class="cp-hero">
+  <div class="cp-wrap">
+    <div class="cp-eyebrow"><i class="ti ti-rosette"></i> Mentored by 99+ percentilers</div>
+    <h1>Your complete <span>CAT &amp; OMETs</span> prep portal</h1>
+    <p>Free material, sectional mocks, a live leaderboard, GDPI prep and domain Q&amp;A — everything to crack CAT, XAT, SNAP, NMAT, MAH-CET &amp; more.</p>
+    <div class="cp-hero-stats">
+      <div><strong>50+</strong> free sectional mocks</div>
+      <div><strong>100+</strong> past GDPI transcripts</div>
+      <div><strong>8</strong> exams covered</div>
+    </div>
+  </div>
+</header>
+
+<main class="cp-wrap">
+
+  <!-- FREE MATERIAL -->
+  <section class="cp-sec">
+    <div class="cp-sec-head"><div class="cp-label">Free Material</div><h2>VARC, QA &amp; LRDI — free to start</h2><p>Free RCs (Aristotle tricks &amp; tips), 50 sectional mocks, formula booklets and more.</p></div>
+    <div class="cp-grid" id="catMaterials"></div>
+  </section>
+
+  <!-- MOCKS -->
+  <section class="cp-sec">
+    <div class="cp-sec-head"><div class="cp-label">Mock Tests</div><h2>Take a mock on the site</h2><p>VARC, QA, LRDI and full-length mocks — attempt, submit and see your score instantly.</p></div>
+    <div style="margin-bottom:18px"><a href="mock-exam.html" class="cp-mock-btn" style="display:inline-flex;width:auto;padding:12px 22px;text-decoration:none"><i class="ti ti-device-desktop-analytics"></i> Open the full CAT mock exam portal</a></div>
+    <div class="cp-grid" id="catMocks"></div>
+  </section>
+
+  <!-- LEADERBOARD -->
+  <section class="cp-sec">
+    <div class="cp-sec-head"><div class="cp-label">Leaderboard</div><h2>Top scorers this week</h2><p>See where you stand against the community.</p></div>
+    <div class="cp-lb-wrap" id="catLeaderboard"></div>
+  </section>
+
+  <!-- GDPI -->
+  <section class="cp-sec">
+    <div class="cp-sec-head"><div class="cp-label">GDPI Flagship</div><h2>10 mock PIs · 10 mock GDs · 100+ transcripts</h2><p>Real panels and past-year transcripts to ace the final hurdle.</p></div>
+    <div class="cp-grid" id="catGdpi"></div>
+  </section>
+
+  <!-- DOMAIN Q&A -->
+  <section class="cp-sec">
+    <div class="cp-sec-head"><div class="cp-label">Domain Prep</div><h2>Domain-specific Q&amp;A</h2><p>Targeted interview question banks for every domain.</p></div>
+    <div class="cp-grid" id="catDomainQA"></div>
+  </section>
+
+  <!-- MENTORS -->
+  <section class="cp-sec">
+    <div class="cp-sec-head"><div class="cp-label">Mentors</div><h2>Mentors who just converted</h2><p>Learn from students who cracked it last season.</p></div>
+    <div class="cp-grid cp-mentors" id="catMentors"></div>
+  </section>
+
+  <!-- PRICING -->
+  <section class="cp-sec">
+    <div class="cp-sec-head"><div class="cp-label">Plans</div><h2>Simple, transparent pricing</h2><p>Start free, upgrade when you're ready.</p></div>
+    <div class="cp-price-grid" id="catPricing"></div>
+  </section>
+
+</main>
+
+<footer class="cp-footer"><div class="cp-wrap">© 2026 MBA Partner · Initiative by Alumni of Old IIMs · <a href="tel:+917042732092">+91 70427 32092</a></div></footer>
+
+<!-- MOCK PLAYER MODAL -->
+<div class="mock-modal" id="mockModal">
+  <div class="mock-box" role="dialog" aria-modal="true">
+    <div class="mock-bar">
+      <div class="mock-title" id="mockTitle">Mock</div>
+      <div class="mock-timer" id="mockTimer">40:00</div>
+      <button class="mock-x" onclick="closeMock()" aria-label="Close">&times;</button>
+    </div>
+    <div class="mock-body" id="mockBody"></div>
+  </div>
+</div>
+
+<script src="js/cat-portal.js"></script>
+  <script src="js/chatbot-widget.js"></script>
+</body>
+</html>
+

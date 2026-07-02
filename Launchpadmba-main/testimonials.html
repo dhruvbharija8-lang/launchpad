@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Testimonials — MBA Partner</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css"/>
+<link rel="stylesheet" href="css/fonts.css"/>
+<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="css/chatbot-widget.css"/>
+<script src="js/site-nav.js"></script>
+<script src="js/nav-auth.js"></script>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="nav">
+  <div class="wrap nav-in">
+    <div class="brand" onclick="window.location.href='index.html'">
+      <div class="brand-mark">M</div>
+      <div class="brand-text">
+        <div class="brand-name">MBA Partner</div>
+        <div class="brand-tag">Initiative by Alumni of Old IIMs</div>
+      </div>
+    </div>
+    <div class="nav-links">
+      <button class="nav-a" onclick="window.location.href='index.html'">Home</button>
+      <button class="nav-a" onclick="window.location.href='courses.html'">Courses</button>
+      <button class="nav-a active-link" onclick="window.location.href='testimonials.html'">Testimonials</button>
+      <a class="nav-a" href="https://documents1.netlify.app/" target="_blank">Compendiums</a>
+      <a class="nav-a" href="https://documents1.netlify.app/" target="_blank">Sample CVs</a>
+      <div class="nav-sep"></div>
+      <button class="nav-login">Login</button>
+      <a class="nav-call" href="tel:+917042732092">Call Us</a>
+    </div>
+    <button class="mobile-menu-btn" id="mobileMenuBtn" aria-label="Menu">
+      <i class="ti ti-menu-2"></i>
+    </button>
+    <button class="cart-btn" id="cartBtnMobile" aria-label="Cart" style="display:none">
+      <i class="ti ti-shopping-cart" style="font-size:18px"></i>
+      <span class="cart-count" id="cartCountMobile">0</span>
+    </button>
+  </div>
+  <div class="mobile-nav" id="mobileNav">
+    <button class="mobile-nav-a" onclick="window.location.href='index.html';closeMobileNav()">Home</button>
+    <button class="mobile-nav-a" onclick="window.location.href='courses.html';closeMobileNav()">Courses</button>
+    <button class="mobile-nav-a active-link" onclick="window.location.href='testimonials.html';closeMobileNav()">Testimonials</button>
+    <a class="mobile-nav-a" href="https://documents1.netlify.app/" target="_blank">Compendiums</a>
+    <a class="mobile-nav-a" href="https://documents1.netlify.app/" target="_blank">Sample CVs</a>
+    <div class="mobile-nav-btns"><button class="nav-login">Login</button><a class="nav-call" href="tel:+917042732092">Call Us</a></div>
+  </div>
+</nav>
+
+<!-- TICKER -->
+<div class="ticker"><div class="ticker-inner" id="tickerInner"></div></div>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="wrap hero-inner">
+    <div>
+      <div class="hero-eyebrow"><i class="ti ti-star-filled"></i> 9.6 / 10 · Rated by 700+ students</div>
+      <h1 class="hero-h1">Real Students.<br><span class="ac">Real Placements.</span></h1>
+      <p class="hero-p">Over 5,000 MBA students and aspirants have transformed their careers with MBA Partner. Here's what they have to say — in their own words.</p>
+    </div>
+    <div class="hero-stats">
+      <div class="hstat"><div class="hstat-n">9.6<span class="ac">/10</span></div><div class="hstat-l">Avg. satisfaction rating</div></div>
+      <div class="hstat"><div class="hstat-n">700<span class="ac">+</span></div><div class="hstat-l">Student reviews</div></div>
+      <div class="hstat"><div class="hstat-n">98<span class="ac">.7%</span></div><div class="hstat-l">Placed in target domain</div></div>
+      <div class="hstat"><div class="hstat-n">5<span class="ac">K+</span></div><div class="hstat-l">Student network</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- MARQUEE -->
+<div class="marquee-sec">
+  <div class="marquee-row">
+    <div class="m-track" id="mtrk1"></div>
+    <div class="m-track" id="mtrk1b" aria-hidden="true"></div>
+  </div>
+  <div class="marquee-row" style="margin-top:14px">
+    <div class="m-track rev" id="mtrk2"></div>
+    <div class="m-track rev" id="mtrk2b" aria-hidden="true"></div>
+  </div>
+</div>
+
+
+
+<!-- FILTER BAR -->
+<div class="filter-bar">
+  <div class="wrap filter-inner" id="filterBar">
+    <button class="fchip on" data-f="all">All</button>
+    <button class="fchip" data-f="iim">IIM</button>
+    <button class="fchip" data-f="xlri">XLRI</button>
+    <button class="fchip" data-f="consulting">Consulting</button>
+    <button class="fchip" data-f="finance">Finance</button>
+    <button class="fchip" data-f="marketing">Marketing / FMCG</button>
+    <button class="fchip" data-f="fresher">Fresher</button>
+    <button class="fchip" data-f="liveproject">Live Project</button>
+  </div>
+</div>
+
+<!-- TESTIMONIALS GRID -->
+<section class="testi-sec">
+  <div class="wrap">
+    <div class="section-head reveal" style="margin-bottom:40px">
+      <div class="sec-label">Student Stories</div>
+      <h2 class="sec-h">What Our Students Say</h2>
+      <p class="sec-sub">Every review below is real — real names, real schools, real companies.</p>
+    </div>
+    <div class="tgrid reveal" id="tgrid"></div>
+    <div class="empty" id="emptyState" style="display:none"><i class="ti ti-mood-empty"></i><p style="font-family:'Inter',sans-serif;font-size:15px;color:var(--ink3)">No stories match this filter. Try another category.</p></div>
+  </div>
+</section>
+
+<!-- HALL OF FAME -->
+<section class="hof-sec">
+  <div class="wrap" style="position:relative;z-index:1">
+    <div class="reveal">
+      <div class="sec-label">🏆 Hall of Fame</div>
+      <h2 class="sec-h">From Classroom to Corporate</h2>
+      <p class="sec-sub">Real students, real offers. <span id="plCount"></span></p>
+    </div>
+    <div class="pl-filter reveal" id="plFilter">
+      <button class="pl-chip on" data-b="all">All</button>
+      <button class="pl-chip" data-b="iim">IIM</button>
+      <button class="pl-chip" data-b="xlri">XLRI</button>
+      <button class="pl-chip" data-b="consulting">Consulting</button>
+      <button class="pl-chip" data-b="finance">Finance</button>
+      <button class="pl-chip" data-b="marketing">Marketing / FMCG</button>
+      <button class="pl-chip" data-b="final">Final Placements</button>
+      <button class="pl-chip" data-b="summer">Summer Internships</button>
+    </div>
+    <div class="hof-grid pl-wall reveal" id="hofGrid"></div>
+  </div>
+</section>
+
+<!-- CTA -->
+<div class="wrap" style="padding-top:64px">
+  <div class="cta-banner reveal">
+    <div>
+      <h2>Your success story starts here.</h2>
+      <p>Join 5,000+ students who've already made it happen with MBA Partner's mentorship.</p>
+    </div>
+    <div class="cta-btns">
+      <button class="btn-w" onclick="window.location.href='index.html'">Explore Programs</button>
+      <a class="btn-ow" href="https://chat.whatsapp.com/EdyvGJbQoV9Jj6eC0slSx9" target="_blank"><i class="ti ti-brand-whatsapp"></i> Join Community</a>
+    </div>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer class="footer"><div class="wrap">
+  <div class="footer-grid">
+    <div class="footer-brand">
+      <a class="brand" href="index.html"><div class="brand-mark">M</div><div><div class="brand-name">MBA Partner</div><div class="brand-tag">Initiative by Alumni of Old IIMs</div></div></a>
+      <p>We help MBA students get placed at their dream companies through Live Projects Across Domains, Case Competition Prep, and expert-mentored Placements Bootcamp.</p>
+    </div>
+    <div class="footer-col"><h4>Programs</h4><div class="footer-links"><a href="index.html">Placement Bootcamp</a><a href="index.html">Live Projects</a><a href="index.html">Case Competitions</a><a href="index.html">Certifications</a></div></div>
+    <div class="footer-col"><h4>Resources</h4><div class="footer-links"><a href="https://documents1.netlify.app/" target="_blank">Compendiums</a><a href="https://documents1.netlify.app/" target="_blank">Sample CVs</a><a href="testimonials.html">Testimonials</a></div></div>
+    <div class="footer-col"><h4>Connect</h4><div class="footer-links"><a href="https://chat.whatsapp.com/EdyvGJbQoV9Jj6eC0slSx9" target="_blank">WhatsApp Community</a><a href="https://t.me/+IrnzgXdUKqsyOTZl" target="_blank">Telegram Channel</a><a href="tel:+917042732092">+91 70427 32092</a></div></div>
+  </div>
+  <div class="footer-bottom"><p>© 2026 MBA Partner. Initiative by Alumni of Old IIMs. All rights reserved.</p><div class="footer-social"><a href="https://chat.whatsapp.com/EdyvGJbQoV9Jj6eC0slSx9" target="_blank" class="whatsapp"><i class="ti ti-brand-whatsapp"></i></a><a href="https://t.me/+IrnzgXdUKqsyOTZl" target="_blank" class="telegram"><i class="ti ti-brand-telegram"></i></a><a href="https://documents1.netlify.app/?open=instagram" target="_blank" class="instagram"><i class="ti ti-brand-instagram"></i></a><a href="https://documents1.netlify.app/?open=linkedin" target="_blank" class="linkedin"><i class="ti ti-brand-linkedin"></i></a></div></div>
+</div></footer>
+
+<!-- LIGHTBOX -->
+<div class="lb" id="lb" onclick="if(event.target===this)closeLB()">
+  <div class="lb-box" role="dialog" aria-modal="true">
+    <button class="lb-x" onclick="closeLB()">&times;</button>
+    <div class="lb-av" id="lbAv"></div>
+    <div class="lb-stars">★★★★★</div>
+    <div class="lb-open-q" id="lbQ"></div>
+    <div class="lb-name" id="lbName"></div>
+    <div class="lb-meta" id="lbMeta"></div>
+    <div class="lb-pill" style="margin-top:10px"><i class="ti ti-briefcase" style="font-size:13px"></i><span id="lbOut"></span></div>
+  </div>
+</div>
+
+<div class="toast-wrap" id="toastWrap"></div>
+
+
+  <script src="js/site-data.js"></script>
+  <script src="js/navbar.js"></script>
+  <script src="js/chatbot-widget.js"></script>
+</body>
+</html>

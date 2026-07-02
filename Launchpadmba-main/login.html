@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>MBA Partner — Student Portal</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css"/>
+<link rel="stylesheet" href="css/login.css">
+<link rel="stylesheet" href="css/fonts.css"/>
+</head>
+<body>
+
+<!-- =====================
+     LOGIN PAGE
+===================== -->
+<div id="loginPage">
+  <div class="login-wrap">
+    <!-- LEFT PANEL -->
+    <div class="login-left">
+      <div class="login-glow"></div>
+      <div class="brand">
+        <div class="brand-mark">M</div>
+        <div>
+          <div class="brand-name">MBA Partner</div>
+          <div class="brand-tag">Initiative by Alumni of Old IIMs</div>
+        </div>
+      </div>
+      <div class="login-hero-text">
+        <h1>Your placement<br>journey <span>starts here.</span></h1>
+        <p>Access your live project materials, CV reviews, mock PI sessions, GD rounds, and compendiums — all in one place.</p>
+      </div>
+      <div class="login-stats">
+        <div class="ls-item">
+          <div class="ls-num">5<span>K+</span></div>
+          <div class="ls-lbl">Active students</div>
+        </div>
+        <div class="ls-item">
+          <div class="ls-num">9.6<span>/10</span></div>
+          <div class="ls-lbl">Avg. rating</div>
+        </div>
+        <div class="ls-item">
+          <div class="ls-num">98<span>%</span></div>
+          <div class="ls-lbl">Placement rate</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- RIGHT PANEL -->
+    <div class="login-right">
+      <div class="login-card">
+        <a class="back-link" href="index.html"><i class="ti ti-arrow-left"></i> Back to home</a>
+        <h2 id="authHeading">Welcome back 👋</h2>
+        <p id="authSub">Log in to access your student dashboard</p>
+
+        <div id="loginError" class="login-error hidden">
+          <i class="ti ti-alert-circle"></i>
+          <span id="loginErrorMsg">Invalid credentials. Try the demo login below.</span>
+        </div>
+
+        <form onsubmit="event.preventDefault(); handleLogin();" autocomplete="on">
+          <div class="field" id="nameField" style="display:none">
+            <label>Full name</label>
+            <div class="field-wrap">
+              <i class="ti ti-user"></i>
+              <input type="text" id="nameInput" placeholder="Your name" autocomplete="name"/>
+            </div>
+          </div>
+          <div class="field">
+            <label>Email address</label>
+            <div class="field-wrap">
+              <i class="ti ti-mail"></i>
+              <input type="email" id="emailInput" placeholder="you@college.edu" autocomplete="email"/>
+            </div>
+          </div>
+          <div class="field">
+            <div class="field-row2">
+              <label>Password</label>
+              <span class="forgot">Forgot password?</span>
+            </div>
+            <div class="field-wrap">
+              <i class="ti ti-lock"></i>
+              <input type="password" id="passInput" placeholder="Enter your password" autocomplete="current-password"/>
+            </div>
+          </div>
+
+          <button class="login-btn" id="loginBtn" type="submit">
+            <i class="ti ti-arrow-right"></i> <span id="loginBtnText">Sign in to Dashboard</span>
+          </button>
+        </form>
+
+        <div class="auth-toggle" id="authToggle" onclick="toggleAuthMode()">New to MBA Partner? <a>Create an account</a></div>
+
+        <div class="login-divider">or try the demo</div>
+
+        <div class="demo-btns">
+          <button class="demo-btn" onclick="demoLogin('placement')">
+            <i class="ti ti-rocket"></i> Demo: Placement Bootcamp Student
+          </button>
+          <button class="demo-btn" onclick="demoLogin('bundle')">
+            <i class="ti ti-package"></i> Demo: Complete Bundle Student
+          </button>
+          <button class="demo-btn" onclick="demoLogin('finance')">
+            <i class="ti ti-coin"></i> Demo: Finance Track Student
+          </button>
+          <button class="demo-btn" onclick="demoLogin('marketing')">
+            <i class="ti ti-palette"></i> Demo: Marketing Bootcamp Student
+          </button>
+          <button class="demo-btn" onclick="demoLogin('consulting')">
+            <i class="ti ti-briefcase"></i> Demo: Consulting Track Student
+          </button>
+          <button class="demo-btn" onclick="demoLogin('tech')">
+            <i class="ti ti-device-laptop"></i> Demo: Tech Roles Student
+          </button>
+        </div>
+
+        <div class="login-footer">
+          New student? <a href="index.html">Explore the main site</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- =====================
+     DASHBOARD
+===================== -->
+<div id="dashPage" class="hidden">
+
+  <div class="dash-wrap">
+    <!-- SIDEBAR OVERLAY (mobile) -->
+    <div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-brand">
+        <div class="brand-mark">M</div>
+        <div>
+          <div class="brand-name">MBA Partner</div>
+          <div class="brand-tag">Student Portal</div>
+        </div>
+      </div>
+      <div class="sidebar-user">
+        <div class="sidebar-avatar" id="sidebarAvatar">A</div>
+        <div>
+          <div class="sidebar-user-name" id="sidebarName">Ananya Sharma</div>
+          <div class="sidebar-user-role" id="sidebarRole">Placement Bootcamp</div>
+        </div>
+      </div>
+
+      <nav class="sidebar-nav">
+        <div class="nav-section-lbl">Main</div>
+        <button class="nav-item active" data-page="overview" onclick="switchPage('overview',this)">
+          <i class="ti ti-layout-dashboard"></i> Overview
+        </button>
+        <button class="nav-item" data-page="courses" onclick="switchPage('courses',this)">
+          <i class="ti ti-book"></i> My Courses
+        </button>
+        <button class="nav-item" data-page="sessions" onclick="switchPage('sessions',this)">
+          <i class="ti ti-calendar"></i> Sessions
+          <span class="nav-badge" id="sessionsBadge">2</span>
+        </button>
+        <button class="nav-item" data-page="materials" onclick="switchPage('materials',this)">
+          <i class="ti ti-folder"></i> Materials & Drive
+        </button>
+        <button class="nav-item" data-page="progress" onclick="switchPage('progress',this)">
+          <i class="ti ti-chart-bar"></i> CV & PI Progress
+        </button>
+
+        <div class="nav-section-lbl" style="margin-top:8px">Community</div>
+        <button class="nav-item" onclick="window.open('https://chat.whatsapp.com/EdyvGJbQoV9Jj6eC0slSx9','_blank')">
+          <i class="ti ti-brand-whatsapp"></i> WhatsApp Group
+        </button>
+        <button class="nav-item" onclick="window.open('https://t.me/+IrnzgXdUKqsyOTZl','_blank')">
+          <i class="ti ti-brand-telegram"></i> Telegram Channel
+        </button>
+      </nav>
+
+      <div class="sidebar-logout">
+        <button class="logout-btn" onclick="goToHomeFromDashboard()" style="margin-bottom:8px">
+          <i class="ti ti-home"></i> Back to Home
+        </button>
+        <button class="logout-btn" onclick="logout()">
+          <i class="ti ti-logout"></i> Sign out
+        </button>
+      </div>
+    </aside>
+
+    <!-- MAIN -->
+    <div class="dash-main">
+      <!-- TOPBAR -->
+      <div class="dash-topbar">
+        <div style="display:flex;align-items:center;gap:12px">
+          <button class="mobile-menu-btn" onclick="openSidebar()">
+            <i class="ti ti-menu-2"></i>
+          </button>
+          <h2 id="topbarTitle">Overview</h2>
+        </div>
+        <div class="topbar-right">
+          <div class="notif-btn"><i class="ti ti-bell"></i><div class="notif-dot"></div></div>
+          <div class="sidebar-avatar" style="width:36px;height:36px;font-size:13px" id="topbarAvatar">A</div>
+        </div>
+      </div>
+
+      <!-- BODY -->
+      <div class="dash-body">
+
+        <!-- ===== PAGE: OVERVIEW ===== -->
+        <div class="dash-page active" id="page-overview">
+
+          <div class="welcome-banner">
+            <div class="welcome-text">
+              <h3 id="welcomeMsg">Good morning, Ananya! 👋</h3>
+              <p id="welcomeSub">You have 2 sessions this week. Keep up the momentum — placements are closer than they feel.</p>
+            </div>
+            <button class="welcome-cta" onclick="switchPage('sessions', document.querySelector('[data-page=sessions]'))">
+              View Sessions →
+            </button>
+          </div>
+
+          <div class="stats-row">
+            <div class="stat-card">
+              <div class="stat-card-top">
+                <div class="stat-card-ico orange"><i class="ti ti-file-cv"></i></div>
+                <span class="stat-badge up">+1 new</span>
+              </div>
+              <div class="stat-num">2<span style="font-size:16px;color:var(--ink3)">/5</span></div>
+              <div class="stat-lbl">CV Reviews done</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-card-top">
+                <div class="stat-card-ico navy"><i class="ti ti-microphone-2"></i></div>
+                <span class="stat-badge warn">3 left</span>
+              </div>
+              <div class="stat-num">4<span style="font-size:16px;color:var(--ink3)">/7</span></div>
+              <div class="stat-lbl">Mock PIs completed</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-card-top">
+                <div class="stat-card-ico green"><i class="ti ti-users"></i></div>
+                <span class="stat-badge up">On track</span>
+              </div>
+              <div class="stat-num">5<span style="font-size:16px;color:var(--ink3)">/7</span></div>
+              <div class="stat-lbl">GD rounds done</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-card-top">
+                <div class="stat-card-ico purple"><i class="ti ti-briefcase"></i></div>
+                <span class="stat-badge up">Active</span>
+              </div>
+              <div class="stat-num">68<span style="font-size:16px;color:var(--ink3)">%</span></div>
+              <div class="stat-lbl">Live project progress</div>
+            </div>
+          </div>
+
+          <!-- ENROLLED COURSES PREVIEW -->
+          <div class="sec-header">
+            <h3>My Courses</h3>
+            <span class="sec-link" onclick="switchPage('courses',document.querySelector('[data-page=courses]'))">View all →</span>
+          </div>
+          <div class="course-cards-row" id="overviewCourses"></div>
+
+          <!-- UPCOMING SESSIONS -->
+          <div class="sec-header" style="margin-top:28px">
+            <h3>Upcoming Sessions</h3>
+            <span class="sec-link" onclick="switchPage('sessions',document.querySelector('[data-page=sessions]'))">See all →</span>
+          </div>
+          <div class="sessions-list" id="overviewSessions"></div>
+
+        </div>
+
+        <!-- ===== PAGE: COURSES ===== -->
+        <div class="dash-page" id="page-courses">
+          <div class="course-cards-row" id="allCourseCards"></div>
+        </div>
+
+        <!-- ===== PAGE: SESSIONS ===== -->
+        <div class="dash-page" id="page-sessions">
+          <div class="sessions-list" id="allSessions"></div>
+        </div>
+
+        <!-- ===== PAGE: MATERIALS ===== -->
+        <div class="dash-page" id="page-materials">
+          <div class="mat-header">
+            <h3>Your Study Materials</h3>
+            <p>Every resource from your enrolled programs, right here — no need to dig through Drive. <span id="materialCount"></span></p>
+          </div>
+          <div class="mat-filters" id="materialFilters"></div>
+          <div class="materials-grid" id="materialsGrid"></div>
+        </div>
+
+        <!-- ===== PAGE: PROGRESS ===== -->
+        <div class="dash-page" id="page-progress">
+          <div class="cv-tracker" id="cvTracker"></div>
+          <div class="pi-tracker">
+            <h3 style="font-size:15px;font-weight:800;color:var(--navy);margin-bottom:4px">Mock PI & GD Tracker</h3>
+            <p style="font-size:12px;color:var(--ink2);font-family:'Inter',sans-serif">7 PIs + 7 GDs included in your bootcamp</p>
+            <div class="pi-grid" id="piGrid"></div>
+          </div>
+        </div>
+
+      </div><!-- /dash-body -->
+    </div><!-- /dash-main -->
+  </div><!-- /dash-wrap -->
+</div><!-- /dashPage -->
+
+
+  <script src="js/auth.js"></script>
+  <script src="js/dashboard-data.js"></script>
+  <script src="js/form.js"></script>
+</body>
+</html>

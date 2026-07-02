@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>MBA Exam & College Predictor</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css"/>
+<link rel="stylesheet" href="css/exam-predictor.css"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="css/fonts.css"/>
+<script src="js/site-nav.js"></script>
+<script src="js/nav-auth.js"></script>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- HEADER -->
+  <div class="header">
+    <a class="home-link" href="index.html"><i class="ti ti-arrow-left"></i> Back to Home</a>
+    <div class="eyebrow"><i class="ti ti-award"></i> MBA Partner Tool</div>
+    <div class="h-title">MBA Exam <span>College Predictor</span></div>
+    <div class="h-sub">CAT · OMET · SNAP · NMAT · MAH-CET · CMAT · XAT · GMAT — pick your exam, enter your score, get personalised predictions with AI analysis.</div>
+    <div class="badge-row">
+      <div class="badge"><i class="ti ti-building-bank"></i> 50+ B-Schools</div>
+      <div class="badge"><i class="ti ti-certificate"></i> 8 Exams Covered</div>
+      <div class="badge"><i class="ti ti-sparkles"></i> AI Strategy Tips</div>
+      <div class="badge"><i class="ti ti-refresh"></i> 2024–25 Data</div>
+    </div>
+  </div>
+
+  <!-- EXAM SELECTOR -->
+  <div class="exam-select-section">
+    <h3><i class="ti ti-clipboard-list"></i> Step 1 — Select Your Exam</h3>
+    <p>Choose the entrance exam you appeared for (or are planning to). You can change this anytime.</p>
+    <div class="exam-dropdown" id="examDropdown">
+      <button type="button" class="exam-drop-toggle" id="examDropToggle" onclick="toggleExamDrop()" aria-haspopup="listbox" aria-expanded="false">
+        <span class="exam-drop-current" id="examDropCurrent">
+          <span class="exam-drop-ico"><i class="ti ti-chart-bar"></i></span>
+          <span class="exam-drop-text">
+            <span class="exam-drop-name">CAT — Common Admission Test</span>
+            <span class="exam-drop-range">Score 0–198 · IIMs &amp; top B-schools</span>
+          </span>
+        </span>
+        <i class="ti ti-chevron-down exam-drop-caret"></i>
+      </button>
+      <div class="exam-drop-list" id="examDropList" role="listbox">
+        <div class="exam-option active" data-exam="cat" role="option" onclick="chooseExam('cat')"><span class="exam-drop-ico"><i class="ti ti-chart-bar"></i></span><span class="exam-opt-name">CAT — Common Admission Test</span><span class="exam-opt-range">0–198</span></div>
+        <div class="exam-option" data-exam="xat" role="option" onclick="chooseExam('xat')"><span class="exam-drop-ico"><i class="ti ti-pencil"></i></span><span class="exam-opt-name">XAT — Xavier Aptitude Test</span><span class="exam-opt-range">0–100</span></div>
+        <div class="exam-option" data-exam="snap" role="option" onclick="chooseExam('snap')"><span class="exam-drop-ico"><i class="ti ti-bolt"></i></span><span class="exam-opt-name">SNAP — Symbiosis Aptitude Test</span><span class="exam-opt-range">0–60</span></div>
+        <div class="exam-option" data-exam="nmat" role="option" onclick="chooseExam('nmat')"><span class="exam-drop-ico"><i class="ti ti-brain"></i></span><span class="exam-opt-name">NMAT — NMIMS Management Aptitude</span><span class="exam-opt-range">0–360</span></div>
+        <div class="exam-option" data-exam="mahcet" role="option" onclick="chooseExam('mahcet')"><span class="exam-drop-ico"><i class="ti ti-map-pin"></i></span><span class="exam-opt-name">MAH-CET — Maharashtra CET</span><span class="exam-opt-range">0–200</span></div>
+        <div class="exam-option" data-exam="cmat" role="option" onclick="chooseExam('cmat')"><span class="exam-drop-ico"><i class="ti ti-school"></i></span><span class="exam-opt-name">CMAT — Common Management Admission</span><span class="exam-opt-range">0–400</span></div>
+        <div class="exam-option" data-exam="omet" role="option" onclick="chooseExam('omet')"><span class="exam-drop-ico"><i class="ti ti-star"></i></span><span class="exam-opt-name">OMET — Other Management Exams</span><span class="exam-opt-range">0–180</span></div>
+        <div class="exam-option" data-exam="gmat" role="option" onclick="chooseExam('gmat')"><span class="exam-drop-ico"><i class="ti ti-world"></i></span><span class="exam-opt-name">GMAT — Graduate Management Admission</span><span class="exam-opt-range">205–805</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SCORE INPUT (dynamic) -->
+  <div class="form-card" id="scoreCard">
+    <h3><i class="ti ti-chart-dots" id="scoreCardIcon"></i> <span id="scoreCardTitle">CAT Score</span></h3>
+    <div id="examInfoBanner"></div>
+    <div class="score-big">
+      <div class="score-number" id="scoreDisplay">120</div>
+      <div class="score-label" id="scoreLabel">Raw Score / 198</div>
+      <div><span class="equiv-pill" id="equivPill"><i class="ti ti-percentage"></i> ≈ 98.5 Percentile</span></div>
+    </div>
+    <input type="range" class="f-slider" id="scoreSlider" min="0" max="198" value="120" oninput="onSlider(this.value)"/>
+    <div class="slider-labels">
+      <span id="sliderMin">0</span>
+      <span id="sliderMid">99</span>
+      <span id="sliderMax">198</span>
+    </div>
+
+    <!-- Sectional inputs (CAT/XAT only) -->
+    <div id="sectionalWrap" style="margin-top:20px"></div>
+  </div>
+
+  <!-- PROFILE -->
+  <div class="form-card">
+    <h3><i class="ti ti-user-circle"></i> Your Profile</h3>
+    <div class="form-grid">
+      <div class="f-group">
+        <label class="f-label">Gender</label>
+        <select class="f-select" id="gender">
+          <option value="male">Male</option>
+          <option value="female">Female</option>
+          <option value="other">Other / Non-binary</option>
+        </select>
+      </div>
+      <div class="f-group">
+        <label class="f-label">Category</label>
+        <select class="f-select" id="category">
+          <option value="general">General</option>
+          <option value="ncobc">NC-OBC</option>
+          <option value="sc">SC</option>
+          <option value="st">ST</option>
+          <option value="ews">EWS</option>
+          <option value="pwd">PwD</option>
+        </select>
+      </div>
+      <div class="f-group">
+        <label class="f-label">Work Experience</label>
+        <select class="f-select" id="workex">
+          <option value="0">Fresher (0 months)</option>
+          <option value="12">6–12 months</option>
+          <option value="24" selected>13–24 months</option>
+          <option value="36">25–36 months</option>
+          <option value="48">37–48 months</option>
+          <option value="60">48+ months</option>
+        </select>
+      </div>
+      <div class="f-group">
+        <label class="f-label">Background</label>
+        <select class="f-select" id="background">
+          <option value="engineer">Engineer (B.Tech/B.E.)</option>
+          <option value="noneng">Non-Engineer</option>
+          <option value="doctor">Doctor (MBBS/BDS)</option>
+          <option value="law">Law Graduate</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <!-- ACADEMICS -->
+  <div class="form-card">
+    <h3><i class="ti ti-school"></i> Academic Background</h3>
+    <div class="form-grid-3">
+      <div class="f-group">
+        <label class="f-label">Class 10th %</label>
+        <input class="f-input" type="number" id="tenth" min="0" max="100" value="88"/>
+      </div>
+      <div class="f-group">
+        <label class="f-label">Class 12th %</label>
+        <input class="f-input" type="number" id="twelfth" min="0" max="100" value="85"/>
+      </div>
+      <div class="f-group">
+        <label class="f-label">Graduation %/CGPA</label>
+        <input class="f-input" type="number" id="grad" min="0" max="100" value="78"/>
+      </div>
+    </div>
+    <div class="f-group" style="margin-top:14px">
+      <label class="f-label">Academic gaps or backlogs?</label>
+      <select class="f-select" id="gaps">
+        <option value="none">No gaps or backlogs</option>
+        <option value="gap1">1 year gap (explained)</option>
+        <option value="backlog">Backlogs cleared</option>
+        <option value="both">Gap + backlogs</option>
+      </select>
+    </div>
+  </div>
+
+  <button class="predict-btn" onclick="runPredictor()">
+    <i class="ti ti-sparkles"></i> Predict My Colleges
+  </button>
+
+  <div id="resultsSection"></div>
+
+</div>
+
+<script src="js/exam-predictor.js"></script>
+</body>
+</html>

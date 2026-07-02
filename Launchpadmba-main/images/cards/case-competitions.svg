@@ -1,0 +1,40 @@
+<svg width="1600" height="900" viewBox="0 0 1600 900" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#213178"/><stop offset="0.55" stop-color="#1B2A6B"/><stop offset="1" stop-color="#0E1D52"/></linearGradient>
+    <linearGradient id="top" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#FFB35C"/><stop offset="0.5" stop-color="#FF8B02"/><stop offset="1" stop-color="#D97400"/></linearGradient>
+    <radialGradient id="glow" cx="0.5" cy="0.5" r="0.5"><stop offset="0" stop-color="#FF8B02" stop-opacity="0.22"/><stop offset="1" stop-color="#FF8B02" stop-opacity="0"/></radialGradient>
+  </defs>
+  <rect width="1600" height="900" fill="url(#bg)"/>
+  <circle cx="1560" cy="60" r="420" fill="url(#glow)"/>
+  <circle cx="60" cy="880" r="330" fill="url(#glow)" opacity="0.55"/>
+  <circle cx="1500" cy="840" r="190" fill="none" stroke="#ffffff" stroke-opacity="0.05" stroke-width="34"/>
+  <rect width="1600" height="12" fill="url(#top)"/>
+  <circle cx="116" cy="118" r="32" fill="#FF8B02"/>
+  <text x="116" y="131" text-anchor="middle" font-family="Poppins,'Segoe UI',Arial,sans-serif" font-size="34" font-weight="700" fill="#ffffff">M</text>
+  <text x="168" y="114" font-family="Poppins,'Segoe UI',Arial,sans-serif" font-size="32" font-weight="700" fill="#ffffff">MBA Partner</text>
+  <text x="169" y="144" font-family="Poppins,'Segoe UI',Arial,sans-serif" font-size="14" font-weight="500" letter-spacing="3" fill="#8F9CC9">GET MENTORED. GET PLACED.</text>
+  <rect x="1324" y="52" width="196" height="50" rx="25" fill="#F7E27A"/>
+    <text x="1422" y="85" text-anchor="middle" font-family="Poppins,'Segoe UI',Arial,sans-serif" font-size="19" font-weight="700" letter-spacing="1.5" fill="#1B2A6B">BESTSELLER</text>
+  <rect x="84" y="212" width="285" height="52" rx="26" fill="#FF8B02" fill-opacity="0.13" stroke="#FF8B02" stroke-opacity="0.4"/>
+  <text x="226.5" y="246" text-anchor="middle" font-family="Poppins,'Segoe UI',Arial,sans-serif" font-size="20" font-weight="700" letter-spacing="2.5" fill="#FFAE4D">CASE COMPETITIONS</text>
+  <text x="82" y="344" font-family="Poppins,'Segoe UI',Arial,sans-serif" font-size="80" font-weight="700" fill="#ffffff">Dominating Case</text>
+  <text x="82" y="440" font-family="Poppins,'Segoe UI',Arial,sans-serif" font-size="80" font-weight="700" fill="#ffffff">Competitions</text>
+  <rect x="86" y="474" width="150" height="9" rx="4.5" fill="#FF8B02"/>
+  <rect x="84" y="700" width="138" height="66" rx="33" fill="#ffffff" fill-opacity="0.08" stroke="#ffffff" stroke-opacity="0.18"/>
+    <circle cx="110" cy="733" r="5.5" fill="#FF8B02"/>
+    <text x="128" y="742" font-family="Poppins,'Segoe UI',Arial,sans-serif" font-size="26" font-weight="500" fill="#DCE1F2">8+ hrs</text><rect x="240" y="700" width="288" height="66" rx="33" fill="#ffffff" fill-opacity="0.08" stroke="#ffffff" stroke-opacity="0.18"/>
+    <circle cx="266" cy="733" r="5.5" fill="#FF8B02"/>
+    <text x="284" y="742" font-family="Poppins,'Segoe UI',Arial,sans-serif" font-size="26" font-weight="500" fill="#DCE1F2">AIR 1, 6, 10, 15</text>
+  <rect x="940" y="160" width="600" height="660" rx="30" fill="#ffffff" fill-opacity="0.06" stroke="#ffffff" stroke-opacity="0.18" stroke-width="2"/>
+  <text x="1004" y="246" font-family="Poppins,'Segoe UI',Arial,sans-serif" font-size="24" font-weight="700" letter-spacing="4" fill="#FFAE4D">WHAT YOU GET</text>
+  <line x1="1004" y1="270" x2="1476" y2="270" stroke="#FF8B02" stroke-opacity="0.4" stroke-width="2"/>
+  <circle cx="1026" cy="318" r="22" fill="#FF8B02"/>
+    <path d="M 1016 318 l 7 7 l 13 -14" stroke="#fff" stroke-width="4.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+    <text x="1070" y="330" font-family="Poppins,'Segoe UI',Arial,sans-serif" font-size="36" font-weight="600" fill="#ffffff">Unstop AIR 1, 6, 10, 15</text><circle cx="1026" cy="460" r="22" fill="#FF8B02"/>
+    <path d="M 1016 460 l 7 7 l 13 -14" stroke="#fff" stroke-width="4.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+    <text x="1070" y="472" font-family="Poppins,'Segoe UI',Arial,sans-serif" font-size="36" font-weight="600" fill="#ffffff">8 hrs case-cracking</text><circle cx="1026" cy="602" r="22" fill="#FF8B02"/>
+    <path d="M 1016 602 l 7 7 l 13 -14" stroke="#fff" stroke-width="4.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+    <text x="1070" y="614" font-family="Poppins,'Segoe UI',Arial,sans-serif" font-size="36" font-weight="600" fill="#ffffff">30+ winning PPTs</text><circle cx="1026" cy="744" r="22" fill="#FF8B02"/>
+    <path d="M 1016 744 l 7 7 l 13 -14" stroke="#fff" stroke-width="4.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+    <text x="1070" y="756" font-family="Poppins,'Segoe UI',Arial,sans-serif" font-size="36" font-weight="600" fill="#ffffff">Canva Pro (1 year)</text>
+</svg>
