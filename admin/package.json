@@ -1,0 +1,12 @@
+{
+  "name": "launchpad-admin",
+  "version": "1.0.0",
+  "description": "Admin UI web service for Launchpad",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2"
+  }
+}
