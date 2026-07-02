@@ -1,0 +1,52 @@
+require('dotenv').config();
+const path = require('path');
+const express = require('express');
+const cors = require('cors');
+
+const db = require('./lib/db');
+const { ensureAdminSeeded } = require('./lib/auth');
+const { run: seed } = require('./seed');
+const { makePublicRouter, makeAdminRouter, COLLECTIONS, ADMIN_ONLY } = require('./routes/resource');
+const settingsRouter = require('./routes/settings');
+const couponsRouter = require('./routes/coupons');
+const authRouter = require('./routes/auth');
+
+// First boot: create data/db.json with the site's own sample data
+// so nothing changes visually until the admin actually edits something.
+seed(false);
+ensureAdminSeeded();
+
+const app = express();
+app.use(cors());
+app.use(express.json({ limit: '2mb' }));
+
+// ---- Public API (read-only, no login needed — the live website calls these) ----
+COLLECTIONS.forEach(name => {
+  if (!ADMIN_ONLY.has(name)) app.use('/api/public/' + name, makePublicRouter(name));
+});
+app.use('/api/public/settings', settingsRouter); // GET is public; PUT inside requires auth
+app.use('/api/public/coupons', couponsRouter); // exposes POST /api/public/coupons/validate
+
+// ---- Admin API (every route below requires a valid admin token) ----
+COLLECTIONS.forEach(name => {
+  app.use('/api/admin/' + name, makeAdminRouter(name));
+});
+app.use('/api/admin/settings', settingsRouter);
+app.use('/api/admin/auth', authRouter);
+
+app.get('/api/health', (req, res) => res.json({ ok: true }));
+
+// ---- Serve the admin dashboard's static files ----
+app.use('/admin', express.static(path.join(__dirname, '..', 'admin')));
+
+// ---- Serve the main website's static files (index.html, courses.html, css/, js/, images/, etc.) ----
+// Block direct access to the backend's own folder before the static server runs.
+app.use('/admin-server', (req, res) => res.status(404).end());
+app.use(express.static(path.join(__dirname, '..'), { index: 'index.html' }));
+
+const PORT = process.env.PORT || 4000;
+app.listen(PORT, () => {
+  console.log(`MBA Partner site + admin API running on http://localhost:${PORT}`);
+  console.log(`Admin dashboard: http://localhost:${PORT}/admin`);
+  console.log(`Data file: ${db.DB_PATH}`);
+});

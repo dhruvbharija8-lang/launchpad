@@ -15,4 +15,5 @@ Thumbs.db
 admin-server/node_modules/
 admin-server/data/db.json
 admin-server/.env
-\n# Ignore admin Node modules\nadmin/node_modules/\n
+admin/node_modules/
+
