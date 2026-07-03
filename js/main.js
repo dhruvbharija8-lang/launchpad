@@ -85,6 +85,16 @@ const SORTS = [{ key: 'popular', label: 'Most popular' }, { key: 'rating', label
 
 const io = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } }), { threshold: .12 });
 function observeReveals(scope) { (scope || document).querySelectorAll('.reveal:not(.in)').forEach(el => io.observe(el)); }
+// Safety net: some mobile browsers can miss elements already on-screen at
+// page load (very tall grids, sections sitting right at the fold on first
+// paint). Anything still visible in the viewport shortly after load gets
+// force-revealed so it never stays permanently invisible.
+setTimeout(() => {
+  document.querySelectorAll('.reveal:not(.in)').forEach(el => {
+    const r = el.getBoundingClientRect();
+    if (r.top < window.innerHeight && r.bottom > 0) el.classList.add('in');
+  });
+}, 700);
 
 function syncCart() {
   const n = cart.length;

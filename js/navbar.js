@@ -169,6 +169,17 @@ const TICKERS=['9.6/10 Avg. Rating','5,000+ Students Mentored','98.7% Placed in 
 /* ===== UTILS ===== */
 const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}}),{threshold:.1});
 function obs(root){(root||document).querySelectorAll('.reveal:not(.in)').forEach(el=>io.observe(el));}
+// Safety net: on some mobile browsers the IntersectionObserver can miss elements
+// that are already on-screen at page load (e.g. very tall grids, or a section
+// sitting right at the fold when the page first paints). Anything that's
+// already visible in the viewport a moment after load gets force-revealed so
+// it never stays permanently invisible.
+setTimeout(()=>{
+  document.querySelectorAll('.reveal:not(.in)').forEach(el=>{
+    const r=el.getBoundingClientRect();
+    if(r.top<window.innerHeight && r.bottom>0) el.classList.add('in');
+  });
+},700);
 function stars5(){return'★★★★★';}
 function initials(name){return name.trim().charAt(0).toUpperCase();}
 function avHtml(t){
