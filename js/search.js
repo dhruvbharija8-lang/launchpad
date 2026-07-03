@@ -864,8 +864,9 @@ function updateMobileCart() {
   const w = window.innerWidth;
   const mob = document.getElementById('cartBtnMobile');
   const des = document.getElementById('cartBtn');
-  if (w <= 960) { mob.style.display = 'flex'; des.style.display = 'none'; }
-  else { mob.style.display = 'none'; des.style.display = 'flex'; }
+  const mobSearch = document.getElementById('mobileSearchBtn');
+  if (w <= 960) { mob.style.display = 'flex'; des.style.display = 'none'; if (mobSearch) mobSearch.style.display = 'flex'; }
+  else { mob.style.display = 'none'; des.style.display = 'flex'; if (mobSearch) mobSearch.style.display = 'none'; }
 }
 window.addEventListener('resize', updateMobileCart);
 updateMobileCart();
@@ -885,8 +886,9 @@ function updateMobileCart() {
   const w = window.innerWidth;
   const mob = document.getElementById('cartBtnMobile');
   const des = document.getElementById('cartBtn');
-  if (w <= 960) { mob.style.display = 'flex'; des.style.display = 'none'; }
-  else { mob.style.display = 'none'; des.style.display = 'flex'; }
+  const mobSearch = document.getElementById('mobileSearchBtn');
+  if (w <= 960) { mob.style.display = 'flex'; des.style.display = 'none'; if (mobSearch) mobSearch.style.display = 'flex'; }
+  else { mob.style.display = 'none'; des.style.display = 'flex'; if (mobSearch) mobSearch.style.display = 'none'; }
 }
 window.addEventListener('resize', updateMobileCart);
 updateMobileCart();

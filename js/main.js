@@ -53,13 +53,7 @@ const TESTIMONIALS = [
   { name: 'Shen Shaji', school: 'IIM Bangalore', outcome: 'Product Management · Media.Net', quote: 'Mentors support was immense. My CV was boosted through Live Projects and the Bootcamp shaped my SIP prep. Landed my dream PM role at Media.Net!' },
   { name: 'Rutuja Thorat', school: 'IIM Calcutta', outcome: 'Strategy · Accenture', quote: 'MBA Partner cleared the information asymmetry for me. Guidance from mentors who were alumni of my own college helped me land Accenture Strategy SIP.' },
   { name: 'Aayushi Gupta', school: 'FMS Delhi', outcome: 'Amazon', quote: 'Being a fresher is haunting in MBA. Live projects and placement prep from great mentors really made the difference. True savior!' },
-  { name: 'Shruti Satdeve', school: 'IIM Udaipur', outcome: 'Accenture Strategy', quote: 'Live projects at MBA Partner really helped boost my CV and my SIP interview was totally on the project. Placements Bootcamp made it a cakewalk.' },
-  { name: 'Hemang Agarwal', school: 'MDI Gurgaon', outcome: 'Reliance Group', quote: 'My journey with MBA Partner began with Case Comp sessions and their Live Project further elevated my CV, leading to an amazing SIP at Reliance Group.' },
-  { name: 'Akula Vamsi', school: 'SPJIMR', outcome: 'Finance · JM Financials', quote: 'As an engineer aiming for Finance roles, it looked difficult. Finance Bootcamp coupled with a live project helped me crack a Finance SIP.' },
-  { name: 'Shikhar Kapoor', school: 'IIM Kozhikode', outcome: 'Pine Labs', quote: 'Live projects gave my CV the high-stakes experience it was missing. SIP interview felt incredibly smooth. ATS keywords helped get desired shortlists.' },
-  { name: 'Tanisha Sen', school: 'IIM Ranchi', outcome: 'Times of India', quote: 'From GDPI course to live projects, case comps and placements prep — MBA Partner was with me at every step. Got into Times of India!' },
-  { name: 'Utsav Jain', school: 'NMIMS Mumbai', outcome: 'Big 4', quote: 'Despite workex with KPMG, my CV lacked finance orientation. MBA Partner helped with the right projects and I got through even in a sluggish market.' },
-  { name: 'Megha Bhattacharya', school: 'IIM Mumbai', outcome: 'Kearney', quote: 'As a fresher I was afraid of SIPs, but hands-on experience from live projects was a definitive turning point in my interview at Kearney.' }
+  { name: 'Hemang Agarwal', school: 'MDI Gurgaon', outcome: 'Reliance Group', quote: 'My journey with MBA Partner began with Case Comp sessions and their Live Project further elevated my CV, leading to an amazing SIP at Reliance Group.' }
 ];
 const HOF = [
   { name: 'Nishant Khandelwal', school: 'IIM Ahmedabad', company: 'IIM ABC Convert', quote: 'Mentors helped me craft my story for GDPI — went from 10% convert chance to actually getting in.', img: 'https://static.wixstatic.com/media/67e5e0_9adcddd217334ce5818c5156afc9b22a~mv2.jpg/v1/crop/x_0,y_54,w_400,h_239/fill/w_550,h_329,fp_0.50_0.50,lg_1,q_80,enc_avif,quality_auto/1743480492229.jpg' },
@@ -185,21 +179,32 @@ function hofCardHtml(h) {
 async function renderHallOfFame() {
   const el = document.getElementById('hofGrid');
   if (!el) return;
-  // Admin-editable "Hall of Fame Spotlight" section (falls back to the
-  // built-in HOF stories if the admin dashboard has nothing set yet or
-  // the API is unreachable — the site never breaks because of this).
-  let stories = HOF;
-  try {
-    if (typeof loadSiteData === 'function') {
-      const data = await loadSiteData();
-      if (Array.isArray(data.hallOfFame) && data.hallOfFame.length) {
-        stories = data.hallOfFame.map(h => ({ name: h.Name, school: h.School, company: h.Company, quote: h.Quote, img: h.Photo }));
-      }
-    }
-  } catch (e) { /* keep the built-in fallback stories */ }
-  el.innerHTML = stories.map(hofCardHtml).join('');
+
+  // Paint the built-in stories immediately so the section never sits blank
+  // while waiting on the network (Render's free tier can take a while to
+  // wake up on a cold start — we don't want the whole homepage to feel
+  // slow just because of this one section).
+  el.innerHTML = HOF.map(hofCardHtml).join('');
   if (el.classList.contains('reveal') && !el.classList.contains('in')) io.observe(el);
   observeReveals(el);
+
+  // Then, in the background, try to fetch the admin-editable version and
+  // swap it in if it arrives quickly. If it's slow or unreachable, we just
+  // keep showing the built-in stories — the section never blocks on this.
+  try {
+    const base = (typeof MBA_API_BASE !== 'undefined') ? MBA_API_BASE : '';
+    const ctrl = new AbortController();
+    const timeout = setTimeout(() => ctrl.abort(), 4000);
+    const res = await fetch(base + '/api/public/hallOfFame', { signal: ctrl.signal });
+    clearTimeout(timeout);
+    if (!res.ok) return;
+    const data = await res.json();
+    if (Array.isArray(data) && data.length) {
+      const stories = data.map(h => ({ name: h.Name, school: h.School, company: h.Company, quote: h.Quote, img: h.Photo }));
+      el.innerHTML = stories.map(hofCardHtml).join('');
+      observeReveals(el);
+    }
+  } catch (e) { /* keep the built-in fallback stories — no big deal */ }
 }
 function renderBenefitsCards() {
   const el = document.getElementById('benefitsCards');

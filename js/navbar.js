@@ -383,20 +383,17 @@ function closeLB(){document.getElementById('lb').classList.remove('open');docume
 document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeLB();closeVidLb();}});
 
 /* MOBILE NAV */
+// NOTE: the mobile-menu button itself is wired by js/site-nav.js (the single
+// source of truth for the shared navbar — it injects the canonical nav and
+// attaches the open/close click handler). This file used to ALSO attach a
+// second, duplicate click handler here, which caused the menu to open and
+// immediately close again on every tap (both handlers fired on one click,
+// toggling the same class twice). closeMobileNav() is kept since other
+// on-page links may still reference it.
 function closeMobileNav(){
   const nav=document.getElementById('mobileNav');
   if(nav) nav.classList.remove('open');
 }
-
-window.addEventListener('DOMContentLoaded', ()=>{
-  const menu=document.getElementById('mobileMenuBtn');
-  if(menu){
-    menu.onclick=()=>{
-      const nav=document.getElementById('mobileNav');
-      if(nav) nav.classList.toggle('open');
-    };
-  }
-});
 
 /* INIT */
 initTicker();
