@@ -59,7 +59,7 @@
     const email = emailOf(Clerk.user);
     if (email) {
       setLoading(true);
-      await ensureData();
+      await ensureData(true);
       setLoading(false);
       enterDashboardOrWelcome(email.trim().toLowerCase(), Clerk.user.fullName);
       return;
@@ -86,7 +86,7 @@
     const email = emailOf(user);
     if (!email) return;
     setLoading(true);
-    ensureData().then(() => {
+    ensureData(true).then(() => {
       setLoading(false);
       enterDashboardOrWelcome(email.trim().toLowerCase(), user.fullName);
     });

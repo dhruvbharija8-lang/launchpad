@@ -29,8 +29,8 @@ const MAT_STYLE = {
 };
 
 /* ---------- DATA BOOTSTRAP ---------- */
-async function ensureData() {
-  if (!DASH_DATA) DASH_DATA = await loadAllData();
+async function ensureData(force = false) {
+  if (!DASH_DATA || force) DASH_DATA = await loadAllData();
   return DASH_DATA;
 }
 

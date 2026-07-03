@@ -567,6 +567,7 @@ function renderCheckout() {
           Coupon: appliedCoupon ? appliedCoupon.code : ''
         })
       });
+      if (typeof DASH_DATA !== 'undefined') DASH_DATA = null; // force fresh dashboard data after a new purchase
     } catch (err) { /* still confirm the order — a network hiccup shouldn't block checkout */ }
     if (payBtn) payBtn.disabled = false;
     openModal('paid', { total: grandTotal });
