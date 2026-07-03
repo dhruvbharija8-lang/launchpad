@@ -128,5 +128,16 @@ a{color:inherit}
 .mock-note{font-size:12px;color:var(--ink3);font-family:'Inter',sans-serif;margin-top:14px;text-align:center}
 
 @media(max-width:860px){.cp-grid,.cp-price-grid{grid-template-columns:1fr 1fr}.cp-hero h1{font-size:30px}.cp-nav-links a:not(.cp-nav-call){display:none}}
-@media(max-width:560px){.cp-grid,.cp-price-grid{grid-template-columns:1fr}.cp-lb th:nth-child(4),.cp-lb td:nth-child(4){display:none}}
+@media(max-width:560px){
+  .cp-grid,.cp-price-grid{grid-template-columns:1fr}
+  .cp-lb th:nth-child(4),.cp-lb td:nth-child(4){display:none}
+  .cp-hero{padding:44px 0 40px}
+  .cp-hero h1{font-size:24px}
+  .cp-hero-stats{gap:18px}
+  .mock-bar{padding:14px 16px;gap:8px;flex-wrap:wrap}
+  .mock-title{font-size:14px;flex-basis:100%}
+  .mock-body{padding:16px}
+  .cp-sec{padding:36px 0}
+  .cp-sec-head h2{font-size:21px}
+}
 

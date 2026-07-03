@@ -376,6 +376,11 @@ button{cursor:pointer}
   .buy,.summary{position:static}.summary{order:-1}
   .grid{grid-template-columns:1fr 1fr}
 }
+@media(max-width:560px){
+  .grid{grid-template-columns:1fr}
+  .tmodal-grid{grid-template-columns:1fr}
+  .tmodal-body{padding:20px 18px 28px}
+}
 
 /* ===== Combo savings ===== */
 .combo-save{display:inline-flex;align-items:center;gap:6px;margin-top:10px;font-size:12px;font-weight:700;

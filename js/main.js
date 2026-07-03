@@ -198,6 +198,8 @@ async function renderHallOfFame() {
     }
   } catch (e) { /* keep the built-in fallback stories */ }
   el.innerHTML = stories.map(hofCardHtml).join('');
+  if (el.classList.contains('reveal') && !el.classList.contains('in')) io.observe(el);
+  observeReveals(el);
 }
 function renderBenefitsCards() {
   const el = document.getElementById('benefitsCards');

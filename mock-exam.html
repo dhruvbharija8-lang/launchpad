@@ -248,6 +248,42 @@ button{cursor:pointer;font-family:inherit}
 .qr-status.skipped{background:#F0F2F8;color:var(--ink3)}
 .result-back-btn{display:flex;align-items:center;justify-content:center;gap:8px;font-size:14px;font-weight:700;background:var(--navy);color:#fff;padding:14px 32px;border-radius:30px;border:none;cursor:pointer;margin:0 auto;transition:.2s}
 .result-back-btn:hover{background:var(--navy2);transform:translateY(-1px)}
+
+/* ════ MOBILE — EXAM ENGINE ════ */
+@media(max-width:760px){
+  .exam-bar{padding:0 10px;gap:8px;height:50px}
+  .exam-bar-title{display:none}
+  .exam-timer{font-size:15px;min-width:76px;padding:5px 10px}
+  .exam-bar-submit{font-size:12px;padding:7px 12px}
+
+  .exam-main{flex-direction:column}
+  .exam-sidebar{width:100%;max-height:none;border-right:none;border-bottom:1px solid #334155}
+  .sidebar-head{padding:8px 12px}
+  .q-palette{padding:8px 12px;max-height:104px;overflow-y:auto}
+  .q-btn{width:32px;height:32px;font-size:12px}
+  .sidebar-stats{display:flex;gap:14px;padding:8px 12px;border-top:1px solid #334155;margin-top:0}
+  .ss-row{margin-bottom:0}
+
+  .q-area{padding:16px}
+  .q-text{font-size:14.5px;margin-bottom:16px}
+  .q-passage{padding:12px 14px;font-size:13px}
+  .opt-label{padding:11px 14px;font-size:13.5px}
+
+  .q-bottom{padding:10px 12px;gap:8px}
+  .q-nav-info{width:100%;order:-1;text-align:center}
+  .q-btn-group{width:100%;margin-left:0}
+  .q-action-btn{flex:1 1 48%;padding:9px 6px;font-size:12px;white-space:normal;text-align:center;justify-content:center}
+
+  .pre-head{padding:24px 20px}
+  .pre-body{padding:20px}
+  .pre-title{font-size:21px}
+  .submit-summary{gap:8px}
+  .submit-box{padding:24px 20px}
+}
+@media(max-width:380px){
+  .q-action-btn{font-size:11px}
+  .q-palette{max-height:88px}
+}
 </style>
 </head>
 <body>
