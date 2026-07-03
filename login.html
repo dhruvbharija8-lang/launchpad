@@ -181,40 +181,10 @@
             </button>
           </div>
 
-          <div class="stats-row">
-            <div class="stat-card">
-              <div class="stat-card-top">
-                <div class="stat-card-ico orange"><i class="ti ti-file-cv"></i></div>
-                <span class="stat-badge up">+1 new</span>
-              </div>
-              <div class="stat-num">2<span style="font-size:16px;color:var(--ink3)">/5</span></div>
-              <div class="stat-lbl">CV Reviews done</div>
-            </div>
-            <div class="stat-card">
-              <div class="stat-card-top">
-                <div class="stat-card-ico navy"><i class="ti ti-microphone-2"></i></div>
-                <span class="stat-badge warn">3 left</span>
-              </div>
-              <div class="stat-num">4<span style="font-size:16px;color:var(--ink3)">/7</span></div>
-              <div class="stat-lbl">Mock PIs completed</div>
-            </div>
-            <div class="stat-card">
-              <div class="stat-card-top">
-                <div class="stat-card-ico green"><i class="ti ti-users"></i></div>
-                <span class="stat-badge up">On track</span>
-              </div>
-              <div class="stat-num">5<span style="font-size:16px;color:var(--ink3)">/7</span></div>
-              <div class="stat-lbl">GD rounds done</div>
-            </div>
-            <div class="stat-card">
-              <div class="stat-card-top">
-                <div class="stat-card-ico purple"><i class="ti ti-briefcase"></i></div>
-                <span class="stat-badge up">Active</span>
-              </div>
-              <div class="stat-num">68<span style="font-size:16px;color:var(--ink3)">%</span></div>
-              <div class="stat-lbl">Live project progress</div>
-            </div>
-          </div>
+          <!-- Populated dynamically by renderOverviewStats() in js/form.js —
+               which stat cards show up here depends on the category of
+               course(s) this student is actually enrolled in. -->
+          <div class="stats-row" id="overviewStatsRow"></div>
 
           <!-- ENROLLED COURSES PREVIEW -->
           <div class="sec-header">

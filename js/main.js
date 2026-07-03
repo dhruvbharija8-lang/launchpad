@@ -173,6 +173,16 @@ function switchPersona(p) {
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
+// Restore whichever toggle (MBA/CAT) was last selected — otherwise the
+// homepage always reset to MBA on a fresh load, even if the visitor had
+// switched to CAT/OMETs and just came back from Courses/Testimonials.
+(function restorePersona() {
+  try {
+    const saved = localStorage.getItem('mbaPersona');
+    if (saved === 'cat') switchPersona('cat');
+  } catch (e) { }
+})();
+
 /* ===== MOBILE NAV ===== */
 document.getElementById('mobileMenuBtn').onclick = () => {
   const nav = document.getElementById('mobileNav');
@@ -590,21 +600,28 @@ function renderCheckout() {
     const payBtn = document.getElementById('payNow');
     if (payBtn) payBtn.disabled = true;
     try {
-      const base = (typeof MBA_API_BASE !== 'undefined') ? MBA_API_BASE : '';
-      await fetch(base + '/api/public/orders', {
-        method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          Name: n, Email: e, Phone: ph, College: col,
-          Items: cart.map(c => c.title).join(', '),
-          ItemIds: cart.map(c => c.id).join(', '),
-          Total: grandTotal,
-          Coupon: appliedCoupon ? appliedCoupon.code : ''
-        })
+      const checkoutPayload = {
+        Name: n, Email: e, Phone: ph, College: col,
+        Items: cart.map(c => c.title).join(', '),
+        ItemIds: cart.map(c => c.id).join(', '),
+        Total: grandTotal,
+        Coupon: appliedCoupon ? appliedCoupon.code : ''
+      };
+      const orderData = await createRazorpayOrder(grandTotal, `order_${Date.now()}`, {
+        email: e,
+        name: n,
+        courseIds: cart.map(c => c.id).join(','),
+        coupon: appliedCoupon ? appliedCoupon.code : ''
       });
+      await startRazorpayCheckout(orderData, checkoutPayload);
       if (typeof DASH_DATA !== 'undefined') DASH_DATA = null; // force fresh dashboard data after a new purchase
-    } catch (err) { /* still confirm the order — a network hiccup shouldn't block checkout */ }
-    if (payBtn) payBtn.disabled = false;
-    openModal('paid', { total: grandTotal });
+      openModal('paid', { total: grandTotal });
+    } catch (err) {
+      console.error('Checkout failed:', err);
+      showToast(err.message || 'Payment could not be completed. Please try again.');
+    } finally {
+      if (payBtn) payBtn.disabled = false;
+    }
   };
 
   // If the visitor is already signed in (via Clerk, from login.html), their

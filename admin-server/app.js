@@ -7,6 +7,7 @@ const db = require('./lib/db');
 const { ensureAdminSeeded } = require('./lib/auth');
 const { run: seed } = require('./seed');
 const { makePublicRouter, makePublicWriteRouter, makeAdminRouter, COLLECTIONS, ADMIN_ONLY, PUBLIC_WRITE_ONLY } = require('./routes/resource');
+const razorpayRouter = require('./routes/razorpay');
 const settingsRouter = require('./routes/settings');
 const couponsRouter = require('./routes/coupons');
 const authRouter = require('./routes/auth');
@@ -32,6 +33,7 @@ COLLECTIONS.forEach(name => {
 });
 app.use('/api/public/settings', settingsRouter); // GET is public; PUT inside requires auth
 app.use('/api/public/coupons', couponsRouter); // exposes POST /api/public/coupons/validate
+app.use('/api/public/razorpay', razorpayRouter);
 
 // ---- Admin API (every route below requires a valid admin token) ----
 COLLECTIONS.forEach(name => {

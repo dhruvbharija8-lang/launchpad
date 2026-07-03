@@ -332,10 +332,11 @@ function renderCatalog() {
   const persona = getPersona();
   const personaCourses = COURSES.filter(c => (c.Track || 'mba') === persona);
 
-  // Toggle the static wrap container of the group banner
+  // Toggle the static wrap container of the group banner — shown on both
+  // MBA and CAT/OMETs toggles, just hidden while actively searching.
   const promoWrap = document.getElementById('groupPromoBannerWrap');
   if (promoWrap) {
-    promoWrap.style.display = (q || persona === 'cat') ? 'none' : 'block';
+    promoWrap.style.display = q ? 'none' : 'flex';
   }
 
   let html = '';
@@ -725,7 +726,14 @@ function renderDetail(id) {
   document.getElementById('dCurriculum').innerHTML = (c.curriculum && c.curriculum.length) ? c.curriculum.map((m, i) => `<div class="curr-item"><div class="curr-num">${i + 1}</div><div><div class="curr-t">${m.t}</div><div class="curr-s">${m.s}</div></div></div>`).join('') : `<div class="skeleton">Detailed curriculum will be added once official content is provided.</div>`;
   renderMentors(); renderFaq(); renderVariantUI(c);
   document.getElementById('dCart').onclick = () => addToCart(c);
-  document.getElementById('dEnroll').onclick = () => { if (addToCart(c)) location.hash = '#/checkout'; };
+  // If this detail view was reached via the Enroll & Refer page's own
+  // "Details" link (courses.html?from=enroll#/course/...), send "Enroll
+  // Now" back to that page's own enroll flow for this exact course,
+  // instead of the standard add-to-cart + checkout path.
+  const fromEnrollPage = new URLSearchParams(location.search).get('from') === 'enroll';
+  document.getElementById('dEnroll').onclick = fromEnrollPage
+    ? () => { window.location.href = 'enroll.html?course=' + encodeURIComponent(c.id); }
+    : () => { if (addToCart(c)) location.hash = '#/checkout'; };
   
   // Call to render Live Project domain details
   renderLiveProjectDomainCoverage(c);
@@ -758,7 +766,7 @@ function renderCheckout() {
       <div class="pay-opt sel" data-pay="upi"><i class="ti ti-qrcode"></i><div class="pay-opt-t">UPI / QR</div></div>
       <div class="pay-opt" data-pay="card"><i class="ti ti-credit-card"></i><div class="pay-opt-t">Credit / Debit card</div></div>
       <div class="pay-opt" data-pay="netbanking"><i class="ti ti-building-bank"></i><div class="pay-opt-t">Net banking</div></div>
-      <div class="pay-note">Payments are simulated — production routes through Wix Payments / Razorpay.</div>
+      <div class="pay-note">Payments are processed securely via Razorpay.</div>
     </div>
     <div class="co-panel group-panel"><h3><i class="ti ti-users"></i> Enroll with a friend — 30% off</h3>
       <p class="group-note">When 2 students join together, you <b>both</b> get 30% off. Add your friend's details to apply.</p>
@@ -814,7 +822,42 @@ function renderCheckout() {
     showToast('Group offer applied — you both get 30% off');
     renderCheckout();
   };
-  document.getElementById('payNow').onclick = () => { const n = (body.querySelector('input[placeholder="Ananya Sharma"]').value || '').trim(), e = (body.querySelector('input[type="email"]').value || '').trim(); if (!n || !e) { showToast('Please enter your name and email'); return; } openModal('paid', { total: grandTotal }); };
+  document.getElementById('payNow').onclick = async () => {
+    const n = (body.querySelector('input[placeholder="Ananya Sharma"]').value || '').trim();
+    const e = (body.querySelector('input[type="email"]').value || '').trim();
+    const ph = (body.querySelector('input[placeholder="+91 …"]').value || '').trim();
+    const col = (body.querySelector('input[placeholder="IIM …"]').value || '').trim();
+    if (!n || !e) { showToast('Please enter your name and email'); return; }
+    const payBtn = document.getElementById('payNow');
+    if (payBtn) payBtn.disabled = true;
+    try {
+      const checkoutPayload = {
+        Name: n,
+        Email: e,
+        Phone: ph,
+        College: col,
+        Items: cart.map(c => c.title).join(', '),
+        ItemIds: cart.map(c => c.id).join(', '),
+        Total: grandTotal,
+        Coupon: appliedCoupon ? appliedCoupon.code : ''
+      };
+      const orderData = await createRazorpayOrder(grandTotal, `order_${Date.now()}`, {
+        email: e,
+        name: n,
+        courseIds: cart.map(c => c.id).join(','),
+        coupon: appliedCoupon ? appliedCoupon.code : ''
+      });
+      await startRazorpayCheckout(orderData, checkoutPayload);
+      if (typeof DASH_DATA !== 'undefined') DASH_DATA = null;
+      openModal('paid', { total: grandTotal });
+    } catch (err) {
+      console.error('Checkout failed:', err);
+      showToast(err.message || 'Payment could not be completed. Please try again.');
+    } finally {
+      if (payBtn) payBtn.disabled = false;
+    }
+  };
+
 }
 
 /* ===== ROUTING ===== */

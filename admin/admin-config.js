@@ -229,7 +229,8 @@ const ADMIN_SECTIONS = [
       { name: 'ProgramCode', label: 'Program code (unique, no spaces)', type: 'text', required: true, col: true },
       { name: 'Type', label: 'Category label', type: 'text', col: true },
       { name: 'Title', label: 'Program title', type: 'text', col: true },
-      { name: 'Emoji', label: 'Emoji icon', type: 'text' }
+      { name: 'Emoji', label: 'Emoji icon', type: 'text' },
+      { name: 'StatType', label: 'Overview stats to show for this program', type: 'select', options: ['bootcamp', 'live', 'case', 'cert', 'gdpi', 'combo'], col: true }
     ]
   },
   {
@@ -273,7 +274,11 @@ const ADMIN_SECTIONS = [
       { name: 'PI_Done', label: 'Mock PIs done', type: 'number' },
       { name: 'PI_Total', label: 'Mock PIs included', type: 'number' },
       { name: 'GD_Done', label: 'GD rounds done', type: 'number' },
-      { name: 'GD_Total', label: 'GD rounds included', type: 'number' }
+      { name: 'GD_Total', label: 'GD rounds included', type: 'number' },
+      { name: 'Live_Project_Progress', label: 'Live project progress (%)', type: 'number' },
+      { name: 'Case_Done', label: 'Case comp rounds done', type: 'number' },
+      { name: 'Case_Total', label: 'Case comp rounds included', type: 'number' },
+      { name: 'Cert_Progress', label: 'Certificate course progress (%)', type: 'number' }
     ]
   },
   {

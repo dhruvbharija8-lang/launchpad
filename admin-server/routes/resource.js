@@ -143,4 +143,4 @@ const COLLECTIONS = [
   'catLeaderboard', 'catGdpi', 'catDomainQA', 'catMentors', 'catPricing'
 ];
 
-module.exports = { makePublicRouter, makePublicWriteRouter, makeAdminRouter, COLLECTIONS, ADMIN_ONLY, PUBLIC_WRITE_ONLY };
+module.exports = { makePublicRouter, makePublicWriteRouter, makeAdminRouter, COLLECTIONS, ADMIN_ONLY, PUBLIC_WRITE_ONLY, autoProvisionFromSubmission };

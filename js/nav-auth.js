@@ -157,12 +157,30 @@
 
     document.addEventListener('click', () => dropdown.classList.remove('open'));
 
-    signOutBtn.addEventListener('click', () => {
+    signOutBtn.addEventListener('click', async () => {
       try {
         localStorage.removeItem(SESSION_KEY);
         localStorage.removeItem(NAME_KEY);
         localStorage.removeItem(AVATAR_KEY);
       } catch(e) {}
+      // Clearing the local display state alone isn't a real sign-out — the
+      // actual Clerk session (used on login.html) stays active, so the
+      // next visit to Login silently logs the same account back in. Sign
+      // out of Clerk too, from wherever this dropdown happens to be. Give
+      // Clerk's async script a brief moment to finish loading if it hasn't
+      // already (it usually has, by the time someone clicks Sign Out).
+      let tries = 0;
+      while (!window.Clerk && tries < 20) { await new Promise(r => setTimeout(r, 100)); tries++; }
+      if (window.Clerk) {
+        // Clerk.user is only populated AFTER Clerk.load() resolves — on
+        // pages that never call it (this dropdown can appear on any page),
+        // Clerk.user looks empty even though the real session is still
+        // active, so the sign-out below would silently get skipped.
+        try { await Clerk.load(); } catch (e) {}
+        if (Clerk.user) {
+          try { await Clerk.signOut(); } catch (e) {}
+        }
+      }
       window.location.reload();
     });
   }

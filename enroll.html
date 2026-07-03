@@ -13,6 +13,13 @@
 <script src="js/nav-auth.js"></script>
 <script src="js/api-config.js"></script>
 <script src="js/site-settings.js"></script>
+<script
+  async
+  crossorigin="anonymous"
+  data-clerk-publishable-key="pk_test_bm92ZWwtbGlvbi05Mi5jbGVyay5hY2NvdW50cy5kZXYk"
+  src="https://novel-lion-92.clerk.accounts.dev/npm/@clerk/clerk-js@latest/dist/clerk.browser.js"
+  type="text/javascript"
+></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 :root{
@@ -816,7 +823,7 @@ function renderGrid(){
         ${c.groupOffer?`<div class="group-offer-tag" style="cursor:pointer" onclick="openEnroll('${c.id}', true)"><i class="ti ti-users"></i> Enroll with a friend — 30% off each</div>`:''}
         <div class="card-cta">
           <button class="btn-enroll" onclick="openEnroll('${c.id}')"><i class="ti ti-bolt"></i> Enroll Now</button>
-          <button class="btn-details" onclick="window.location.href='courses.html#/course/${c.id}'">Details</button>
+          <button class="btn-details" onclick="window.location.href='courses.html?from=enroll#/course/${c.id}'">Details</button>
         </div>
       </div>
     </div>`).join('');
@@ -831,6 +838,14 @@ document.querySelectorAll('.fchip').forEach(btn=>{
   };
 });
 renderGrid();
+
+// If we were sent here from a course's "Enroll Now" on its Details page
+// (courses.html?from=enroll), open the enroll modal for that exact course
+// automatically instead of making them find and click it again here.
+(function () {
+  const courseId = new URLSearchParams(location.search).get('course');
+  if (courseId) openEnroll(courseId);
+})();
 
 /* ── ENROLLMENT MODAL ── */
 let currentCourse=null,couponDiscount=0,appliedCode='',currentEnrollMode='solo';

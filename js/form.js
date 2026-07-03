@@ -151,9 +151,10 @@ function buildLocalView(a) {
   return {
     name: a.name || 'Student', email: a.email, role: 'Student',
     avatar: ((a.name || a.email || '?')[0] || '?').toUpperCase(),
-    courses: (a.courses || []).map(c => ({ type: c.type || 'Course', title: c.title, emoji: c.emoji || '📘', progress: 0, nextSession: 'Onboarding', nextDate: 'Soon' })),
+    courses: (a.courses || []).map(c => ({ type: c.type || 'Course', title: c.title, emoji: c.emoji || '📘', progress: 0, nextSession: 'Onboarding', nextDate: 'Soon', statType: c.statType || 'bootcamp' })),
     sessions: [], materials: [],
-    cvDone: 0, cvTotal: 5, piDone: 0, piTotal: 7, gdDone: 0, gdTotal: 7
+    cvDone: 0, cvTotal: 5, piDone: 0, piTotal: 7, gdDone: 0, gdTotal: 7, liveProgress: 0,
+    caseDone: 0, caseTotal: 3, certProgress: 0
   };
 }
 function enterDashboard(email) {
@@ -178,10 +179,17 @@ function blankStudentView(email, displayName) {
     name, email, role: 'Student',
     avatar: (name[0] || '?').toUpperCase(),
     courses: [], sessions: [], materials: [],
-    cvDone: 0, cvTotal: 5, piDone: 0, piTotal: 7, gdDone: 0, gdTotal: 7
+    cvDone: 0, cvTotal: 5, piDone: 0, piTotal: 7, gdDone: 0, gdTotal: 7, liveProgress: 0,
+    caseDone: 0, caseTotal: 3, certProgress: 0
   };
 }
 function enterDashboardOrWelcome(email, displayName) {
+  // If the visitor was sent here mid-task (e.g. clicked "Enroll Now" on a
+  // course while logged out), send them straight back to where they were
+  // instead of always landing on the dashboard — so they can pick up the
+  // purchase/enrollment they were trying to make.
+  const ret = window.MBAauth ? MBAauth.takeReturn() : '';
+
   // Real (Clerk-verified) logins always read from the admin-managed data
   // (Students/Enrollments/Programs) — never from the old local/demo
   // MBAauth accounts, even if a stale one happens to exist in this
@@ -191,6 +199,8 @@ function enterDashboardOrWelcome(email, displayName) {
   const view = buildStudentView(DASH_DATA, email);
   currentUser = view || blankStudentView(email, displayName);
   saveSession(email);
+
+  if (ret) { location.href = ret; return; }
   showDashboard();
 }
 
@@ -262,6 +272,60 @@ function initDashboard() {
   renderSessions('allSessions', u.sessions);
   renderMaterials(u.materials);
   renderProgress(u);
+  renderOverviewStats(u);
+}
+
+// Overview stat cards — these used to be 4 fixed, hardcoded dummy numbers
+// ("2/5", "4/7", "5/7", "68%") that showed the same thing to every student
+// regardless of what they'd actually bought. Now the set of cards shown is
+// driven by the category (statType, set on the admin's Dashboard Programs
+// entry) of whatever course(s) this specific student is enrolled in — e.g.
+// a Live Project student only sees "Live project progress", a Bootcamp
+// student sees CV/PI/GD, a student in a combo sees all of them.
+const OVERVIEW_STAT_DEFS = {
+  cv:   { ico: 'orange ti-file-cv',      label: 'CV Reviews done',       num: u => u.cvDone,       total: u => u.cvTotal },
+  pi:   { ico: 'navy ti-microphone-2',   label: 'Mock PIs completed',    num: u => u.piDone,       total: u => u.piTotal },
+  gd:   { ico: 'green ti-users',         label: 'GD rounds done',        num: u => u.gdDone,       total: u => u.gdTotal },
+  live: { ico: 'purple ti-briefcase',    label: 'Live project progress', num: u => u.liveProgress, suffix: '%' },
+  case: { ico: 'red ti-trophy',          label: 'Case rounds done',      num: u => u.caseDone,     total: u => u.caseTotal },
+  cert: { ico: 'teal ti-certificate',    label: 'Certificate progress',  num: u => u.certProgress, suffix: '%' }
+};
+const STAT_TYPE_TO_CARDS = {
+  bootcamp: ['cv', 'pi', 'gd'],
+  gdpi:     ['pi', 'gd'],
+  live:     ['live'],
+  case:     ['case'],
+  cert:     ['cert'],
+  combo:    ['cv', 'pi', 'gd', 'live']
+};
+const OVERVIEW_CARD_ORDER = ['cv', 'pi', 'gd', 'live', 'case', 'cert'];
+
+function renderOverviewStats(u) {
+  const row = document.getElementById('overviewStatsRow');
+  if (!row) return;
+
+  // Union of every card key relevant to any course this student owns.
+  // No courses yet (brand-new student) → fall back to the original
+  // generic CV/PI/GD/Live set so the dashboard doesn't look empty.
+  let keys;
+  if (u.courses && u.courses.length) {
+    const set = new Set();
+    u.courses.forEach(c => (STAT_TYPE_TO_CARDS[c.statType] || STAT_TYPE_TO_CARDS.bootcamp).forEach(k => set.add(k)));
+    keys = OVERVIEW_CARD_ORDER.filter(k => set.has(k));
+  } else {
+    keys = ['cv', 'pi', 'gd', 'live'];
+  }
+
+  row.innerHTML = keys.map(k => {
+    const d = OVERVIEW_STAT_DEFS[k];
+    const num = d.num(u) || 0;
+    const totalTxt = d.total ? '/' + d.total(u) : (d.suffix || '');
+    return `<div class="stat-card">
+      <div class="stat-card-top"><div class="stat-card-ico ${d.ico.split(' ')[0]}"><i class="ti ${d.ico.split(' ')[1]}"></i></div></div>
+      <div class="stat-num">${num}<span style="font-size:16px;color:var(--ink3)">${totalTxt}</span></div>
+      <div class="stat-lbl">${d.label}</div>
+    </div>`;
+  }).join('');
 }
 
 /* ---------- RENDERERS ---------- */

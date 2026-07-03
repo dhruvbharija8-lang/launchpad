@@ -215,7 +215,11 @@ function buildStudentView(data, email) {
     return {
       code: e.ProgramCode, type: p.Type || 'Program', title: p.Title || e.ProgramCode,
       emoji: p.Emoji || '📘', progress: _num(e.Progress),
-      nextSession: e.NextSession || 'TBA', nextDate: e.NextDate || ''
+      nextSession: e.NextSession || 'TBA', nextDate: e.NextDate || '',
+      // Which overview stat-cards are relevant for this specific program
+      // (admin-set on the Dashboard Programs entry) — drives the
+      // course-aware "Overview" stat row instead of one fixed set for everyone.
+      statType: p.StatType || 'bootcamp'
     };
   });
 
@@ -238,7 +242,10 @@ function buildStudentView(data, email) {
     courses, sessions, materials,
     cvDone: _num(s.CV_Done), cvTotal: _num(s.CV_Total) || 5,
     piDone: _num(s.PI_Done), piTotal: _num(s.PI_Total) || 7,
-    gdDone: _num(s.GD_Done), gdTotal: _num(s.GD_Total) || 7
+    gdDone: _num(s.GD_Done), gdTotal: _num(s.GD_Total) || 7,
+    liveProgress: _num(s.Live_Project_Progress),
+    caseDone: _num(s.Case_Done), caseTotal: _num(s.Case_Total) || 3,
+    certProgress: _num(s.Cert_Progress)
   };
 }
 

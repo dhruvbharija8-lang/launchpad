@@ -200,6 +200,13 @@ document.addEventListener('DOMContentLoaded',function(){
 <script src="js/nav-auth.js"></script>
 <script src="js/api-config.js"></script>
 <script src="js/site-settings.js"></script>
+<script
+  async
+  crossorigin="anonymous"
+  data-clerk-publishable-key="pk_test_bm92ZWwtbGlvbi05Mi5jbGVyay5hY2NvdW50cy5kZXYk"
+  src="https://novel-lion-92.clerk.accounts.dev/npm/@clerk/clerk-js@latest/dist/clerk.browser.js"
+  type="text/javascript"
+></script>
 </head>
 <body>
 <nav class="nav">
@@ -322,6 +329,18 @@ document.addEventListener('DOMContentLoaded',function(){
         <button class="sort-btn" id="sortBtn"><i class="ti ti-arrows-sort"></i>&nbsp;Sort: <span id="sortLabel">Most popular</span> <i class="ti ti-chevron-down caret"></i></button>
         <div class="sort-menu" id="sortMenu"></div>
       </div>
+    </div>
+  </div>
+  <div class="wrap">
+    <div id="groupPromoBannerWrap" style="display:flex;align-items:center;justify-content:space-between;gap:20px;background:#1B2A6B;border-radius:16px;padding:20px 24px;margin:0 0 24px;flex-wrap:wrap">
+      <div style="display:flex;align-items:center;gap:16px">
+        <i class="ti ti-users-group" style="font-size:26px;color:#FF8B02;flex:0 0 auto"></i>
+        <div>
+          <div style="color:#fff;font-weight:700;font-size:15.5px;font-family:'Inter',sans-serif">Enrol with a friend — you BOTH get 20% off</div>
+          <div style="color:rgba(255,255,255,.7);font-size:13px;font-family:'Inter',sans-serif;margin-top:2px">On Case Comps, Live Projects &amp; every program. Apply the offer at checkout.</div>
+        </div>
+      </div>
+      <button onclick="window.location.href='enroll.html'" style="background:#FF8B02;color:#fff;border:none;border-radius:10px;padding:11px 22px;font-weight:700;font-size:14px;font-family:'Inter',sans-serif;cursor:pointer;white-space:nowrap">Enrol now</button>
     </div>
   </div>
   <div class="wrap" id="catalogBody"></div>
@@ -491,6 +510,7 @@ document.addEventListener('DOMContentLoaded',function(){
 
   <script src="js/auth.js"></script>
   <script src="js/courses-dynamic.js"></script>
+  <script src="js/razorpay.js"></script>
   <script src="js/search.js"></script>
   <script src="js/chatbot-widget.js"></script>
 </body>
