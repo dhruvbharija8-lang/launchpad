@@ -182,8 +182,13 @@ function blankStudentView(email, displayName) {
   };
 }
 function enterDashboardOrWelcome(email, displayName) {
-  const acct = (window.MBAauth && MBAauth.findAccount) ? MBAauth.findAccount(email) : null;
-  const view = acct ? buildLocalView(acct) : buildStudentView(DASH_DATA, email);
+  // Real (Clerk-verified) logins always read from the admin-managed data
+  // (Students/Enrollments/Programs) — never from the old local/demo
+  // MBAauth accounts, even if a stale one happens to exist in this
+  // browser's localStorage from earlier testing (that data has no
+  // connection to any real purchase and would otherwise silently shadow
+  // it, always showing 0 courses regardless of what was actually bought).
+  const view = buildStudentView(DASH_DATA, email);
   currentUser = view || blankStudentView(email, displayName);
   saveSession(email);
   showDashboard();
