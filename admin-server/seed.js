@@ -37,7 +37,20 @@ const SETTINGS = {
   placementRate: '98.7%',
   campusesReached: '40+',
   reviewsCount: '700+',
-  iimCallsSecured: '500+'
+  iimCallsSecured: '500+',
+  // ----- Site-wide link destinations (edit here to update every button
+  // across the whole site that points to it — no code changes needed). -----
+  whatsappCommunity: 'https://chat.whatsapp.com/EdyvGJbQoV9Jj6eC0slSx9',
+  telegramCommunity: 'https://t.me/+IrnzgXdUKqsyOTZl',
+  freeResourcesHub: 'https://documents1.netlify.app/',
+  instagramUrl: 'https://documents1.netlify.app/?open=instagram',
+  linkedinUrl: 'https://documents1.netlify.app/?open=linkedin',
+  youtubeUrl: 'https://documents1.netlify.app/?open=youtube',
+  testimonialsExternalUrl: 'https://www.mbapartner.in/testimonials',
+  phone: '+91 70427 32092',
+  email: 'bharat.kapoor@prodmarkconsulting.in',
+  catWhatsappCommunity: '',
+  catTelegramCommunity: ''
 };
 
 const PLACEMENTS = [
@@ -233,7 +246,42 @@ const VIDEOS = [
 ];
 
 const GDPI = [
-  { Name: 'Sabeen', College: 'IIM Lucknow', Quote: 'Mock PIs made my final answers sharper and more confident.' }
+  { Name: 'Sabeen', College: 'IIM Lucknow', Quote: 'Mock PIs made my final answers sharper and more confident.' },
+  { Name: 'Aryan Vivian', College: 'NMIMS Mumbai', Quote: 'The GDPI prep gave me structure when I needed it most.' },
+  { Name: 'Abhishek Rohilla', College: 'IIM Kozhikode', Quote: 'Personal feedback helped me turn every mock into progress.' },
+  { Name: 'Divija Bansod', College: 'IIM Lucknow', Quote: 'Mentors helped me present my story with clarity.' },
+  { Name: 'Rupali Priyadarshini', College: 'IIM Indore', Quote: 'The practice panels made the real interview feel familiar.' },
+  { Name: 'Varun Gangurde', College: 'BITSOM', Quote: 'Focused prep and honest feedback improved my interview presence.' },
+  { Name: 'Prathamesh Mulay', College: 'NMIMS Mumbai', Quote: 'The structured mocks helped me walk in with real confidence.' },
+  { Name: 'Nikhil Jaiswal', College: 'JBIMS', Quote: 'The transcripts and mocks helped me prepare with direction.' },
+  { Name: 'Tamoghna Haldar', College: 'IIM Sambalpur', Quote: 'GD practice helped me speak with clarity and confidence.' },
+  { Name: 'Mrittika Mukhopadhyay', College: 'XIMB', Quote: 'The feedback sessions helped me find the right words.' },
+  { Name: 'Satakshi Singh', College: 'SSBF', Quote: 'I could feel the difference after every mock interview.' },
+  { Name: 'Shivadhwaj SR', College: 'IIM Shillong', Quote: 'MBA Partner helped me refine answers without sounding rehearsed.' },
+  { Name: 'Aastha Jain', College: 'IIM Shillong', Quote: 'The personalized feedback made my PI prep far more effective.' },
+  { Name: 'Romit Banerjee', College: 'GLIM Chennai', Quote: 'The mentor feedback made my interview prep much sharper.' },
+  { Name: 'Kushagra Barai', College: 'IIM Mumbai', Quote: 'I learnt how to connect my profile to every answer.' },
+  { Name: 'Soumojit Mondal', College: 'SCMHRD', Quote: 'Consistent mock practice helped me handle pressure with ease.' },
+  { Name: 'Nivedha', College: 'IIM Indore', Quote: 'The GDPI prep helped me convert my calls with confidence.' },
+  { Name: 'Dhamo Dharan', College: 'IIT Madras', Quote: 'Structured mocks helped me stay calm under pressure.' },
+  { Name: 'Sandeep', College: 'IIM Bangalore', Quote: 'Their GDPI guidance helped me bring out my best points.' },
+  { Name: 'Srishti Mittal', College: 'NMIMS Mumbai', Quote: 'The mock panels felt so real, the actual interview was easy.' },
+  { Name: 'Nishtha Arora', College: 'MICA', Quote: 'I gained clarity on how to structure my PI answers effectively.' },
+  { Name: 'Anmisha N', College: 'IIM Lucknow', Quote: 'The GDPI course helped me tell my story with confidence.' },
+  { Name: 'Pranav', College: 'FMS Delhi', Quote: 'Short, focused prep sessions made a big difference.' },
+  { Name: 'Priya Yadav', College: 'FMS Delhi', Quote: 'Mock GDs gave me the practice I needed to stand out.' },
+  { Name: 'Viresh Sawant', College: 'GLIM Chennai', Quote: 'The practice and feedback loop made all the difference.' },
+  { Name: 'Nishita Sihag', College: 'ISME', Quote: 'Every mock session helped me get sharper and more confident.' },
+  { Name: 'Gaurav Sarkar', College: 'IIM Kozhikode', Quote: 'The mock feedback helped me fix gaps before the final PI.' },
+  { Name: 'Rudra', College: 'IIM Trichy', Quote: 'I became more confident with every mock and review.' },
+  { Name: 'Dev Chauhan', College: 'IIM Ahmedabad', Quote: 'Mentors helped me build a crisp, convincing interview story.' },
+  { Name: 'Sanjana Rai', College: 'MDI Gurgaon', Quote: 'The GDPI course gave me clarity on what panels expect.' },
+  { Name: 'Ayan Murmu', College: 'IIM Calcutta', Quote: 'The answer frameworks helped me communicate with impact.' },
+  { Name: 'Medha Rajhans', College: 'IIM Nagpur', Quote: 'Mock interviews helped me identify and improve weak areas.' },
+  { Name: 'Yusuf Hasan', College: 'XLRI Jamshedpur', Quote: 'The practice made my PI answers more natural and precise.' },
+  { Name: 'Aastha Maurya', College: 'XLRI Jamshedpur', Quote: 'Mentor feedback helped me polish my WAT and PI approach.' },
+  { Name: 'Sankalp Annavarpu', College: 'FMS Delhi', Quote: 'The mocks gave me confidence to handle tough follow-ups.' },
+  { Name: 'Piyush Kumar Jha', College: 'IIM Mumbai', Quote: 'GDPI prep helped me convert preparation into confidence.' }
 ];
 
 // The "Free Session" YouTube cards — Persona picks which toggle (mba/cat)
@@ -410,6 +458,28 @@ function backfillMissingCollections() {
       console.log('Backfilled missing collection:', key);
     }
   });
+  // One-time upgrade: earlier deploys were seeded with only a single
+  // placeholder GDPI quote ("Sabeen"). If that's still all that's there
+  // (i.e. nobody has customised it via the admin dashboard yet), replace
+  // it with the full 35-student set. Never touches it if the admin has
+  // already added/edited entries themselves.
+  if (Array.isArray(data.gdpi) && data.gdpi.length === 1 && data.gdpi[0].Name === 'Sabeen') {
+    data.gdpi = withIds(GDPI);
+    changed = true;
+    console.log('Upgraded gdpi collection from placeholder to full sample set');
+  }
+  // The 'settings' singleton already existed on older installs, but the new
+  // site-wide link fields (whatsappCommunity, phone, email, etc.) were added
+  // later — merge in any of those that are missing without touching values
+  // the admin has already customised.
+  if (data.settings && typeof data.settings === 'object' && !Array.isArray(data.settings)) {
+    Object.keys(SETTINGS).forEach(key => {
+      if (!(key in data.settings)) {
+        data.settings[key] = SETTINGS[key];
+        changed = true;
+      }
+    });
+  }
   if (changed) db.writeAll(data);
 }
 

@@ -12,8 +12,9 @@ const ADMIN_SECTIONS = [
     idField: 'id',
     fields: [
       { name: 'id', label: 'Course ID (no spaces, used internally)', type: 'text', required: true },
+      { name: 'Track', label: 'Show on which toggle?', type: 'select', options: ['mba', 'cat'], col: true },
       { name: 'title', label: 'Title', type: 'text', required: true, col: true },
-      { name: 'cat', label: 'Category', type: 'select', options: ['combo', 'bootcamp', 'live', 'case', 'cert'], col: true },
+      { name: 'cat', label: 'Category', type: 'select', options: ['combo', 'bootcamp', 'live', 'case', 'cert', 'gdpi'], col: true },
       { name: 'type', label: 'Type label (shown on card)', type: 'text' },
       { name: 'price', label: 'Price (₹)', type: 'number', required: true, col: true },
       { name: 'mrp', label: 'MRP / struck-through price (₹, optional)', type: 'number' },
@@ -129,7 +130,7 @@ const ADMIN_SECTIONS = [
   },
   {
     key: 'settings', label: 'Homepage Stats', icon: 'ti-chart-bar', group: 'Site content', singleton: true,
-    desc: 'The trust numbers shown across the site (hero section, brochure, testimonials, etc.) — e.g. the "9.6/10" rating.',
+    desc: 'The trust numbers shown across the site (hero section, brochure, testimonials, etc.) — e.g. the "9.6/10" rating. Also includes site-wide link destinations (WhatsApp, Telegram, social, contact) — change one here and every button using it updates everywhere on the site.',
     fields: [
       { name: 'heroRating', label: 'Average rating (e.g. 9.6)', type: 'text' },
       { name: 'heroRatingScale', label: 'Rating scale label (e.g. /10)', type: 'text' },
@@ -137,13 +138,25 @@ const ADMIN_SECTIONS = [
       { name: 'placementRate', label: 'Placement rate (e.g. 98.7%)', type: 'text' },
       { name: 'campusesReached', label: 'Campuses reached (e.g. 40+)', type: 'text' },
       { name: 'reviewsCount', label: 'Reviews count (e.g. 700+)', type: 'text' },
-      { name: 'iimCallsSecured', label: 'IIM calls secured (e.g. 500+)', type: 'text' }
+      { name: 'iimCallsSecured', label: 'IIM calls secured (e.g. 500+)', type: 'text' },
+      { name: 'whatsappCommunity', label: 'WhatsApp Community URL (used across the whole site)', type: 'text' },
+      { name: 'telegramCommunity', label: 'Telegram Channel URL (used across the whole site)', type: 'text' },
+      { name: 'catWhatsappCommunity', label: 'CAT/OMETs WhatsApp Community URL (leave blank to reuse the main one)', type: 'text' },
+      { name: 'catTelegramCommunity', label: 'CAT/OMETs Telegram Community URL (leave blank to reuse the main one)', type: 'text' },
+      { name: 'freeResourcesHub', label: 'Free Resources / Compendium / Sample CV hub URL', type: 'text' },
+      { name: 'instagramUrl', label: 'Instagram URL', type: 'text' },
+      { name: 'linkedinUrl', label: 'LinkedIn URL', type: 'text' },
+      { name: 'youtubeUrl', label: 'YouTube URL', type: 'text' },
+      { name: 'testimonialsExternalUrl', label: 'External testimonials link (footer)', type: 'text' },
+      { name: 'phone', label: 'Contact phone number (e.g. +91 70427 32092)', type: 'text' },
+      { name: 'email', label: 'Contact email address', type: 'text' }
     ]
   },
   {
     key: 'placements', label: 'Placements Wall', icon: 'ti-trophy', group: 'Site content',
     desc: 'The placements wall on the Testimonials page.',
     fields: [
+      { name: 'Track', label: 'Show on which toggle?', type: 'select', options: ['mba', 'cat'], col: true },
       { name: 'Name', label: 'Student name', type: 'text', required: true, col: true },
       { name: 'College', label: 'College', type: 'text', col: true },
       { name: 'Company', label: 'Company', type: 'text', col: true },
@@ -171,6 +184,7 @@ const ADMIN_SECTIONS = [
     key: 'videos', label: 'Video Testimonials', icon: 'ti-video', group: 'Site content',
     desc: 'Video testimonials on the Testimonials page. Leave URL blank to show "coming soon".',
     fields: [
+      { name: 'Track', label: 'Show on which toggle?', type: 'select', options: ['mba', 'cat'], col: true },
       { name: 'Name', label: 'Student name', type: 'text', required: true, col: true },
       { name: 'College', label: 'College', type: 'text', col: true },
       { name: 'Company', label: 'Company (optional)', type: 'text' },

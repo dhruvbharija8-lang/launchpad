@@ -1,0 +1,780 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Presenza — Check in to the future of work</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<style>
+  :root{
+    --navy:#241638;
+    --navy-2:#2f1e49;
+    --purple-deep:#4a2f7a;
+    --purple:#8b5fbf;
+    --purple-light:#efe6fb;
+    --lavender:#ded1f2;
+    --lavender-card:#a888c9;
+    --lavender-card-2:#bda3d6;
+    --accent:#7c3fc4;
+    --accent-2:#9b5fe0;
+    --text-dark:#2c1a45;
+    --text-light:#f6f0ff;
+    --pink:#c98fd6;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  body{
+    font-family:'Inter', sans-serif;
+    background:var(--purple-light);
+    color:var(--text-dark);
+    overflow-x:hidden;
+  }
+  h1,h2,h3,h4{font-family:'Poppins', sans-serif;}
+  a{text-decoration:none; color:inherit;}
+  button{font-family:inherit; cursor:pointer; border:none;}
+
+  /* ===== decorative shapes ===== */
+  .shape{position:absolute; opacity:.14; pointer-events:none;}
+  .shape.circle{border-radius:50%; border:3px solid #fff;}
+  .shape.square{border:3px solid #fff; border-radius:8px;}
+
+  /* ===== NAV ===== */
+  .topnav{
+    display:flex; align-items:center; justify-content:space-between;
+    padding:18px 48px; background:var(--navy); color:#fff;
+    position:relative; z-index:20;
+  }
+  .brand{display:flex; align-items:center; gap:10px; font-weight:800; font-size:20px; letter-spacing:.5px;}
+  .brand-badge{
+    width:38px; height:38px; border-radius:50%; background:radial-gradient(circle at 35% 30%, #c9a6ea, #7c3fc4);
+    display:flex; align-items:center; justify-content:center; font-size:18px;
+  }
+  .nav-links{display:flex; gap:32px; font-weight:500; font-size:15px;}
+  .nav-links a{opacity:.85; transition:opacity .2s; cursor:pointer;}
+  .nav-links a:hover, .nav-links a.active{opacity:1; color:#d9b8ef;}
+  .nav-cta{
+    background:linear-gradient(135deg, var(--accent-2), var(--accent));
+    color:#fff; padding:10px 22px; border-radius:24px; font-weight:600; font-size:14px;
+    box-shadow:0 4px 14px rgba(124,63,196,.4);
+  }
+  .nav-cta:hover{opacity:.92;}
+
+  /* ===== PAGES ===== */
+  .page{display:none;}
+  .page.active{display:block; animation:fadein .35s ease;}
+  @keyframes fadein{from{opacity:0; transform:translateY(8px);} to{opacity:1; transform:translateY(0);}}
+
+  /* ===== HERO ===== */
+  .hero{
+    background:linear-gradient(120deg, var(--navy) 0%, var(--purple-deep) 55%, var(--purple-light) 55%);
+    padding:70px 48px 90px; display:flex; align-items:center; gap:40px; position:relative; overflow:hidden;
+    min-height:520px;
+  }
+  .hero-left{flex:1; max-width:560px; z-index:2;}
+  .hero-left h1{
+    font-size:44px; font-weight:800; line-height:1.15; color:#e9d8fa;
+    text-shadow:0 2px 12px rgba(0,0,0,.25);
+  }
+  .hero-left h1 .lit{color:#f3e9ff; -webkit-text-stroke:.3px #c9a6ea;}
+  .hero-left p{margin-top:20px; color:#d8c8ee; font-size:15.5px; line-height:1.6; max-width:480px;}
+  .hero-btns{margin-top:28px; display:flex; gap:16px;}
+  .btn-primary{
+    background:linear-gradient(135deg, var(--accent-2), var(--accent));
+    color:#fff; padding:13px 30px; border-radius:26px; font-weight:600; font-size:15px;
+    box-shadow:0 6px 18px rgba(124,63,196,.45);
+  }
+  .btn-primary:hover{transform:translateY(-1px);}
+  .btn-secondary{
+    background:rgba(255,255,255,.12); color:#f0e6fb; padding:13px 30px; border-radius:26px;
+    font-weight:600; font-size:15px; border:1.5px solid rgba(255,255,255,.35);
+  }
+  .btn-secondary:hover{background:rgba(255,255,255,.2);}
+  .hero-right{flex:1; display:flex; justify-content:center; align-items:center; z-index:2; position:relative;}
+  .phone-mock{
+    width:230px; height:460px; background:#1e1330; border-radius:38px; padding:14px;
+    box-shadow:0 25px 60px rgba(0,0,0,.4); border:6px solid #120a1e; position:relative;
+  }
+  .phone-screen{
+    width:100%; height:100%; background:linear-gradient(160deg,#f4edfb,#e3d3f5); border-radius:24px;
+    padding:16px; overflow:hidden; position:relative;
+  }
+  .phone-screen .status-card{
+    background:#fff; border-radius:14px; padding:10px 12px; margin-bottom:10px; box-shadow:0 4px 10px rgba(0,0,0,.08);
+  }
+  .phone-screen .status-card .label{font-size:10px; color:#8a7aa3; font-weight:600;}
+  .phone-screen .status-card .val{font-size:13px; font-weight:700; color:#3b2657; margin-top:2px;}
+  .phone-calendar{display:grid; grid-template-columns:repeat(5,1fr); gap:6px; margin-top:10px;}
+  .phone-calendar .cell{
+    background:#fff; border-radius:8px; height:34px; display:flex; align-items:center; justify-content:center;
+    font-size:11px; font-weight:700; color:#7c3fc4; box-shadow:0 2px 6px rgba(0,0,0,.06);
+  }
+  .phone-calendar .cell.active{background:var(--accent); color:#fff;}
+  .phone-bottom-btn{
+    position:absolute; bottom:14px; left:16px; right:16px; background:var(--accent); color:#fff;
+    text-align:center; padding:10px; border-radius:14px; font-size:12px; font-weight:700;
+  }
+
+  /* ===== SECTION: precision ===== */
+  .section{padding:70px 48px;}
+  .section-title{text-align:center; font-size:30px; font-weight:800; color:var(--purple-deep); margin-bottom:44px;}
+  .precision-section{background:var(--navy); position:relative; overflow:hidden;}
+  .precision-section .section-title{color:#e9d8fa;}
+  .grid-2x2{
+    display:grid; grid-template-columns:1fr 1fr; gap:24px; max-width:900px; margin:0 auto; position:relative; z-index:2;
+  }
+  .feature-card{
+    background:linear-gradient(160deg, var(--lavender-card-2), var(--lavender-card));
+    border-radius:20px; padding:26px 26px 22px; color:#fff;
+  }
+  .feature-card .ficon{
+    width:44px; height:44px; border-radius:12px; background:rgba(255,255,255,.22);
+    display:flex; align-items:center; justify-content:center; font-size:18px; margin-bottom:14px;
+  }
+  .feature-card h3{font-size:17px; margin-bottom:8px;}
+  .feature-card p{font-size:13.5px; line-height:1.55; opacity:.92;}
+
+  /* ===== how it works ===== */
+  .howitworks{background:var(--purple-light);}
+  .steps-grid{display:grid; grid-template-columns:repeat(4,1fr); gap:22px; max-width:1100px; margin:0 auto;}
+  .step-card{
+    background:linear-gradient(160deg, var(--lavender-card-2), var(--lavender-card));
+    border-radius:20px; padding:24px; color:#fff;
+  }
+  .step-card .sicon{
+    width:40px; height:40px; border-radius:50%; background:rgba(255,255,255,.25);
+    display:flex; align-items:center; justify-content:center; font-size:16px; margin-bottom:12px;
+  }
+  .step-card h4{font-size:15.5px; margin-bottom:8px;}
+  .step-card p{font-size:12.5px; line-height:1.5; opacity:.9;}
+
+  /* ===== dashboard preview ===== */
+  .dash-preview{background:var(--navy); position:relative;}
+  .dash-preview .section-title{color:#e9d8fa;}
+  .persona-grid{max-width:1100px; margin:0 auto; display:grid; grid-template-columns:1fr 1fr; gap:24px;}
+  .persona-card{
+    background:linear-gradient(160deg, var(--lavender-card-2), var(--lavender-card));
+    border-radius:20px; padding:22px; color:#fff; display:flex; gap:16px; align-items:flex-start;
+  }
+  .persona-card img{width:110px; height:80px; object-fit:cover; border-radius:12px; flex-shrink:0;}
+  .persona-card .picon{
+    width:38px; height:38px; border-radius:10px; background:rgba(255,255,255,.22); display:flex;
+    align-items:center; justify-content:center; margin-bottom:8px; font-size:15px;
+  }
+  .persona-card h4{font-size:16px; margin-bottom:6px;}
+  .persona-card p{font-size:12.5px; line-height:1.5; opacity:.92;}
+  .persona-card.full{grid-column:1/3;}
+
+  /* footer */
+  footer{background:var(--purple-deep); color:#eadffb; padding:36px 48px 24px;}
+  .footer-top{display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:20px;}
+  .footer-brand{display:flex; align-items:center; gap:10px; font-weight:800; font-size:18px;}
+  .footer-desc{max-width:340px; font-size:12.5px; opacity:.85; margin-top:10px; line-height:1.6;}
+  .footer-cols{display:flex; gap:60px;}
+  .footer-col a{display:block; font-size:13px; margin-bottom:10px; opacity:.9;}
+  .footer-social{display:flex; gap:14px; margin-top:14px;}
+  .footer-social i{opacity:.85;}
+  .footer-bottom{border-top:1px solid rgba(255,255,255,.15); margin-top:24px; padding-top:16px; font-size:11.5px; opacity:.7; text-align:center;}
+
+  /* ===== LOGIN PAGE ===== */
+  .login-wrap{display:flex; min-height:calc(100vh - 74px);}
+  .login-left{
+    flex:1; background:linear-gradient(160deg, var(--purple-light), #e3d3f5);
+    padding:60px; display:flex; flex-direction:column; justify-content:center; position:relative; overflow:hidden;
+  }
+  .login-left h1{font-size:34px; color:var(--purple-deep); font-weight:800; line-height:1.25; max-width:380px;}
+  .login-imgs{margin-top:36px; position:relative; height:260px;}
+  .login-imgs img{position:absolute; border-radius:16px; box-shadow:0 12px 30px rgba(60,20,90,.25); object-fit:cover;}
+  .login-imgs .img1{width:280px; height:190px; top:0; left:0; z-index:1;}
+  .login-imgs .img2{width:150px; height:110px; bottom:0; right:20px; z-index:2; border:4px solid #fff;}
+  .login-imgs .pin{
+    position:absolute; bottom:30px; left:210px; width:56px; height:56px; border-radius:50%;
+    background:var(--accent); display:flex; align-items:center; justify-content:center; color:#fff; font-size:22px;
+    box-shadow:0 8px 18px rgba(124,63,196,.5); z-index:3; border:4px solid #fff;
+  }
+  .login-right{
+    flex:1; background:var(--navy); display:flex; flex-direction:column; justify-content:center; padding:60px;
+    position:relative; overflow:hidden;
+  }
+  .login-form{max-width:340px; margin:0 auto; width:100%; position:relative; z-index:2;}
+  .login-form h2{color:#fff; font-size:26px; margin-bottom:24px;}
+  .login-form input{
+    width:100%; padding:14px 18px; border-radius:24px; border:none; background:rgba(255,255,255,.9);
+    margin-bottom:16px; font-size:14px; color:#3b2657;
+  }
+  .login-form input::placeholder{color:#8a7aa3;}
+  .btn-login{
+    width:100%; padding:14px; border-radius:24px; background:linear-gradient(135deg, var(--accent-2), var(--accent));
+    color:#fff; font-weight:700; font-size:15px; margin-top:6px; box-shadow:0 6px 18px rgba(124,63,196,.45);
+  }
+  .login-links{display:flex; justify-content:center; margin:14px 0; font-size:12.5px;}
+  .login-links a{color:#c9a6ea;}
+  .btn-google{
+    width:100%; padding:12px; border-radius:24px; background:#fff; color:#3b2657; font-weight:600; font-size:14px;
+    display:flex; align-items:center; justify-content:center; gap:10px; margin-bottom:12px;
+  }
+  .btn-create{
+    width:100%; padding:12px; border-radius:24px; background:transparent; color:#e9d8fa; font-weight:600;
+    font-size:14px; border:1.5px solid rgba(255,255,255,.3);
+  }
+
+  /* ===== DASHBOARD SHELL ===== */
+  .dash-header{
+    background:var(--navy); color:#fff; padding:18px 40px; display:flex; align-items:center;
+    justify-content:space-between; position:relative; z-index:5;
+  }
+  .dash-header .dbrand{display:flex; align-items:center; gap:12px; font-size:22px; font-weight:800;}
+  .dash-title{font-size:26px; font-weight:800; margin-left:8px;}
+  .dash-avatar{width:38px; height:38px; border-radius:50%; background:#fff;}
+  .dash-tabs{
+    background:var(--purple-deep); display:flex; gap:6px; padding:0 40px; overflow-x:auto;
+  }
+  .dash-tabs button{
+    background:transparent; color:#e5d5f7; padding:14px 18px; font-size:13.5px; font-weight:600;
+    border-bottom:3px solid transparent; white-space:nowrap;
+  }
+  .dash-tabs button.active{color:#fff; border-bottom-color:#fff; background:rgba(255,255,255,.06);}
+  .dash-body{background:var(--purple-light); min-height:640px; padding:34px 40px;}
+  .dash-view{display:none;}
+  .dash-view.active{display:block; animation:fadein .3s ease;}
+
+  .greet{font-size:22px; font-weight:700; color:var(--accent); margin-bottom:20px;}
+  .stat-row{display:grid; grid-template-columns:repeat(4,1fr); gap:20px; margin-bottom:26px;}
+  .stat-card{
+    background:#a888c9; border-radius:16px; padding:20px; color:#fff; display:flex; flex-direction:column; gap:8px;
+  }
+  .stat-card .snum{font-size:26px; font-weight:800;}
+  .stat-card .slabel{font-size:12.5px; opacity:.9; display:flex; align-items:center; gap:6px;}
+  .card-panel{background:#c1a9db; border-radius:18px; padding:24px;}
+  .card-panel h3{color:var(--accent); font-size:18px; margin-bottom:16px;}
+  .activity-item{
+    background:rgba(255,255,255,.35); border-radius:12px; padding:12px 16px; display:flex;
+    justify-content:space-between; align-items:center; margin-bottom:10px; font-size:13.5px; color:#3b2657;
+  }
+  .activity-item .time{font-size:11.5px; color:#5c4472; opacity:.8;}
+
+  .form-grid{display:grid; grid-template-columns:1fr 1fr; gap:18px; background:#c1a9db; border-radius:20px; padding:28px;}
+  .form-field label{display:block; font-size:13px; font-weight:600; color:#3b2657; margin-bottom:6px;}
+  .form-field input, .form-field select{
+    width:100%; padding:12px 16px; border-radius:12px; border:none; background:#f0e6fb; font-size:13.5px; color:#3b2657;
+  }
+  .plan-row{grid-column:1/3; margin-top:8px;}
+  .plan-row h3{color:#3b2657; font-size:16px; margin-bottom:14px;}
+  .plans{display:flex; gap:16px;}
+  .plan-box{
+    flex:1; background:#8b5fbf; border-radius:14px; padding:18px; text-align:center; color:#fff; font-weight:700;
+    position:relative; cursor:pointer;
+  }
+  .plan-box.current{background:var(--accent);}
+  .plan-box .tag{
+    position:absolute; top:-10px; left:50%; transform:translateX(-50%); background:#fff; color:var(--accent);
+    font-size:10px; padding:2px 10px; border-radius:10px; font-weight:700;
+  }
+  .plan-box small{display:block; font-weight:400; font-size:11px; margin-top:4px; opacity:.9;}
+
+  .codes-row{display:grid; grid-template-columns:1fr 1fr; gap:20px; margin-bottom:24px;}
+  .code-card{background:#c1a9db; border-radius:16px; padding:22px; text-align:center;}
+  .code-card h4{color:#3b2657; font-size:14px; margin-bottom:10px;}
+  .code-card .codeval{font-size:19px; font-weight:800; color:var(--accent); letter-spacing:.5px; margin-bottom:12px;}
+  .code-card button{background:var(--accent); color:#fff; padding:8px 20px; border-radius:16px; font-size:12.5px; font-weight:600;}
+
+  .zone-grid{display:grid; grid-template-columns:1fr 1fr; gap:18px;}
+  .zone-card{background:#c1a9db; border-radius:16px; padding:20px; color:#3b2657;}
+  .zone-card h4{font-weight:700; margin-bottom:8px;}
+  .zone-card .zline{font-size:12.5px; margin-bottom:4px; opacity:.85;}
+  .add-btn{
+    background:var(--accent); color:#fff; padding:10px 22px; border-radius:20px; font-size:13px; font-weight:600;
+    display:inline-flex; align-items:center; gap:6px; margin-top:16px; float:right;
+  }
+
+  table{width:100%; border-collapse:collapse; background:#c1a9db; border-radius:16px; overflow:hidden;}
+  thead tr{background:#8b5fbf;}
+  th{color:#fff; text-align:left; padding:14px 16px; font-size:12.5px; font-weight:700;}
+  td{padding:13px 16px; font-size:13px; color:#3b2657; border-top:1px solid rgba(255,255,255,.3);}
+  tr:hover td{background:rgba(255,255,255,.15);}
+  .status-pill{padding:3px 12px; border-radius:12px; font-size:11px; font-weight:700;}
+  .status-pill.active{background:#3fae5c; color:#fff;}
+  .status-pill.inactive{background:#c25a5a; color:#fff;}
+  .icon-btn{width:28px; height:28px; border-radius:8px; display:inline-flex; align-items:center; justify-content:center; margin-right:6px; color:#fff; font-size:12px;}
+  .icon-btn.edit{background:#7c3fc4;}
+  .icon-btn.del{background:#c0435a;}
+
+  .empty-panel{background:#c1a9db; border-radius:18px; min-height:260px; display:flex; align-items:center; justify-content:center; color:#5c4472; font-size:14px; opacity:.8;}
+
+  .toolbar{display:flex; gap:14px; align-items:center; margin-bottom:18px;}
+  .toolbar input, .toolbar select{padding:9px 14px; border-radius:10px; border:none; background:#c1a9db; color:#3b2657; font-size:12.5px;}
+  .toolbar button{background:var(--accent); color:#fff; padding:9px 18px; border-radius:10px; font-size:12.5px; font-weight:600; display:flex; align-items:center; gap:6px;}
+
+  .req-card{background:#a888c9; border-radius:16px; padding:18px 20px; margin-bottom:14px; color:#fff;}
+  .req-card.rejected{opacity:.6;}
+  .req-top{display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;}
+  .req-name{font-weight:700; font-size:15px;}
+  .req-sub{font-size:11.5px; opacity:.8;}
+  .req-pill{padding:3px 12px; border-radius:12px; font-size:10.5px; font-weight:700;}
+  .req-pill.pending{background:#e0a83a;}
+  .req-pill.rejected{background:#c0435a;}
+  .device-row{display:flex; gap:30px; font-size:12.5px; margin-bottom:8px;}
+  .device-row span b{opacity:.85; font-weight:600;}
+  .req-reason{font-size:12px; opacity:.85; margin-bottom:10px;}
+  .req-actions{display:flex; gap:10px;}
+  .req-actions button{padding:7px 20px; border-radius:14px; font-size:12px; font-weight:700; color:#fff;}
+  .btn-accept{background:#3fae5c;}
+  .btn-reject{background:#c0435a;}
+  .req-time{font-size:11px; opacity:.75;}
+
+  @media(max-width:900px){
+    .hero{flex-direction:column; padding:50px 24px;}
+    .grid-2x2, .steps-grid, .persona-grid, .form-grid, .codes-row, .zone-grid, .stat-row{grid-template-columns:1fr 1fr;}
+    .login-wrap{flex-direction:column;}
+    .nav-links{display:none;}
+  }
+</style>
+</head>
+<body>
+
+<!-- ================= TOP NAV ================= -->
+<nav class="topnav">
+  <div class="brand">
+    <div class="brand-badge">🎈</div> PRESENZA
+  </div>
+  <div class="nav-links">
+    <a onclick="showPage('landing')" class="active">Home</a>
+    <a onclick="showPage('landing')">Features</a>
+    <a onclick="showPage('landing')">How it works</a>
+    <a onclick="showPage('landing')">Roles</a>
+    <a onclick="showPage('landing')">About Us</a>
+  </div>
+  <div class="nav-cta" onclick="showPage('login')">Get Started</div>
+</nav>
+
+<!-- ================= LANDING PAGE ================= -->
+<div class="page active" id="page-landing">
+
+  <section class="hero">
+    <div class="shape circle" style="width:60px;height:60px; top:30px; left:20%;"></div>
+    <div class="shape square" style="width:40px;height:40px; top:120px; left:10%; transform:rotate(20deg);"></div>
+    <div class="shape circle" style="width:90px;height:90px; bottom:20px; left:35%;"></div>
+    <div class="hero-left">
+      <h1>ATTENDANCE BY <span class="lit">PRECISION</span> NOT <span class="lit">TRUST</span></h1>
+      <p>Combines GPS geofencing with WiFi BSSID dual-verification to make attendance fraud impossible and management completely effortless.</p>
+      <div class="hero-btns">
+        <button class="btn-primary" onclick="showPage('login')">Login</button>
+        <button class="btn-secondary" onclick="showPage('login')">Signup</button>
+      </div>
+    </div>
+    <div class="hero-right">
+      <div class="phone-mock">
+        <div class="phone-screen">
+          <div class="status-card"><div class="label">GOOD MORNING,</div><div class="val">ALISA</div></div>
+          <div class="status-card"><div class="label">Status</div><div class="val">✅ Checked In — Room 101</div></div>
+          <div class="phone-calendar">
+            <div class="cell">M</div><div class="cell active">T</div><div class="cell">W</div><div class="cell">T</div><div class="cell">F</div>
+            <div class="cell">12</div><div class="cell active">13</div><div class="cell">14</div><div class="cell">15</div><div class="cell">16</div>
+          </div>
+          <div class="phone-bottom-btn">CHECK IN NOW</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section precision-section">
+    <div class="shape circle" style="width:80px;height:80px; top:20px; right:10%;"></div>
+    <h2 class="section-title">BUILT ON PRECISION</h2>
+    <div class="grid-2x2">
+      <div class="feature-card">
+        <div class="ficon"><i class="fa-solid fa-shield-halved"></i></div>
+        <h3>Spoof-Proof Verification</h3>
+        <p>Uses a smart two-layered system, GPS geofencing combined with workplace WiFi (BSSID), to completely eliminate fake or proxy attendance.</p>
+      </div>
+      <div class="feature-card">
+        <div class="ficon"><i class="fa-solid fa-bolt"></i></div>
+        <h3>Zero-Friction Onboarding</h3>
+        <p>Organizations can instantly invite admin and members using unique join codes, removing the need for manual setup or data entry.</p>
+      </div>
+      <div class="feature-card">
+        <div class="ficon"><i class="fa-solid fa-diagram-project"></i></div>
+        <h3>Automated Admin Workflows</h3>
+        <p>Seamlessly connects the dots by automatically updating daily attendance records whenever a leave request is approved by the admin.</p>
+      </div>
+      <div class="feature-card">
+        <div class="ficon"><i class="fa-solid fa-gauge-high"></i></div>
+        <h3>Unified Role-Based Dashboards</h3>
+        <p>One single platform that provides a custom, dedicated dashboard for everyone: the Organization, the Admin, and the Employee/Student.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section howitworks">
+    <h2 class="section-title">HOW IT WORKS?</h2>
+    <div class="steps-grid">
+      <div class="step-card">
+        <div class="sicon"><i class="fa-solid fa-plus"></i></div>
+        <h4>Create Your Workspace</h4>
+        <p>The organization signs up and instantly receives unique join codes. There is no need for complex setup or manual data entry.</p>
+      </div>
+      <div class="step-card">
+        <div class="sicon"><i class="fa-solid fa-user-plus"></i></div>
+        <h4>Join The Platform</h4>
+        <p>Admins and members simply enter their join code to access their personalized dashboard. The system automatically gives them the correct role.</p>
+      </div>
+      <div class="step-card">
+        <div class="sicon"><i class="fa-solid fa-shield-check"></i></div>
+        <h4>Secure Check In</h4>
+        <p>Users mark their attendance straight from their phones. The system uses GPS location and workplace WiFi to verify physical presence with complete accuracy.</p>
+      </div>
+      <div class="step-card">
+        <div class="sicon"><i class="fa-solid fa-gears"></i></div>
+        <h4>Automated Management</h4>
+        <p>Leave requests and shift rosters are handled automatically. When an admin approves a leave request the main attendance record updates instantly.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section dash-preview">
+    <h2 class="section-title">A PERFECT DASHBOARD FOR EVERYONE</h2>
+    <div class="persona-grid">
+      <div class="persona-card full">
+        <div style="flex:1;">
+          <div class="picon"><i class="fa-solid fa-building"></i></div>
+          <h4>Organization</h4>
+          <p>Bird's-eye view across all branches. Compliance metrics, location maps, and department-level insights at a glance.</p>
+        </div>
+        <img src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=300&h=200&fit=crop" alt="org">
+      </div>
+      <div class="persona-card">
+        <div>
+          <div class="picon"><i class="fa-solid fa-user-tie"></i></div>
+          <h4>Manager</h4>
+          <p>Manage employees, configure geofences and BSSID zones, review geofence alerts, and generate attendance reports.</p>
+        </div>
+      </div>
+      <div class="persona-card">
+        <div>
+          <div class="picon"><i class="fa-solid fa-users"></i></div>
+          <h4>Employee / Student</h4>
+          <p>Check in with one tap, view your attendance history, track your GPS and WiFi verification status in real time.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <div class="footer-top">
+      <div>
+        <div class="footer-brand"><div class="brand-badge">🎈</div> PRESENZA</div>
+        <p class="footer-desc">A smart attendance and HR management system for modern workplaces and campuses. We verify physical presence using GPS and WiFi to completely eliminate fake check-ins.</p>
+        <div class="footer-social">
+          <i class="fa-brands fa-instagram"></i><i class="fa-brands fa-facebook"></i><i class="fa-brands fa-x-twitter"></i><i class="fa-brands fa-linkedin"></i><i class="fa-solid fa-envelope"></i>
+        </div>
+      </div>
+      <div class="footer-cols">
+        <div class="footer-col">
+          <a>Home</a><a>Features</a><a>How it Works</a><a>Roles</a>
+        </div>
+        <div class="footer-col">
+          <a>Employee / Student</a><a>Manager</a><a>Organization</a>
+        </div>
+        <div class="footer-col">
+          <a>Contacts</a><a>Terms or Services</a><a>Privacy Policy</a>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">© 2026 Presenza. All rights reserved.</div>
+  </footer>
+</div>
+
+<!-- ================= LOGIN PAGE ================= -->
+<div class="page" id="page-login">
+  <div class="login-wrap">
+    <div class="login-left">
+      <div class="shape circle" style="width:60px;height:60px; top:20px; right:15%; border-color:#7c3fc4;"></div>
+      <h1>Check in to the future of work.</h1>
+      <div class="login-imgs">
+        <img class="img1" src="https://images.unsplash.com/photo-1600880292203-757bb62b4baf?w=400&h=280&fit=crop" alt="office">
+        <img class="img2" src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=250&h=180&fit=crop" alt="students">
+        <div class="pin"><i class="fa-solid fa-location-dot"></i></div>
+      </div>
+    </div>
+    <div class="login-right">
+      <div class="shape circle" style="width:70px;height:70px; top:10%; right:10%;"></div>
+      <div class="login-form">
+        <h2>Log into Presenza</h2>
+        <input type="text" placeholder="UserId or Email Address">
+        <input type="password" placeholder="Password">
+        <button class="btn-login" onclick="showPage('org-dash')">Log In</button>
+        <div class="login-links"><a href="#">Forgot password?</a></div>
+        <button class="btn-google"><i class="fa-brands fa-google" style="color:#DB4437;"></i> Log In with Google</button>
+        <button class="btn-create">Create new account</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ================= ORGANIZATION DASHBOARD ================= -->
+<div class="page" id="page-org-dash">
+  <div class="dash-header">
+    <div class="dbrand"><div class="brand-badge">🎈</div><span class="dash-title">Organization</span></div>
+    <div style="display:flex; align-items:center; gap:16px;">
+      <button onclick="showPage('mgr-dash')" style="background:rgba(255,255,255,.15); color:#fff; padding:8px 16px; border-radius:16px; font-size:12.5px;">Switch to Manager view</button>
+      <div class="dash-avatar"></div>
+    </div>
+  </div>
+  <div class="dash-tabs">
+    <button class="active" onclick="showOrgView('overview', this)">Overview</button>
+    <button onclick="showOrgView('setup', this)">Organisation Setup</button>
+    <button onclick="showOrgView('codes', this)">Join codes</button>
+    <button onclick="showOrgView('geofencing', this)">Geofencing</button>
+    <button onclick="showOrgView('wifi', this)">Wifi / BSSID</button>
+    <button onclick="showOrgView('members', this)">Members</button>
+    <button onclick="showOrgView('team', this)">Team Management</button>
+  </div>
+  <div class="dash-body">
+
+    <!-- Overview -->
+    <div class="dash-view active" id="org-overview">
+      <div class="greet">Hey ABC!</div>
+      <div class="stat-row">
+        <div class="stat-card"><div class="snum">47</div><div class="slabel"><i class="fa-solid fa-chart-line"></i> Total members</div></div>
+        <div class="stat-card"><div class="snum">8</div><div class="slabel"><i class="fa-solid fa-person-walking"></i> Active Zones</div></div>
+        <div class="stat-card"><div class="snum">12</div><div class="slabel"><i class="fa-solid fa-wifi"></i> Wifi routers</div></div>
+        <div class="stat-card"><div class="snum">2</div><div class="slabel"><i class="fa-solid fa-fire"></i> Active join codes</div></div>
+      </div>
+      <div class="card-panel">
+        <h3>Recent activity</h3>
+        <div class="activity-item"><span>Rahul Sharma joined as Employee using member code</span><span class="time">2 min ago</span></div>
+        <div class="activity-item"><span>WiFi Router BSSID registered for Zone "Room 204"</span><span class="time">15 min ago</span></div>
+        <div class="activity-item"><span>Geofence updated for Site "Main Campus"</span><span class="time">1 hr ago</span></div>
+        <div class="activity-item"><span>Admin Join Code regenerated successfully</span><span class="time">15 hr ago</span></div>
+        <div class="activity-item"><span>Priya Verma joined as Admin using admin code</span><span class="time">1 day ago</span></div>
+        <div class="activity-item"><span>Admin Join Code regenerated successfully</span><span class="time">3 days ago</span></div>
+      </div>
+    </div>
+
+    <!-- Organisation Setup -->
+    <div class="dash-view" id="org-setup">
+      <div class="form-grid">
+        <div class="form-field"><label>Organization Name</label><input placeholder="ABC Institute"></div>
+        <div class="form-field"><label>Domain Type</label><input placeholder="Education"></div>
+        <div class="form-field"><label>Email Address</label><input placeholder="admin@abc.edu"></div>
+        <div class="form-field"><label>Timezone</label><input placeholder="GMT +5:30"></div>
+        <div class="plan-row">
+          <h3>Subscription Plan</h3>
+          <div class="plans">
+            <div class="plan-box">FREE<small>upto 25 members</small></div>
+            <div class="plan-box current"><span class="tag">current</span>STANDARD<small>upto 200 members</small></div>
+            <div class="plan-box">ENTERPRISE<small>upto 1000 members</small></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Join Codes -->
+    <div class="dash-view" id="org-codes">
+      <div class="codes-row">
+        <div class="code-card"><h4>Manager</h4><div class="codeval">PRZ-ADM-R6MV</div><button>regenerate</button></div>
+        <div class="code-card"><h4>Employee</h4><div class="codeval">PRZ-MEM-4T2W</div><button>regenerate</button></div>
+      </div>
+      <div class="form-grid" style="grid-template-columns:1fr 1fr;">
+        <div class="form-field"><label>Code Expiry</label><select><option>Never</option><option>7 days</option><option>30 days</option></select></div>
+        <div class="form-field"><label>Max Uses</label><select><option>Unlimited</option><option>10</option><option>50</option></select></div>
+      </div>
+    </div>
+
+    <!-- Geofencing -->
+    <div class="dash-view" id="org-geofencing">
+      <div class="zone-grid">
+        <div class="zone-card"><h4>Room 101</h4><div class="zline">30.7413°N, 76.7684°E</div><div class="zline">Radius: 25m</div><div class="zline">Floor 1 - Main Campus</div><div class="zline">Verification: WiFi BSSID + GPS</div></div>
+        <div class="zone-card"><h4>Room 101</h4><div class="zline">30.7413°N, 76.7684°E</div><div class="zline">Radius: 25m</div><div class="zline">Floor 1 - Main Campus</div><div class="zline">Verification: WiFi BSSID + GPS</div></div>
+        <div class="zone-card"><h4>Room 101</h4><div class="zline">30.7413°N, 76.7684°E</div><div class="zline">Radius: 25m</div><div class="zline">Floor 1 - Main Campus</div><div class="zline">Verification: WiFi BSSID + GPS</div></div>
+        <div class="zone-card"><h4>Room 101</h4><div class="zline">30.7413°N, 76.7684°E</div><div class="zline">Radius: 25m</div><div class="zline">Floor 1 - Main Campus</div><div class="zline">Verification: WiFi BSSID + GPS</div></div>
+      </div>
+      <button class="add-btn"><i class="fa-solid fa-plus"></i> Add zone</button>
+    </div>
+
+    <!-- Wifi/BSSID -->
+    <div class="dash-view" id="org-wifi">
+      <table>
+        <thead><tr><th>Zone</th><th>SSID</th><th>BSSID</th><th>Registerd By</th><th>Status</th><th>Actions</th></tr></thead>
+        <tbody>
+          <tr><td>Room 101</td><td>Campus 5G</td><td>A1:B2:C3:D4:E5:F6</td><td>Priya Sharma</td><td><span class="status-pill active">Active</span></td><td><span class="icon-btn edit"><i class="fa-solid fa-pen"></i></span><span class="icon-btn del"><i class="fa-solid fa-trash"></i></span></td></tr>
+          <tr><td>Room 201</td><td>Campus 5G</td><td>F6:E5:D4:C3:B2:A1</td><td>Priya Sharma</td><td><span class="status-pill active">Active</span></td><td><span class="icon-btn edit"><i class="fa-solid fa-pen"></i></span><span class="icon-btn del"><i class="fa-solid fa-trash"></i></span></td></tr>
+          <tr><td>Room 101</td><td>ABC</td><td>B2:C3:D4:E5:F6:A1</td><td>Sujata Singh</td><td><span class="status-pill active">Active</span></td><td><span class="icon-btn edit"><i class="fa-solid fa-pen"></i></span><span class="icon-btn del"><i class="fa-solid fa-trash"></i></span></td></tr>
+          <tr><td>Lab A</td><td>XYZ</td><td>C3:D4:E5:F6:A1:B2</td><td>Nirmala Sitharaman</td><td><span class="status-pill active">Active</span></td><td><span class="icon-btn edit"><i class="fa-solid fa-pen"></i></span><span class="icon-btn del"><i class="fa-solid fa-trash"></i></span></td></tr>
+        </tbody>
+      </table>
+      <button class="add-btn"><i class="fa-solid fa-plus"></i> Add router</button>
+    </div>
+
+    <!-- Members -->
+    <div class="dash-view" id="org-members">
+      <table>
+        <thead><tr><th>Name</th><th>Email Address</th><th>Joined Via</th><th>Status</th><th>Role</th></tr></thead>
+        <tbody>
+          <tr><td>Rahul</td><td>Rahul@abc.edu</td><td>PRZ-ADM-442W</td><td><span class="status-pill active">Active</span></td><td>Professor</td></tr>
+          <tr><td>Sandhya</td><td>Sandhya@abc.edu</td><td>PRZ-MEM-4T2W</td><td><span class="status-pill active">Active</span></td><td>Student</td></tr>
+          <tr><td>Shreya</td><td>Shreya@abc.edu</td><td>PRZ-MEM-4T2W</td><td><span class="status-pill active">Active</span></td><td>Student</td></tr>
+          <tr><td>Asha</td><td>Asha@abc.edu</td><td>PRZ-MEM-4T2W</td><td><span class="status-pill inactive">Inactive</span></td><td>Student</td></tr>
+          <tr><td>Sardarji</td><td>Sardarji@abc.edu</td><td>PRZ-MEM-X45F</td><td><span class="status-pill active">Active</span></td><td>Student</td></tr>
+          <tr><td>Bholi</td><td>Bholi@abc.edu</td><td>PRZ-ADM-X55F</td><td><span class="status-pill inactive">Inactive</span></td><td>Student</td></tr>
+          <tr><td>Siya</td><td>Siya@abc.edu</td><td>PRZ-MEM-X45F</td><td><span class="status-pill active">Active</span></td><td>Student</td></tr>
+          <tr><td>Disha</td><td>Disha@abc.edu</td><td>PRZ-MEM-X45F</td><td><span class="status-pill active">Active</span></td><td>Professor</td></tr>
+        </tbody>
+      </table>
+      <button class="add-btn"><i class="fa-solid fa-plus"></i> Add member</button>
+    </div>
+
+    <!-- Team Management -->
+    <div class="dash-view" id="org-team">
+      <div class="empty-panel">No team management data yet — click "Add member" to get started.</div>
+      <button class="add-btn"><i class="fa-solid fa-plus"></i> Add member</button>
+    </div>
+
+  </div>
+</div>
+
+<!-- ================= MANAGER DASHBOARD ================= -->
+<div class="page" id="page-mgr-dash">
+  <div class="dash-header">
+    <div class="dbrand"><div class="brand-badge">🎈</div><span class="dash-title">Manager</span></div>
+    <div style="display:flex; align-items:center; gap:16px;">
+      <button onclick="showPage('org-dash')" style="background:rgba(255,255,255,.15); color:#fff; padding:8px 16px; border-radius:16px; font-size:12.5px;">Switch to Organization view</button>
+      <div class="dash-avatar"></div>
+    </div>
+  </div>
+  <div class="dash-tabs">
+    <button class="active" onclick="showMgrView('overview', this)">Overview</button>
+    <button onclick="showMgrView('shifts', this)">Shifts &amp; Timetable</button>
+    <button onclick="showMgrView('attendance', this)">Attendance</button>
+    <button onclick="showMgrView('leave', this)">Leave Request</button>
+    <button onclick="showMgrView('tickets', this)">Tickets</button>
+    <button onclick="showMgrView('members', this)">Members</button>
+    <button onclick="showMgrView('team', this)">Team</button>
+  </div>
+  <div class="dash-body">
+
+    <!-- Overview -->
+    <div class="dash-view active" id="mgr-overview">
+      <div class="greet">Hey ABC!</div>
+      <div class="stat-row">
+        <div class="stat-card"><div class="snum">47</div><div class="slabel"><i class="fa-solid fa-user-check"></i> Present Today</div></div>
+        <div class="stat-card"><div class="snum">8</div><div class="slabel"><i class="fa-solid fa-clock"></i> Late Today</div></div>
+        <div class="stat-card"><div class="snum">12</div><div class="slabel"><i class="fa-solid fa-file-lines"></i> Absent today</div></div>
+        <div class="stat-card"><div class="snum">2</div><div class="slabel"><i class="fa-solid fa-ticket"></i> Open Tickets</div></div>
+      </div>
+      <div class="card-panel">
+        <h3>Recent activity</h3>
+        <div class="activity-item"><span>Rahul checked in — Room 101</span><span class="time">2 min ago</span></div>
+        <div class="activity-item"><span>Leave request approved for Sandhya</span><span class="time">20 min ago</span></div>
+        <div class="activity-item"><span>New device change request from Shanaya</span><span class="time">1 hr ago</span></div>
+      </div>
+    </div>
+
+    <!-- Shifts & Timetable -->
+    <div class="dash-view" id="mgr-shifts">
+      <div class="card-panel" style="margin-bottom:22px;">
+        <h3>Shifts</h3>
+        <div class="zone-grid">
+          <div class="zone-card"><h4>09:00 - 13:00</h4><div class="zline">Morning Session</div><div class="zline">Grace Period: 15 min</div></div>
+          <div class="zone-card"><h4>14:00 - 17:00</h4><div class="zline">Afternoon Session</div><div class="zline">Grace Period: 10 min</div></div>
+          <div class="zone-card"><h4>9:00 - 17:00</h4><div class="zline">Full Day</div><div class="zline">Grace Period: 15 min</div></div>
+        </div>
+      </div>
+      <div class="card-panel"><h3>Timetable</h3><div class="empty-panel" style="min-height:140px;">No timetable entries yet.</div></div>
+    </div>
+
+    <!-- Attendance -->
+    <div class="dash-view" id="mgr-attendance">
+      <div class="toolbar">
+        <input type="date" value="2026-06-28">
+        <select><option>All status</option><option>Present</option><option>Absent</option><option>On Leave</option></select>
+        <button><i class="fa-solid fa-file-export"></i> Export</button>
+      </div>
+      <table>
+        <thead><tr><th>Name</th><th>Check-In</th><th>Check-Out</th><th>Zone</th><th>Status</th><th>Action</th></tr></thead>
+        <tbody>
+          <tr><td>Rahul</td><td>9:00</td><td>13:05</td><td>Room 101</td><td>Present</td><td><span class="icon-btn edit"><i class="fa-solid fa-pen"></i></span></td></tr>
+          <tr><td>Sandhya</td><td>9:02</td><td>12:58</td><td>Room 201</td><td>Present</td><td><span class="icon-btn edit"><i class="fa-solid fa-pen"></i></span></td></tr>
+          <tr><td>Shreya</td><td>9:03</td><td>13:01</td><td>Room 301</td><td>Present</td><td><span class="icon-btn edit"><i class="fa-solid fa-pen"></i></span></td></tr>
+          <tr><td>Asha</td><td>-</td><td>-</td><td>-</td><td>On Leave</td><td><span class="icon-btn edit"><i class="fa-solid fa-pen"></i></span></td></tr>
+          <tr><td>Sardarji</td><td>-</td><td>-</td><td>-</td><td>Absent</td><td><span class="icon-btn edit"><i class="fa-solid fa-pen"></i></span></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Leave Request (device change requests) -->
+    <div class="dash-view" id="mgr-leave">
+      <div class="req-card">
+        <div class="req-top"><div><div class="req-name">Shanaya</div><div class="req-sub">Section A-CSE</div></div><span class="req-pill pending">Pending</span></div>
+        <div class="device-row"><span><b>OLD DEVICE:</b> ONEPLUS-11-T3W9</span><span><b>NEW DEVICE:</b> PIXEL-8A-R7Y1</span></div>
+        <div class="req-reason">Reason: Bought a new phone.</div>
+        <div class="req-top"><div class="req-actions"><button class="btn-accept">Accept</button><button class="btn-reject">Reject</button></div><span class="req-time">2 min ago</span></div>
+      </div>
+      <div class="req-card">
+        <div class="req-top"><div><div class="req-name">Shanaya</div><div class="req-sub">Section B-CSE</div></div><span class="req-pill pending">Pending</span></div>
+        <div class="device-row"><span><b>OLD DEVICE:</b> REDMI-NOTE12-K4L7</span><span><b>NEW DEVICE:</b> REDMI-NOTE13-M8Q2</span></div>
+        <div class="req-reason">Reason: Upgraded to new model.</div>
+        <div class="req-top"><div class="req-actions"><button class="btn-accept">Accept</button><button class="btn-reject">Reject</button></div><span class="req-time">10 min ago</span></div>
+      </div>
+      <div class="req-card rejected">
+        <div class="req-top"><div><div class="req-name">Sneha</div><div class="req-sub">Section B-CSE</div></div><span class="req-pill rejected">Rejected</span></div>
+        <div class="device-row"><span><b>OLD DEVICE:</b> SAMSUNG-A54-X8K2M</span><span><b>NEW DEVICE:</b> REDMI-NOTE13-M8Q2</span></div>
+        <div class="req-reason">Reason: Temporarily using someone else's phone</div>
+      </div>
+    </div>
+
+    <!-- Tickets -->
+    <div class="dash-view" id="mgr-tickets">
+      <div class="empty-panel">No open tickets right now.</div>
+    </div>
+
+    <!-- Members -->
+    <div class="dash-view" id="mgr-members">
+      <table>
+        <thead><tr><th>Name</th><th>Email Address</th><th>Joined Via</th><th>Status</th><th>Attendance (in%)</th></tr></thead>
+        <tbody>
+          <tr><td>Rahul</td><td>Rahul@abc.edu</td><td>PRZ-MEM-4T2W</td><td><span class="status-pill active">Active</span></td><td>85</td></tr>
+          <tr><td>Sandhya</td><td>Sandhya@abc.edu</td><td>PRZ-MEM-4T2W</td><td><span class="status-pill active">Active</span></td><td>70</td></tr>
+          <tr><td>Shreya</td><td>Shreya@abc.edu</td><td>PRZ-MEM-4T2W</td><td><span class="status-pill active">Active</span></td><td>60</td></tr>
+          <tr><td>Asha</td><td>Asha@abc.edu</td><td>PRZ-MEM-4T2W</td><td><span class="status-pill inactive">Inactive</span></td><td>30</td></tr>
+          <tr><td>Sardarji</td><td>Sardarji@abc.edu</td><td>PRZ-MEM-X45F</td><td><span class="status-pill active">Active</span></td><td>80</td></tr>
+          <tr><td>Bholi</td><td>Bholi@abc.edu</td><td>PRZ-MEM-X45F</td><td><span class="status-pill inactive">Inactive</span></td><td>95</td></tr>
+          <tr><td>Siya</td><td>Siya@abc.edu</td><td>PRZ-MEM-X45F</td><td><span class="status-pill active">Active</span></td><td>66</td></tr>
+          <tr><td>Disha</td><td>Disha@abc.edu</td><td>PRZ-MEM-X45F</td><td><span class="status-pill active">Active</span></td><td>72</td></tr>
+        </tbody>
+      </table>
+      <button class="add-btn" style="background:#e0a83a;">Pending Request</button>
+    </div>
+
+    <!-- Team -->
+    <div class="dash-view" id="mgr-team">
+      <div class="empty-panel">No team members added yet.</div>
+      <button class="add-btn"><i class="fa-solid fa-plus"></i> Add member</button>
+    </div>
+
+  </div>
+</div>
+
+<script>
+function showPage(id){
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById('page-' + id).classList.add('active');
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+function showOrgView(id, btn){
+  document.querySelectorAll('#page-org-dash .dash-view').forEach(v => v.classList.remove('active'));
+  document.getElementById('org-' + id).classList.add('active');
+  document.querySelectorAll('#page-org-dash .dash-tabs button').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+}
+function showMgrView(id, btn){
+  document.querySelectorAll('#page-mgr-dash .dash-view').forEach(v => v.classList.remove('active'));
+  document.getElementById('mgr-' + id).classList.add('active');
+  document.querySelectorAll('#page-mgr-dash .dash-tabs button').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+}
+// quick access: allow visiting manager dash from login too (demo toggle)
+document.querySelector('.login-form h2').addEventListener('dblclick', () => showPage('mgr-dash'));
+</script>
+
+</body>
+</html>

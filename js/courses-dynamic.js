@@ -80,7 +80,10 @@ const COURSES_SHEET = {
 
 function _apiBase() { return (typeof MBA_API_BASE !== 'undefined') ? MBA_API_BASE : ''; }
 
-/* Merge admin-server course rows into the local COURSES array by id. */
+/* Merge admin-server course rows into the local COURSES array by id — and
+   add any brand-new course the admin created (e.g. a CAT/OMETs course) that
+   doesn't exist in the hardcoded list yet, so it actually shows up on the
+   site instead of silently being ignored. */
 async function hydrateCoursesFromApi() {
   if (typeof COURSES === 'undefined') return false;
   try {
@@ -90,13 +93,29 @@ async function hydrateCoursesFromApi() {
     if (!Array.isArray(rows) || !rows.length) return false;
     let changed = false;
     const EDITABLE = ['title', 'cat', 'type', 'price', 'mrp', 'off', 'badge', 'rating', 'students',
-      'level', 'hours', 'instr', 'sub', 'tagline', 'desc', 'img'];
+      'level', 'hours', 'instr', 'sub', 'tagline', 'desc', 'img', 'Track'];
     rows.forEach(r => {
       const c = COURSES.find(k => k.id === r.id);
-      if (!c) return;
-      EDITABLE.forEach(key => {
-        if (r[key] !== undefined && r[key] !== null && r[key] !== '') { c[key] = r[key]; changed = true; }
+      if (c) {
+        EDITABLE.forEach(key => {
+          if (r[key] !== undefined && r[key] !== null && r[key] !== '') { c[key] = r[key]; changed = true; }
+        });
+        return;
+      }
+      // Brand-new course from the admin dashboard — not in the hardcoded
+      // list at all. Add it with sane fallbacks so cards/detail pages
+      // don't break on a missing field.
+      if (!r.id || !r.title) return;
+      COURSES.push({
+        id: r.id, Track: r.Track || 'mba', cat: r.cat || 'cert', type: r.type || 'Course',
+        img: r.img || 'images/placement-bootcamp.png', badge: r.badge || null,
+        rating: Number(r.rating) || 4.8, students: Number(r.students) || 0,
+        level: r.level || 'All levels', hours: r.hours || '', instr: r.instr || 'MBA Partner mentors',
+        title: r.title, sub: r.sub || '', tagline: r.tagline || '', desc: r.desc || r.sub || '',
+        price: Number(r.price) || 0, mrp: r.mrp ? Number(r.mrp) : null, off: r.off || null,
+        feats: [], curriculum: [], compInfo: {}
       });
+      changed = true;
     });
     return changed;
   } catch (e) {

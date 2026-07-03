@@ -166,6 +166,11 @@ const HOF = [
 
 const TICKERS=['9.6/10 Avg. Rating','5,000+ Students Mentored','98.7% Placed in Desired Domain','IIM · XLRI · FMS Mentor Schools','Live Projects Across Domains','AIR 1 Case Competition Mentor','30+ Winning Case PPTs','Real Placements. Real Stories.'];
 
+/* Which toggle (MBA Partner / CAT-OMETs) was last selected on the homepage —
+   read here so the Testimonials page shows matching content. Defaults to
+   'mba' if nothing was ever picked (e.g. a direct visit to this page). */
+function getPersona(){ try { return localStorage.getItem('mbaPersona') || 'mba'; } catch(e){ return 'mba'; } }
+
 /* ===== UTILS ===== */
 const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}}),{threshold:.1});
 function obs(root){(root||document).querySelectorAll('.reveal:not(.in)').forEach(el=>io.observe(el));}
@@ -247,10 +252,19 @@ const TGRID_MOBILE_LIMIT=4;
 let tgridExpanded=false;
 let tgridFullList=[];
 function renderGrid(filter){
-  const list=filter==='all'?TESTIMONIALS.map((t,i)=>({t,i})):TESTIMONIALS.map((t,i)=>({t,i})).filter(({t})=>t.tags.includes(filter));
   const grid=document.getElementById('tgrid');
   const empty=document.getElementById('emptyState');
   const moreBtn=document.getElementById('tgridLoadMore');
+  // This hardcoded testimonial set is MBA-track content only — CAT/OMETs
+  // testimonials come from the admin-managed Placements Wall / Video
+  // Testimonials sections below instead (tagged with Track='cat' there).
+  if(getPersona()==='cat'){
+    tgridFullList=[]; tgridExpanded=false;
+    grid.innerHTML=''; if(empty){empty.style.display='block'; empty.innerHTML='<p>CAT/OMETs testimonials coming soon — check the Placements Wall below.</p>';}
+    if(moreBtn) moreBtn.style.display='none';
+    return;
+  }
+  const list=filter==='all'?TESTIMONIALS.map((t,i)=>({t,i})):TESTIMONIALS.map((t,i)=>({t,i})).filter(({t})=>t.tags.includes(filter));
   tgridFullList=list;
   tgridExpanded=false;
   if(!list.length){grid.innerHTML='';empty.style.display='block';if(moreBtn)moreBtn.style.display='none';return;}
@@ -287,7 +301,8 @@ let PL_DATA = [];
 let plFilter = 'all';
 async function renderPlacements(){
   const data = await loadSiteData();
-  PL_DATA = data.placements || [];
+  const persona = getPersona();
+  PL_DATA = (data.placements || []).filter(p => (p.Track || 'mba') === persona);
   const cnt = document.getElementById('plCount');
   if (cnt) cnt.textContent = PL_DATA.length + '+ real placements and counting.';
   drawPlacements();
@@ -342,7 +357,8 @@ function drawPlacements(){
   const moreBtn=document.getElementById('hofGridLoadMore');
   if (!g) return;
   if (!list.length) {
-    g.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:40px;color:rgba(255,255,255,.5);font-family:'Inter',sans-serif">No results for this filter.</div>`;
+    const msg = plFilter === 'all' ? 'Placements coming soon for this track.' : 'No results for this filter.';
+    g.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:40px;color:rgba(255,255,255,.5);font-family:'Inter',sans-serif">${msg}</div>`;
     if(moreBtn) moreBtn.style.display='none';
     return;
   }
@@ -407,7 +423,8 @@ async function renderVideoTestimonials(){
   const grid = document.getElementById('vidGrid');
   if(!grid) return;
   const data = await loadSiteData();
-  const vids = (data.videos||[]).filter(v=>v.Name);
+  const persona = getPersona();
+  const vids = (data.videos||[]).filter(v=>v.Name && (v.Track || 'mba') === persona);
   grid.innerHTML = vids.length ? vids.map(vidCard).join('')
     : `<div class="empty"><i class="ti ti-video-off"></i><p style="font-family:'Inter',sans-serif;font-size:15px;color:var(--ink3)">Video testimonials coming soon.</p></div>`;
 }

@@ -120,6 +120,11 @@ function initTicker() {
 
 /* ===== PERSONA TOGGLE ===== */
 function switchPersona(p) {
+  // Remember the choice so Courses/Testimonials pages (reached via the nav
+  // links) know whether to show MBA or CAT/OMETs content when the visitor
+  // navigates there.
+  try { localStorage.setItem('mbaPersona', p); } catch (e) { }
+
   // Update Buttons
   document.querySelectorAll('.persona-btn').forEach(b => b.classList.remove('active'));
   document.getElementById('btn-' + p).classList.add('active');
@@ -133,6 +138,35 @@ function switchPersona(p) {
 
   const target = document.getElementById('pview-' + p);
   target.classList.add('active');
+
+  // A few sections (the bottom CTA banner, the footer's "Programs" list)
+  // sit outside both persona-view divs so they don't get hidden/shown by
+  // the toggle — update their copy directly so CAT/OMETs visitors don't
+  // see MBA-only placement language, and vice versa.
+  const ctaTitle = document.getElementById('ctaBannerTitle');
+  const ctaSub = document.getElementById('ctaBannerSub');
+  if (ctaTitle && ctaSub) {
+    if (p === 'cat') {
+      ctaTitle.textContent = 'Ready to crack CAT & top OMETs?';
+      ctaSub.textContent = "Join 500+ students who've secured IIM calls with MBA Partner's GDPI mentorship.";
+    } else {
+      ctaTitle.textContent = 'Ready to land your dream placement?';
+      ctaSub.textContent = "Join 5,000+ students who've already transformed their MBA journey with MBA Partner.";
+    }
+  }
+  const footerPrograms = document.getElementById('footerProgramsList');
+  if (footerPrograms) {
+    footerPrograms.innerHTML = p === 'cat'
+      ? `<a onclick="goToCourses();return false;" href="#">GDPI Coaching</a>
+         <a onclick="goToCourses();return false;" href="#">Mock Tests & Analysis</a>
+         <a onclick="goToCourses();return false;" href="#">Profile Building</a>
+         <a onclick="goToCourses();return false;" href="#">SOP & WAT Prep</a>`
+      : `<a onclick="goToCourses();return false;" href="#">Placement Bootcamp</a>
+         <a onclick="goToCourses();return false;" href="#">Live Projects</a>
+         <a onclick="goToCourses();return false;" href="#">Case Competitions</a>
+         <a onclick="goToCourses();return false;" href="#">Certifications</a>
+         <a onclick="goToCourses();return false;" href="#">Combo Bundles</a>`;
+  }
 
   // Re-observe animations on new content
   observeReveals(target);

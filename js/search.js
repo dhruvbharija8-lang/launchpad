@@ -81,6 +81,12 @@ const HOF = [
   { name: 'Shruti Satdeve', school: 'IIM Udaipur', company: 'Accenture Strategy', quote: 'My SIP interview was entirely based on my live project. Placements Bootcamp made it a total cakewalk.' }
 ];
 
+/* Which toggle (MBA Partner / CAT-OMETs) was last selected on the homepage —
+   Courses & Testimonials pages read this so their content matches whichever
+   persona the visitor is browsing as. Defaults to 'mba' (existing behaviour)
+   if nothing was ever picked (e.g. a direct visit to courses.html). */
+function getPersona() { try { return localStorage.getItem('mbaPersona') || 'mba'; } catch (e) { return 'mba'; } }
+
 let cart = [], activeCat = 'all', query = '', sort = 'popular', appliedCoupon = null;
 let detailState = { courseId: null, selected: {} };
 let compareSlots = [null, null, null, null]; // up to 4 slots
@@ -191,7 +197,8 @@ function openCpicker(slotIdx) {
   cpickerSlotIdx = slotIdx;
   const already = compareSlots.filter(Boolean);
   const list = document.getElementById('cpickerList');
-  list.innerHTML = COURSES.map(c => {
+  const persona = getPersona();
+  list.innerHTML = COURSES.filter(c => (c.Track || 'mba') === persona).map(c => {
     const taken = already.includes(c.id) && compareSlots[slotIdx] !== c.id;
     return `<div class="cpicker-item ${taken ? 'disabled' : ''}" data-cid="${c.id}">
       <div class="cpicker-item-info">
@@ -215,7 +222,9 @@ document.getElementById('cpickerClose').onclick = closeCpicker;
 document.getElementById('cpickerModal').addEventListener('click', e => { if (e.target === document.getElementById('cpickerModal')) closeCpicker(); });
 
 function renderTabs() {
-  const tabs = [{ key: 'all', label: 'All' }].concat(CATS);
+  // CAT/OMETs track is a single GDPI-focused list — no category sub-tabs,
+  // just "All" + search (kept simple per how that catalogue is structured).
+  const tabs = getPersona() === 'cat' ? [{ key: 'all', label: 'All' }] : [{ key: 'all', label: 'All' }].concat(CATS);
   let tabsHtml = tabs.map(t => {
     const isActive = !query && t.key === activeCat;
     return `<button class="tab ${isActive ? 'active' : ''}" data-c="${t.key}">${t.label}</button>`;
@@ -317,23 +326,32 @@ function renderCatalog() {
   const q = query.trim().toLowerCase();
   const match = c => !q || (c.title + ' ' + c.sub + ' ' + c.type + ' ' + c.instr + ' ' + (c.tagline || '') + ' ' + (c.desc || '') + ' ' + (c.feats || []).join(' ')).toLowerCase().includes(q);
 
+  // Only show courses tagged for the currently-active toggle (MBA Partner
+  // or CAT/OMETs) — existing courses with no Track are treated as 'mba' so
+  // nothing already on the site changes.
+  const persona = getPersona();
+  const personaCourses = COURSES.filter(c => (c.Track || 'mba') === persona);
+
   // Toggle the static wrap container of the group banner
   const promoWrap = document.getElementById('groupPromoBannerWrap');
   if (promoWrap) {
-    promoWrap.style.display = q ? 'none' : 'block';
+    promoWrap.style.display = (q || persona === 'cat') ? 'none' : 'block';
   }
 
   let html = '';
-  if (activeCat === 'all' && sort !== 'popular') {
-    const items = sortList(COURSES.filter(match));
+  if (persona === 'cat' || (activeCat === 'all' && sort !== 'popular')) {
+    const items = sortList(personaCourses.filter(match));
     if (items.length) {
       const h2Class = q ? 'reveal in' : 'reveal';
-      html += `<div class="cat-sec"><h2 class="${h2Class}">All Courses</h2><div class="grid">${items.map(cardHtml).join('')}</div></div>`;
+      const heading = persona === 'cat' ? 'GDPI Prep Courses' : 'All Courses';
+      html += `<div class="cat-sec"><h2 class="${h2Class}">${heading}</h2><div class="grid">${items.map(cardHtml).join('')}</div></div>`;
+    } else if (persona === 'cat') {
+      html = `<div class="co-empty"><i class="ti ti-school"></i><p>CAT/OMETs courses are coming soon — check back shortly.</p></div>`;
     }
   } else {
     const cats = activeCat === 'all' ? CATS : CATS.filter(c => c.key === activeCat);
     cats.forEach(cat => {
-      const items = sortList(COURSES.filter(c => c.cat === cat.key && match(c)));
+      const items = sortList(personaCourses.filter(c => c.cat === cat.key && match(c)));
       if (!items.length) return;
       const h2Class = q ? 'reveal in' : 'reveal';
       html += `<div class="cat-sec"><h2 class="${h2Class}">${cat.label}</h2><div class="grid">${items.map(cardHtml).join('')}</div></div>`;
@@ -716,7 +734,7 @@ function renderDetail(id) {
 }
 
 function renderRelated(c) {
-  const pool = COURSES.filter(x => x.id !== c.id);
+  const pool = COURSES.filter(x => x.id !== c.id && (x.Track || 'mba') === (c.Track || 'mba'));
   let picks = pool.filter(x => x.cat !== c.cat).sort((a, b) => b.rating - a.rating).slice(0, 3);
   if (picks.length < 3) { const more = pool.filter(x => !picks.includes(x)).sort((a, b) => b.rating - a.rating); picks = picks.concat(more).slice(0, 3); }
   const el = document.getElementById('dRelated'); el.innerHTML = picks.map(cardHtml).join(''); wireCards(el);
