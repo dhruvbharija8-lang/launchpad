@@ -40,6 +40,79 @@ const ADMIN_SECTIONS = [
     ]
   },
   {
+    key: 'leads', label: 'Enquiries', icon: 'ti-message-2', group: 'Leads & Applications',
+    desc: 'Everyone who submitted an enquiry form on the homepage, the brochure page, or the chatbot. Read-only from the visitor side — only you can see this list.',
+    fields: [
+      { name: 'Name', label: 'Name', type: 'text', col: true },
+      { name: 'Email', label: 'Email', type: 'text', col: true },
+      { name: 'Phone', label: 'Phone', type: 'text', col: true },
+      { name: 'College', label: 'College / Target B-School', type: 'text', col: true },
+      { name: 'Message', label: 'Message', type: 'textarea' },
+      { name: 'Source', label: 'Where it came from', type: 'text', col: true },
+      { name: 'submittedAt', label: 'Submitted at', type: 'text', col: true }
+    ]
+  },
+  {
+    key: 'mentorApplications', label: 'Mentor Applications', icon: 'ti-user-plus', group: 'Leads & Applications',
+    desc: 'Everyone who applied to be a mentor from the homepage "Apply to be a mentor" form.',
+    fields: [
+      { name: 'Name', label: 'Name', type: 'text', col: true },
+      { name: 'Email', label: 'Email', type: 'text', col: true },
+      { name: 'School', label: 'B-School / Company', type: 'text', col: true },
+      { name: 'VideoLink', label: '60-second intro video link', type: 'text' },
+      { name: 'Why', label: 'Why they want to mentor', type: 'textarea' },
+      { name: 'submittedAt', label: 'Submitted at', type: 'text', col: true }
+    ]
+  },
+  {
+    key: 'collegeCollabLeads', label: 'College Collab Requests', icon: 'ti-building-bank', group: 'Leads & Applications',
+    desc: 'Everyone who filled the College Collaboration form. (This also still emails you and opens WhatsApp — this is just the backup record.)',
+    fields: [
+      { name: 'College', label: 'College name', type: 'text', col: true },
+      { name: 'ContactName', label: 'Contact person', type: 'text', col: true },
+      { name: 'Designation', label: 'Designation', type: 'text' },
+      { name: 'Email', label: 'Email', type: 'text', col: true },
+      { name: 'Phone', label: 'Phone', type: 'text', col: true },
+      { name: 'City', label: 'City', type: 'text' },
+      { name: 'State', label: 'State', type: 'text' },
+      { name: 'BatchSize', label: 'Approx. batch size', type: 'text' },
+      { name: 'Need', label: 'What they need', type: 'textarea' },
+      { name: 'submittedAt', label: 'Submitted at', type: 'text', col: true }
+    ]
+  },
+  {
+    key: 'orders', label: 'Checkout Orders', icon: 'ti-shopping-cart', group: 'Leads & Applications',
+    desc: 'Everyone who completed the checkout flow (cart → Pay Now) on the main site.',
+    fields: [
+      { name: 'Name', label: 'Name', type: 'text', col: true },
+      { name: 'Email', label: 'Email', type: 'text', col: true },
+      { name: 'Phone', label: 'Phone', type: 'text', col: true },
+      { name: 'College', label: 'College', type: 'text' },
+      { name: 'Items', label: 'Items purchased', type: 'text', col: true },
+      { name: 'Total', label: 'Total (₹)', type: 'number', col: true },
+      { name: 'Coupon', label: 'Coupon used', type: 'text' },
+      { name: 'submittedAt', label: 'Submitted at', type: 'text', col: true }
+    ]
+  },
+  {
+    key: 'enrollmentRequests', label: 'Enroll Page Signups', icon: 'ti-user-check', group: 'Leads & Applications',
+    desc: 'Everyone who filled the solo or friend/group enrollment form on the enroll page.',
+    fields: [
+      { name: 'Type', label: 'Type', type: 'select', options: ['solo', 'group'], col: true },
+      { name: 'Course', label: 'Course', type: 'text', col: true },
+      { name: 'Name', label: 'Name (member 1)', type: 'text', col: true },
+      { name: 'Email', label: 'Email (member 1)', type: 'text', col: true },
+      { name: 'Phone', label: 'Phone (member 1)', type: 'text', col: true },
+      { name: 'College', label: 'College (member 1)', type: 'text' },
+      { name: 'Name2', label: 'Name (member 2, if group)', type: 'text' },
+      { name: 'Email2', label: 'Email (member 2, if group)', type: 'text' },
+      { name: 'Phone2', label: 'Phone (member 2, if group)', type: 'text' },
+      { name: 'College2', label: 'College (member 2, if group)', type: 'text' },
+      { name: 'CouponUsed', label: 'Coupon used', type: 'text' },
+      { name: 'submittedAt', label: 'Submitted at', type: 'text', col: true }
+    ]
+  },
+  {
     key: 'coupons', label: 'Coupons', icon: 'ti-discount-2', group: 'Commerce',
     desc: 'Discount codes students can enter at checkout. Turn a code off instead of deleting it to keep its history.',
     fields: [

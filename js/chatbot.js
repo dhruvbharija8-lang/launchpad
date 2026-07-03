@@ -237,7 +237,7 @@ function closeModalOutside(e) {
   if (e.target.id === 'contactModal') closeModal();
 }
 
-function submitContact() {
+async function submitContact() {
   const name  = document.getElementById('nameInput').value.trim();
   const email = document.getElementById('emailInput').value.trim();
   const phone = document.getElementById('phoneInput').value.trim();
@@ -248,7 +248,14 @@ function submitContact() {
     return;
   }
 
-  // ── Replace this block with a real fetch() to your backend or Formspree ──
+  try {
+    const base = (typeof MBA_API_BASE !== 'undefined') ? MBA_API_BASE : '';
+    await fetch(base + '/api/public/leads', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ Name: name, Email: email, Phone: phone, Message: msg, Source: 'Chatbot' })
+    });
+  } catch (e) { /* still show success — a network hiccup shouldn't look like a broken form */ }
+
   document.getElementById('modalContent').innerHTML = `
     <div class="success-msg">
       <div class="check">✅</div>

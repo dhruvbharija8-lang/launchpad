@@ -376,6 +376,7 @@ function run(force) {
     catDomainQA: withIds(CAT_DOMAINQA),
     catMentors: withIds(CAT_MENTORS),
     catPricing: withIds(CAT_PRICING),
+    leads: [], mentorApplications: [], collegeCollabLeads: [], orders: [], enrollmentRequests: [],
     adminUsers: existing.adminUsers || []
   };
   db.writeAll(data);
@@ -395,7 +396,11 @@ function backfillMissingCollections() {
     catMaterials: CAT_MATERIALS, catMocks: CAT_MOCKS, catQuestions: CAT_QUESTIONS,
     catPyq: CAT_PYQ, catPyqQuestions: CAT_PYQ_QUESTIONS, catLeaderboard: CAT_LEADERBOARD,
     catGdpi: CAT_GDPI, catDomainQA: CAT_DOMAINQA, catMentors: CAT_MENTORS, catPricing: CAT_PRICING,
-    hallOfFame: HALL_OF_FAME, freeSessions: FREE_SESSIONS
+    hallOfFame: HALL_OF_FAME, freeSessions: FREE_SESSIONS,
+    // Visitor-submitted collections start empty — nothing to seed, they
+    // just need to exist so the admin dashboard section doesn't error out
+    // before anyone has submitted anything yet.
+    leads: [], mentorApplications: [], collegeCollabLeads: [], orders: [], enrollmentRequests: []
   };
   let changed = false;
   Object.keys(DEFAULTS).forEach(key => {

@@ -626,15 +626,15 @@
       </div>
       <div class="br-form reveal">
         <h3>Send us a message</h3>
-        <div class="br-field"><label>Your name</label><input placeholder="Ananya Sharma"/></div>
+        <div class="br-field"><label>Your name</label><input id="brName" placeholder="Ananya Sharma"/></div>
         <div class="br-field-row">
-          <div class="br-field"><label>Email</label><input type="email" placeholder="you@email.com"/></div>
-          <div class="br-field"><label>Phone</label><input placeholder="+91 …"/></div>
+          <div class="br-field"><label>Email</label><input id="brEmail" type="email" placeholder="you@email.com"/></div>
+          <div class="br-field"><label>Phone</label><input id="brPhone" placeholder="+91 …"/></div>
         </div>
-        <div class="br-field"><label>College / Target B-School</label><input placeholder="IIM Ahmedabad"/></div>
+        <div class="br-field"><label>College / Target B-School</label><input id="brCollege" placeholder="IIM Ahmedabad"/></div>
         <div class="br-field">
           <label>Program of interest</label>
-          <select>
+          <select id="brProgram">
             <option>Select a program</option>
             <option>Complete Placement Bundle</option>
             <option>Placement Bootcamp — Master</option>
@@ -647,8 +647,9 @@
             <option>College Tie-Up / Bulk</option>
           </select>
         </div>
-        <div class="br-field"><label>Message</label><textarea placeholder="Tell us what you're looking for…"></textarea></div>
-        <button class="br-submit" onclick="this.textContent='✓ Sent! We\'ll be in touch within 24 hours.';this.style.background='var(--green)';this.disabled=true">Submit Enquiry</button>
+        <div class="br-field"><label>Message</label><textarea id="brMessage" placeholder="Tell us what you're looking for…"></textarea></div>
+        <div id="brErr" style="display:none;color:#DC2626;font-size:13px;margin-bottom:10px"></div>
+        <button class="br-submit" id="brSubmitBtn" onclick="submitBrochureEnquiry()">Submit Enquiry</button>
       </div>
     </div>
   </div>
@@ -724,5 +725,38 @@
 
   <script src="js/animations.js"></script>
   <script src="js/chatbot-widget.js"></script>
+  <script>
+  async function submitBrochureEnquiry() {
+    const name = (document.getElementById('brName').value || '').trim();
+    const email = (document.getElementById('brEmail').value || '').trim();
+    const phone = (document.getElementById('brPhone').value || '').trim();
+    const college = (document.getElementById('brCollege').value || '').trim();
+    const program = (document.getElementById('brProgram').value || '').trim();
+    const message = (document.getElementById('brMessage').value || '').trim();
+    const err = document.getElementById('brErr');
+    const btn = document.getElementById('brSubmitBtn');
+    if (!name || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email) || !phone) {
+      err.textContent = 'Please add your name, a valid email, and phone number.';
+      err.style.display = 'block';
+      return;
+    }
+    err.style.display = 'none';
+    btn.disabled = true;
+    btn.textContent = 'Sending…';
+    try {
+      const base = (typeof MBA_API_BASE !== 'undefined') ? MBA_API_BASE : '';
+      await fetch(base + '/api/public/leads', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          Name: name, Email: email, Phone: phone, College: college,
+          Message: (program && program !== 'Select a program' ? 'Program: ' + program + '. ' : '') + message,
+          Source: 'Brochure'
+        })
+      });
+    } catch (e) { /* still show success — no need to alarm the visitor over a network hiccup */ }
+    btn.textContent = '✓ Sent! We\'ll be in touch within 24 hours.';
+    btn.style.background = 'var(--green)';
+  }
+  </script>
 </body>
 </html>

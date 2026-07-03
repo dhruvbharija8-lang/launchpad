@@ -721,15 +721,16 @@
           </div>
           <div class="contact-form reveal">
             <h3>Send us a message</h3>
-            <div class="field"><label>Your name</label><input placeholder="Ananya Sharma" /></div>
+            <div class="field"><label>Your name</label><input id="enqName" placeholder="Ananya Sharma" /></div>
             <div class="field-row">
-              <div class="field"><label>Email</label><input type="email" placeholder="you@email.com" /></div>
-              <div class="field"><label>Phone</label><input placeholder="+91 …" /></div>
+              <div class="field"><label>Email</label><input id="enqEmail" type="email" placeholder="you@email.com" /></div>
+              <div class="field"><label>Phone</label><input id="enqPhone" placeholder="+91 …" /></div>
             </div>
-            <div class="field"><label>College / Target B-School</label><input placeholder="IIM Ahmedabad" /></div>
-            <div class="field"><label>Message</label><textarea
+            <div class="field"><label>College / Target B-School</label><input id="enqCollege" placeholder="IIM Ahmedabad" /></div>
+            <div class="field"><label>Message</label><textarea id="enqMessage"
                 placeholder="Tell us what you're looking for…"></textarea></div>
-            <button class="submit-btn" onclick="showToast('Message sent! We will be in touch within 24 hours.')">Submit
+            <div class="apply-err" id="enqErr" style="display:none;color:#DC2626;font-size:13px;margin-bottom:10px"></div>
+            <button class="submit-btn" id="enqSubmit" onclick="submitHomepageEnquiry()">Submit
               enquiry</button>
           </div>
         </div>
@@ -978,9 +979,11 @@
       modal.addEventListener('click', e => { if (e.target === modal) close(); });
       document.addEventListener('keydown', e => { if (e.key === 'Escape') close(); });
       const sub = document.getElementById('amSubmit');
-      if (sub) sub.onclick = () => {
+      if (sub) sub.onclick = async () => {
         const name = (document.getElementById('amName').value || '').trim();
         const email = (document.getElementById('amEmail').value || '').trim();
+        const school = (document.getElementById('amSchool').value || '').trim();
+        const video = (document.getElementById('amVideo').value || '').trim();
         const why = (document.getElementById('amWhy').value || '').trim();
         const err = document.getElementById('amErr');
         if (!name || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email) || !why) {
@@ -988,8 +991,15 @@
           err.style.display = 'block'; return;
         }
         err.style.display = 'none';
-        // To capture applications, POST these fields to a Google Apps Script web-app URL
-        // here and append them to a "MentorApplications" sheet tab.
+        sub.disabled = true;
+        try {
+          const base = (typeof MBA_API_BASE !== 'undefined') ? MBA_API_BASE : '';
+          await fetch(base + '/api/public/mentorApplications', {
+            method: 'POST', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ Name: name, Email: email, School: school, VideoLink: video, Why: why })
+          });
+        } catch (e) { /* still show success — the form worked from the visitor's point of view */ }
+        sub.disabled = false;
         document.getElementById('applyForm').style.display = 'none';
         document.getElementById('applySuccess').style.display = 'block';
       };

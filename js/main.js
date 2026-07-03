@@ -319,6 +319,33 @@ function renderBenefitsCards() {
   el.innerHTML = BENEFIT_CARDS.map(b => `<div class="b-card"><div class="b-card-avatar">${b.name.charAt(0)}</div><div class="b-card-info"><div class="b-role">${b.role}</div><h4>${b.name}</h4><div class="b-school">${b.school}</div><div class="b-card-quote">"${b.quote}"</div></div></div>`).join('');
 }
 
+/* ===== HOMEPAGE ENQUIRY FORM (saves to admin dashboard → "Enquiries") ===== */
+async function submitHomepageEnquiry() {
+  const name = (document.getElementById('enqName').value || '').trim();
+  const email = (document.getElementById('enqEmail').value || '').trim();
+  const phone = (document.getElementById('enqPhone').value || '').trim();
+  const college = (document.getElementById('enqCollege').value || '').trim();
+  const message = (document.getElementById('enqMessage').value || '').trim();
+  const err = document.getElementById('enqErr');
+  const btn = document.getElementById('enqSubmit');
+  if (!name || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email) || !phone) {
+    if (err) { err.textContent = 'Please add your name, a valid email, and phone number.'; err.style.display = 'block'; }
+    return;
+  }
+  if (err) err.style.display = 'none';
+  if (btn) { btn.disabled = true; btn.textContent = 'Sending…'; }
+  try {
+    const base = (typeof MBA_API_BASE !== 'undefined') ? MBA_API_BASE : '';
+    await fetch(base + '/api/public/leads', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ Name: name, Email: email, Phone: phone, College: college, Message: message, Source: 'Homepage Enquiry' })
+    });
+  } catch (e) { /* still show success — we don't want a network hiccup to look like a broken form */ }
+  showToast('Message sent! We will be in touch within 24 hours.');
+  ['enqName', 'enqEmail', 'enqPhone', 'enqCollege', 'enqMessage'].forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
+  if (btn) { btn.disabled = false; btn.textContent = 'Submit enquiry'; }
+}
+
 /* ===== CATALOG ===== */
 function sortList(list) {
   const a = list.slice();
@@ -471,9 +498,9 @@ function renderCheckout() {
   body.innerHTML = `<div class="co-title">Checkout</div><div class="co-sub">${cart.length} item${cart.length > 1 ? 's' : ''} in your cart</div>
   <div class="co-grid"><div>
     <div class="co-panel"><h3>Your details</h3>
-      <div class="field"><label>Full name</label><input placeholder="Ananya Sharma"/></div>
-      <div class="field-row"><div class="field"><label>Email</label><input type="email" placeholder="you@email.com"/></div><div class="field"><label>Phone</label><input placeholder="+91 …"/></div></div>
-      <div class="field"><label>College / B-School</label><input placeholder="IIM …"/></div>
+      <div class="field"><label>Full name</label><input id="coName" placeholder="Ananya Sharma"/></div>
+      <div class="field-row"><div class="field"><label>Email</label><input id="coEmail" type="email" placeholder="you@email.com"/></div><div class="field"><label>Phone</label><input id="coPhone" placeholder="+91 …"/></div></div>
+      <div class="field"><label>College / B-School</label><input id="coCollege" placeholder="IIM …"/></div>
     </div>
     <div class="co-panel"><h3>Payment method</h3>
       <div class="pay-opt sel" data-pay="upi"><i class="ti ti-qrcode"></i><div class="pay-opt-t">UPI / QR</div></div>
@@ -520,7 +547,29 @@ function renderCheckout() {
       applyLocalFallback();
     }
   };
-  document.getElementById('payNow').onclick = () => { const n = (body.querySelector('input[placeholder="Ananya Sharma"]').value || '').trim(), e = (body.querySelector('input[type="email"]').value || '').trim(); if (!n || !e) { showToast('Please enter your name and email'); return; } openModal('paid', { total: grandTotal }); };
+  document.getElementById('payNow').onclick = async () => {
+    const n = (document.getElementById('coName').value || '').trim();
+    const e = (document.getElementById('coEmail').value || '').trim();
+    const ph = (document.getElementById('coPhone').value || '').trim();
+    const col = (document.getElementById('coCollege').value || '').trim();
+    if (!n || !e) { showToast('Please enter your name and email'); return; }
+    const payBtn = document.getElementById('payNow');
+    if (payBtn) payBtn.disabled = true;
+    try {
+      const base = (typeof MBA_API_BASE !== 'undefined') ? MBA_API_BASE : '';
+      await fetch(base + '/api/public/orders', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          Name: n, Email: e, Phone: ph, College: col,
+          Items: cart.map(c => c.title).join(', '),
+          Total: grandTotal,
+          Coupon: appliedCoupon ? appliedCoupon.code : ''
+        })
+      });
+    } catch (err) { /* still confirm the order — a network hiccup shouldn't block checkout */ }
+    if (payBtn) payBtn.disabled = false;
+    openModal('paid', { total: grandTotal });
+  };
 }
 
 /* ===== CART DRAWER ===== */

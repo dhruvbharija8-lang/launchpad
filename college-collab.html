@@ -2680,6 +2680,20 @@
       btn.disabled = true;
       btn.innerHTML = '<i class="ti ti-loader-2" style="animation:spin .8s linear infinite"></i> Sending…';
 
+      // 1a. Save to the admin dashboard ("College Collab Requests") so nothing
+      // is lost even if the email/WhatsApp step below fails for any reason.
+      try {
+        const base = (typeof MBA_API_BASE !== 'undefined') ? MBA_API_BASE : '';
+        await fetch(base + '/api/public/collegeCollabLeads', {
+          method: 'POST', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            College: college, ContactName: name + (desig ? ' (' + desig + ')' : ''),
+            Designation: desig, Email: email, Phone: phone, City: city, State: state,
+            BatchSize: batch, Need: need
+          })
+        });
+      } catch (e) { /* still proceed — email/WhatsApp below is the primary channel */ }
+
       // 1. Send email via FormSubmit AJAX
       try {
         const fd = new FormData();

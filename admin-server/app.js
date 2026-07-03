@@ -6,7 +6,7 @@ const cors = require('cors');
 const db = require('./lib/db');
 const { ensureAdminSeeded } = require('./lib/auth');
 const { run: seed } = require('./seed');
-const { makePublicRouter, makeAdminRouter, COLLECTIONS, ADMIN_ONLY } = require('./routes/resource');
+const { makePublicRouter, makePublicWriteRouter, makeAdminRouter, COLLECTIONS, ADMIN_ONLY, PUBLIC_WRITE_ONLY } = require('./routes/resource');
 const settingsRouter = require('./routes/settings');
 const couponsRouter = require('./routes/coupons');
 const authRouter = require('./routes/auth');
@@ -22,8 +22,13 @@ app.use(cors());
 app.use(express.json({ limit: '2mb' }));
 
 // ---- Public API (read-only, no login needed — the live website calls these) ----
+// A handful of collections (leads, mentor applications, orders, etc.) are
+// write-only on the public side instead — visitors can submit into them,
+// but only the logged-in admin can read the list back.
 COLLECTIONS.forEach(name => {
-  if (!ADMIN_ONLY.has(name)) app.use('/api/public/' + name, makePublicRouter(name));
+  if (ADMIN_ONLY.has(name)) return;
+  if (PUBLIC_WRITE_ONLY.has(name)) app.use('/api/public/' + name, makePublicWriteRouter(name));
+  else app.use('/api/public/' + name, makePublicRouter(name));
 });
 app.use('/api/public/settings', settingsRouter); // GET is public; PUT inside requires auth
 app.use('/api/public/coupons', couponsRouter); // exposes POST /api/public/coupons/validate
