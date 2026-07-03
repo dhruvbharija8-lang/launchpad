@@ -21,4 +21,4 @@
      const MBA_API_BASE = 'https://mba-partner-admin.onrender.com';
    and redeploy the site to Netlify after changing it.
 ============================================================ */
-const MBA_API_BASE = '';
+const MBA_API_BASE = 'https://launchpad-07.onrender.com';
