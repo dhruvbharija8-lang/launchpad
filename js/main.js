@@ -572,16 +572,39 @@ function renderCheckout() {
     openModal('paid', { total: grandTotal });
   };
 
-  // If the visitor is already signed in (via Clerk, from login.html),
-  // pre-fill their name/email so they don't have to type it again.
+  // If the visitor is already signed in (via Clerk, from login.html), their
+  // name/email is already known — lock those two fields (don't make them
+  // retype what we already have) and only ask for what Google/Clerk can't
+  // supply (phone, college).
   if (window.__clerkReady) {
     window.__clerkReady.then(clerk => {
       if (!clerk || !clerk.user) return;
       const emailEl = document.getElementById('coEmail');
       const nameEl = document.getElementById('coName');
       const email = clerk.user.primaryEmailAddress ? clerk.user.primaryEmailAddress.emailAddress : '';
-      if (emailEl && email && !emailEl.value) emailEl.value = email;
-      if (nameEl && clerk.user.fullName && !nameEl.value) nameEl.value = clerk.user.fullName;
+      if (emailEl && email) {
+        emailEl.value = email;
+        emailEl.readOnly = true;
+        emailEl.style.background = '#F3F4F6';
+        emailEl.style.cursor = 'not-allowed';
+      }
+      if (nameEl && clerk.user.fullName) {
+        nameEl.value = clerk.user.fullName;
+        nameEl.readOnly = true;
+        nameEl.style.background = '#F3F4F6';
+        nameEl.style.cursor = 'not-allowed';
+      }
+      // Small "logged in as" hint so it's obvious these came from their account.
+      if (emailEl && email) {
+        const panel = emailEl.closest('.co-panel');
+        if (panel && !panel.querySelector('.co-loggedin-hint')) {
+          const hint = document.createElement('div');
+          hint.className = 'co-loggedin-hint';
+          hint.style.cssText = 'font-size:12px;color:var(--green,#16A34A);margin:-6px 0 12px;display:flex;align-items:center;gap:4px';
+          hint.innerHTML = '<i class="ti ti-circle-check-filled"></i> Using your logged-in account details';
+          panel.querySelector('h3').insertAdjacentElement('afterend', hint);
+        }
+      }
     }).catch(() => {});
   }
 }
