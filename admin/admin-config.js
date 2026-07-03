@@ -119,6 +119,7 @@ const ADMIN_SECTIONS = [
       { name: 'code', label: 'Coupon code', type: 'text', required: true, col: true },
       { name: 'type', label: 'Discount type', type: 'select', options: ['percent', 'flat'], col: true },
       { name: 'value', label: 'Discount value (% or ₹)', type: 'number', required: true, col: true },
+      { name: 'courseIds', label: 'Restrict to specific course(s) (optional — leave all unchecked to allow on any course)', type: 'multiref', refCollection: 'courses', refValue: 'id', refLabel: r => r.title, col: true },
       { name: 'active', label: 'Active', type: 'checkbox', col: true },
       { name: 'usageLimit', label: 'Usage limit (blank = unlimited)', type: 'number' },
       { name: 'note', label: 'Internal note', type: 'text' }

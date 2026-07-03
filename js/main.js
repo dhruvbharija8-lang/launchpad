@@ -532,7 +532,7 @@ function renderCheckout() {
       const base = (typeof MBA_API_BASE !== 'undefined') ? MBA_API_BASE : '';
       const res = await fetch(base + '/api/public/coupons/validate', {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ code, subtotal })
+        body: JSON.stringify({ code, subtotal, courseIds: cart.map(c => c.id) })
       });
       const data = await res.json();
       if (data.valid) {

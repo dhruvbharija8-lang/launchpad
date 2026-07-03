@@ -3,7 +3,7 @@ const db = require('../lib/db');
 const router = express.Router();
 
 router.post('/validate', (req, res) => {
-  const { code, subtotal } = req.body || {};
+  const { code, subtotal, courseIds } = req.body || {};
   if (!code) return res.status(400).json({ valid: false, message: 'No code provided' });
   const coupons = db.getCollection('coupons');
   const coupon = coupons.find(c => (c.code || '').toUpperCase() === String(code).toUpperCase());
@@ -15,6 +15,15 @@ router.post('/validate', (req, res) => {
   }
   if (coupon.usageLimit != null && Number(coupon.usedCount || 0) >= Number(coupon.usageLimit)) {
     return res.json({ valid: false, message: 'This coupon has reached its usage limit' });
+  }
+  // If the admin restricted this coupon to specific course(s), the cart must
+  // contain at least one of them for the code to be valid.
+  if (Array.isArray(coupon.courseIds) && coupon.courseIds.length) {
+    const cartCourseIds = Array.isArray(courseIds) ? courseIds : [];
+    const overlaps = coupon.courseIds.some(id => cartCourseIds.includes(id));
+    if (!overlaps) {
+      return res.json({ valid: false, message: 'This coupon only applies to specific course(s) — add one of them to your cart to use it' });
+    }
   }
   const base = Number(subtotal) || 0;
   let discount = 0;

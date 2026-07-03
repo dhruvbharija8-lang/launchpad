@@ -228,6 +228,11 @@ function fieldHtml(f, value, refOptions) {
     const opts = (refOptions || []).map(o => `<option value="${escapeHtml(o.value)}" ${String(value) === o.value ? 'selected' : ''}>${escapeHtml(o.label)}</option>`).join('');
     return `<div class="field"><label>${f.label}</label><select id="${id}"><option value="">— select —</option>${opts}</select></div>`;
   }
+  if (f.type === 'multiref') {
+    const selected = Array.isArray(value) ? value.map(String) : [];
+    const rows = (refOptions || []).map(o => `<label style="display:flex;align-items:center;gap:8px;padding:7px 2px;font-weight:400;font-size:13.5px;color:var(--ink,#111114);cursor:pointer;border-bottom:1px solid rgba(0,0,0,.05)"><input type="checkbox" class="multiref-opt" value="${escapeHtml(o.value)}" ${selected.includes(String(o.value)) ? 'checked' : ''} style="width:16px;height:16px;flex:0 0 16px;margin:0;accent-color:var(--orange,#FF8B02)"/><span>${escapeHtml(o.label)}</span></label>`).join('');
+    return `<div class="field"><label>${f.label}</label><div id="${id}" data-multiref style="max-height:200px;overflow-y:auto;border:1.5px solid var(--line);border-radius:10px;padding:6px 12px;background:#fff">${rows || '<span style="color:var(--ink3);font-size:13px">Nothing to pick from yet</span>'}</div></div>`;
+  }
   if (f.type === 'textarea') {
     return `<div class="field"><label>${f.label}</label><textarea id="${id}" rows="3">${value == null ? '' : escapeHtml(value)}</textarea></div>`;
   }
@@ -264,6 +269,7 @@ function readForm(form, fields) {
     if (f.type === 'checkbox') out[f.name] = el.checked;
     else if (f.type === 'number') out[f.name] = el.value === '' ? null : Number(el.value);
     else if (f.type === 'csv') out[f.name] = el.value.split(',').map(s => s.trim()).filter(Boolean);
+    else if (f.type === 'multiref') out[f.name] = Array.from(el.querySelectorAll('.multiref-opt:checked')).map(c => c.value);
     else out[f.name] = el.value;
   });
   return out;
@@ -312,13 +318,13 @@ async function openRecordModal(section, record, prefill) {
   // their options loaded from another collection before the form can render.
   const refCache = {};
   for (const f of section.fields) {
-    if (f.type === 'ref' && !(f.refCollection in refCache)) {
+    if ((f.type === 'ref' || f.type === 'multiref') && !(f.refCollection in refCache)) {
       try { refCache[f.refCollection] = await api('/admin/' + f.refCollection); }
       catch (e) { refCache[f.refCollection] = []; }
     }
   }
   const refOptionsFor = f => {
-    if (f.type !== 'ref') return null;
+    if (f.type !== 'ref' && f.type !== 'multiref') return null;
     let rows = refCache[f.refCollection] || [];
     if (f.refFilter) rows = rows.filter(f.refFilter);
     return rows.map(r => ({ value: r[f.refValue], label: f.refLabel ? f.refLabel(r) : r[f.refValue] }));
