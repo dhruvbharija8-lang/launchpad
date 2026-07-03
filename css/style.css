@@ -162,6 +162,8 @@ button{cursor:pointer;font-family:inherit}
 .btn-w:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,.15)}
 .btn-ow{font-size:14px;font-weight:700;background:transparent;color:#fff;padding:12px 22px;border-radius:30px;border:2px solid rgba(255,255,255,.55);cursor:pointer;transition:.2s;display:inline-flex;align-items:center;gap:8px}
 .btn-ow:hover{background:rgba(255,255,255,.15)}
+.btn-load-more-navy{font-size:14px;font-weight:700;background:transparent;color:var(--navy);padding:12px 24px;border-radius:30px;border:2px solid var(--line);cursor:pointer;transition:.2s;display:inline-flex;align-items:center;gap:8px;font-family:inherit}
+.btn-load-more-navy:hover{background:var(--surface2,#F0F2F8);border-color:var(--navy)}
 
 /* LIGHTBOX */
 .lb{position:fixed;inset:0;z-index:500;display:flex;align-items:center;justify-content:center;padding:20px;background:rgba(10,15,40,.65);backdrop-filter:blur(10px);opacity:0;visibility:hidden;transition:.25s}

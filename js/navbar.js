@@ -242,13 +242,34 @@ function cardHtml(t,idx){
     </div>
   </div>`;
 }
+const MOBILE_BREAKPOINT=768;
+const TGRID_MOBILE_LIMIT=4;
+let tgridExpanded=false;
+let tgridFullList=[];
 function renderGrid(filter){
   const list=filter==='all'?TESTIMONIALS.map((t,i)=>({t,i})):TESTIMONIALS.map((t,i)=>({t,i})).filter(({t})=>t.tags.includes(filter));
   const grid=document.getElementById('tgrid');
   const empty=document.getElementById('emptyState');
-  if(!list.length){grid.innerHTML='';empty.style.display='block';return;}
+  const moreBtn=document.getElementById('tgridLoadMore');
+  tgridFullList=list;
+  tgridExpanded=false;
+  if(!list.length){grid.innerHTML='';empty.style.display='block';if(moreBtn)moreBtn.style.display='none';return;}
   empty.style.display='none';
-  grid.innerHTML=list.map(({t,i})=>cardHtml(t,i)).join('');
+  const isMobile=window.innerWidth<=MOBILE_BREAKPOINT;
+  const shown=isMobile?list.slice(0,TGRID_MOBILE_LIMIT):list;
+  grid.innerHTML=shown.map(({t,i})=>cardHtml(t,i)).join('');
+  if(moreBtn){
+    if(isMobile && list.length>TGRID_MOBILE_LIMIT){moreBtn.style.display='inline-flex';moreBtn.innerHTML='Show More <i class="ti ti-chevron-down"></i>';}
+    else moreBtn.style.display='none';
+  }
+}
+function toggleTgridExpand(){
+  tgridExpanded=!tgridExpanded;
+  const grid=document.getElementById('tgrid');
+  const moreBtn=document.getElementById('tgridLoadMore');
+  const shown=tgridExpanded?tgridFullList:tgridFullList.slice(0,TGRID_MOBILE_LIMIT);
+  grid.innerHTML=shown.map(({t,i})=>cardHtml(t,i)).join('');
+  if(moreBtn) moreBtn.innerHTML=tgridExpanded?'Show Less <i class="ti ti-chevron-up"></i>':'Show More <i class="ti ti-chevron-down"></i>';
 }
 function initFilter(){
   document.querySelectorAll('.fchip').forEach(btn=>{
@@ -290,6 +311,9 @@ function plCard(p){
 }
 
 
+const HOF_MOBILE_LIMIT=6;
+let hofExpanded=false;
+let hofFullList=[];
 function drawPlacements(){
   let list;
   const f = plFilter;
@@ -312,11 +336,31 @@ function drawPlacements(){
   } else {
     list = PL_DATA;
   }
+  hofFullList=list;
+  hofExpanded=false;
   const g = document.getElementById('hofGrid');
+  const moreBtn=document.getElementById('hofGridLoadMore');
   if (!g) return;
-  g.innerHTML = list.length
-    ? list.map(plCard).join('')
-    : `<div style="grid-column:1/-1;text-align:center;padding:40px;color:rgba(255,255,255,.5);font-family:'Inter',sans-serif">No results for this filter.</div>`;
+  if (!list.length) {
+    g.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:40px;color:rgba(255,255,255,.5);font-family:'Inter',sans-serif">No results for this filter.</div>`;
+    if(moreBtn) moreBtn.style.display='none';
+    return;
+  }
+  const isMobile=window.innerWidth<=MOBILE_BREAKPOINT;
+  const shown=isMobile?list.slice(0,HOF_MOBILE_LIMIT):list;
+  g.innerHTML = shown.map(plCard).join('');
+  if(moreBtn){
+    if(isMobile && list.length>HOF_MOBILE_LIMIT){moreBtn.style.display='inline-flex';moreBtn.innerHTML='Show More <i class="ti ti-chevron-down"></i>';}
+    else moreBtn.style.display='none';
+  }
+}
+function toggleHofExpand(){
+  hofExpanded=!hofExpanded;
+  const g=document.getElementById('hofGrid');
+  const moreBtn=document.getElementById('hofGridLoadMore');
+  const shown=hofExpanded?hofFullList:hofFullList.slice(0,HOF_MOBILE_LIMIT);
+  g.innerHTML=shown.map(plCard).join('');
+  if(moreBtn) moreBtn.innerHTML=hofExpanded?'Show Less <i class="ti ti-chevron-up"></i>':'Show More <i class="ti ti-chevron-down"></i>';
 }
 
 
