@@ -1001,7 +1001,7 @@ function submitEnrollment(){
     fetch(base + '/api/public/enrollmentRequests', {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        Type: 'solo', Course: currentCourse ? currentCourse.title : '',
+        Type: 'solo', Course: currentCourse ? currentCourse.title : '', CourseId: currentCourse ? currentCourse.id : '',
         Name: name, Email: email, Phone: phone,
         College: (document.getElementById('emCollege') || {}).value || '',
         CouponUsed: appliedCode || ''
@@ -1067,7 +1067,7 @@ function submitFriendEnrollment() {
     fetch(base + '/api/public/enrollmentRequests', {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        Type: 'group', Course: currentCourse ? currentCourse.title : '',
+        Type: 'group', Course: currentCourse ? currentCourse.title : '', CourseId: currentCourse ? currentCourse.id : '',
         Name: name1, Email: email1, Phone: phone1, College: college1,
         Name2: name2, Email2: email2, Phone2: phone2, College2: college2,
         CouponUsed: appliedCode || ''

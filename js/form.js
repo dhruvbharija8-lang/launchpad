@@ -165,6 +165,30 @@ function enterDashboard(email) {
   showDashboard();
 }
 
+// A brand-new visitor with a real (Clerk-verified) email but no purchase/
+// enrollment yet — instead of a scary "no record found" error, give them a
+// friendly empty dashboard (0 courses, "browse courses" prompts already
+// built into renderCourseCards/renderSessions/renderMaterials) so signing
+// up feels like it worked. As soon as they buy a course, the backend
+// auto-provisions a real Students/Enrollments record and this welcome
+// shell gets replaced by their actual progress on the next login.
+function blankStudentView(email, displayName) {
+  const name = (displayName || email.split('@')[0] || 'Student').trim() || 'Student';
+  return {
+    name, email, role: 'Student',
+    avatar: (name[0] || '?').toUpperCase(),
+    courses: [], sessions: [], materials: [],
+    cvDone: 0, cvTotal: 5, piDone: 0, piTotal: 7, gdDone: 0, gdTotal: 7
+  };
+}
+function enterDashboardOrWelcome(email, displayName) {
+  const acct = (window.MBAauth && MBAauth.findAccount) ? MBAauth.findAccount(email) : null;
+  const view = acct ? buildLocalView(acct) : buildStudentView(DASH_DATA, email);
+  currentUser = view || blankStudentView(email, displayName);
+  saveSession(email);
+  showDashboard();
+}
+
 function showDashboard() {
   const loginPage = document.getElementById('loginPage');
   const dashPage  = document.getElementById('dashPage');
@@ -181,17 +205,23 @@ function showDashboard() {
 function logout() {
   saveSession(null);
   if (window.MBAauth) MBAauth.logout();
+  // Real sessions are owned by Clerk now — sign out there too so a page
+  // refresh doesn't just log the student straight back in.
+  if (window.Clerk && Clerk.user) { try { Clerk.signOut(); } catch (e) {} }
   document.getElementById('dashPage').classList.add('hidden');
   document.getElementById('dashPage').classList.remove('showing');
   document.getElementById('loginPage').classList.remove('hidden');
   document.getElementById('loginPage').classList.remove('is-exiting');
-  document.getElementById('emailInput').value = '';
-  document.getElementById('passInput').value = '';
+  const emailEl = document.getElementById('emailInput'); if (emailEl) emailEl.value = '';
+  const passEl = document.getElementById('passInput'); if (passEl) passEl.value = '';
   document.getElementById('loginError').classList.add('hidden');
   currentUser = null;
 }
 
-restoreSession();
+// NOTE: session restoration on page load is now driven by js/clerk-auth.js
+// (it checks Clerk's real signed-in session first, and only falls back to
+// this legacy localStorage-based restoreSession() for the "try the demo"
+// buttons, which never touch Clerk at all).
 
 /* ---------- INIT DASHBOARD ---------- */
 function initDashboard() {

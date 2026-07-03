@@ -562,6 +562,7 @@ function renderCheckout() {
         body: JSON.stringify({
           Name: n, Email: e, Phone: ph, College: col,
           Items: cart.map(c => c.title).join(', '),
+          ItemIds: cart.map(c => c.id).join(', '),
           Total: grandTotal,
           Coupon: appliedCoupon ? appliedCoupon.code : ''
         })
@@ -570,6 +571,19 @@ function renderCheckout() {
     if (payBtn) payBtn.disabled = false;
     openModal('paid', { total: grandTotal });
   };
+
+  // If the visitor is already signed in (via Clerk, from login.html),
+  // pre-fill their name/email so they don't have to type it again.
+  if (window.__clerkReady) {
+    window.__clerkReady.then(clerk => {
+      if (!clerk || !clerk.user) return;
+      const emailEl = document.getElementById('coEmail');
+      const nameEl = document.getElementById('coName');
+      const email = clerk.user.primaryEmailAddress ? clerk.user.primaryEmailAddress.emailAddress : '';
+      if (emailEl && email && !emailEl.value) emailEl.value = email;
+      if (nameEl && clerk.user.fullName && !nameEl.value) nameEl.value = clerk.user.fullName;
+    }).catch(() => {});
+  }
 }
 
 /* ===== CART DRAWER ===== */

@@ -89,6 +89,7 @@ const ADMIN_SECTIONS = [
       { name: 'Phone', label: 'Phone', type: 'text', col: true },
       { name: 'College', label: 'College', type: 'text' },
       { name: 'Items', label: 'Items purchased', type: 'text', col: true },
+      { name: 'ItemIds', label: 'Item course IDs (internal — used to auto-link the student dashboard)', type: 'text' },
       { name: 'Total', label: 'Total (₹)', type: 'number', col: true },
       { name: 'Coupon', label: 'Coupon used', type: 'text' },
       { name: 'submittedAt', label: 'Submitted at', type: 'text', col: true }
@@ -100,6 +101,7 @@ const ADMIN_SECTIONS = [
     fields: [
       { name: 'Type', label: 'Type', type: 'select', options: ['solo', 'group'], col: true },
       { name: 'Course', label: 'Course', type: 'text', col: true },
+      { name: 'CourseId', label: 'Course ID (internal — used to auto-link the student dashboard)', type: 'text' },
       { name: 'Name', label: 'Name (member 1)', type: 'text', col: true },
       { name: 'Email', label: 'Email (member 1)', type: 'text', col: true },
       { name: 'Phone', label: 'Phone (member 1)', type: 'text', col: true },

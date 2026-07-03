@@ -19,6 +19,68 @@ function makePublicRouter(name) {
   return router;
 }
 
+/* Auto-provisioning: when a real order/enrollment comes in, make sure the
+   student's dashboard (Students + Enrollments + Programs, matched by
+   email — see js/dashboard-data.js's buildStudentView) has something to
+   show immediately, instead of a "no student record found" dead end the
+   next time they log in via Clerk. Never overwrites existing progress —
+   only fills in what's missing. */
+function autoProvisionStudent(email, name) {
+  if (!email) return;
+  const students = db.getCollection('students');
+  const existing = students.find(s => (s.Email || '').toLowerCase() === email.toLowerCase());
+  if (existing) return existing;
+  const rec = {
+    _id: db.nextId(students),
+    Email: email, Password: '', Name: name || email.split('@')[0], Role: 'Student',
+    Avatar: ((name || email)[0] || '?').toUpperCase(),
+    CV_Done: 0, CV_Total: 5, PI_Done: 0, PI_Total: 7, GD_Done: 0, GD_Total: 7
+  };
+  students.push(rec);
+  db.setCollection('students', students);
+  return rec;
+}
+function autoProvisionProgram(courseId, courseTitle) {
+  if (!courseId) return;
+  const programs = db.getCollection('programs');
+  if (programs.some(p => p.ProgramCode === courseId)) return;
+  const rec = { _id: db.nextId(programs), ProgramCode: courseId, Type: 'Program', Title: courseTitle || courseId, Emoji: '📘' };
+  programs.push(rec);
+  db.setCollection('programs', programs);
+}
+function autoProvisionEnrollment(email, courseId) {
+  if (!email || !courseId) return;
+  const enrollments = db.getCollection('enrollments');
+  const already = enrollments.some(e => (e.Email || '').toLowerCase() === email.toLowerCase() && e.ProgramCode === courseId);
+  if (already) return;
+  const rec = { _id: db.nextId(enrollments), Email: email, ProgramCode: courseId, Progress: 0, NextSession: 'Onboarding', NextDate: 'Soon' };
+  enrollments.push(rec);
+  db.setCollection('enrollments', enrollments);
+}
+function autoProvisionFromSubmission(name, record) {
+  try {
+    if (name === 'orders' && record.Email) {
+      autoProvisionStudent(record.Email, record.Name);
+      const ids = String(record.ItemIds || '').split(',').map(s => s.trim()).filter(Boolean);
+      const titles = String(record.Items || '').split(',').map(s => s.trim());
+      ids.forEach((id, i) => {
+        autoProvisionProgram(id, titles[i]);
+        autoProvisionEnrollment(record.Email, id);
+      });
+    } else if (name === 'enrollmentRequests' && record.Email) {
+      autoProvisionStudent(record.Email, record.Name);
+      if (record.CourseId) {
+        autoProvisionProgram(record.CourseId, record.Course);
+        autoProvisionEnrollment(record.Email, record.CourseId);
+      }
+      if (record.Type === 'group' && record.Email2) {
+        autoProvisionStudent(record.Email2, record.Name2);
+        if (record.CourseId) autoProvisionEnrollment(record.Email2, record.CourseId);
+      }
+    }
+  } catch (e) { /* auto-provisioning is a nice-to-have — never let it break the actual save */ }
+}
+
 function makePublicWriteRouter(name) {
   const router = express.Router();
   router.post('/', (req, res) => {
@@ -26,6 +88,7 @@ function makePublicWriteRouter(name) {
     const record = { _id: db.nextId(rows), ...req.body, submittedAt: new Date().toISOString() };
     rows.push(record);
     db.setCollection(name, rows);
+    autoProvisionFromSubmission(name, record);
     res.status(201).json({ ok: true });
   });
   return router;

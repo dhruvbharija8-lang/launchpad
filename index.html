@@ -21,6 +21,26 @@
   <script src="js/nav-auth.js"></script>
   <script src="js/api-config.js"></script>
   <script src="js/site-settings.js"></script>
+  <script
+    async
+    crossorigin="anonymous"
+    data-clerk-publishable-key="pk_test_bm92ZWwtbGlvbi05Mi5jbGVyay5hY2NvdW50cy5kZXYk"
+    src="https://novel-lion-92.clerk.accounts.dev/npm/@clerk/clerk-js@latest/dist/clerk.browser.js"
+    type="text/javascript"
+  ></script>
+  <script>
+    // Lets the checkout form (js/main.js) pre-fill the name/email if the
+    // visitor is already signed in (via Clerk, from login.html) — resolves
+    // to the Clerk instance once its async script has actually finished
+    // loading, or to null after ~5s if it never arrives.
+    window.__clerkReady = (async function () {
+      let tries = 0;
+      while (!window.Clerk && tries < 50) { await new Promise(r => setTimeout(r, 100)); tries++; }
+      if (!window.Clerk) return null;
+      try { await Clerk.load(); } catch (e) { return null; }
+      return window.Clerk;
+    })();
+  </script>
 </head>
 
 <body>

@@ -13,6 +13,13 @@
 <link rel="stylesheet" href="css/social-rail.css"/>
 <script src="js/api-config.js"></script>
 <script src="js/site-settings.js"></script>
+<script
+  async
+  crossorigin="anonymous"
+  data-clerk-publishable-key="pk_test_bm92ZWwtbGlvbi05Mi5jbGVyay5hY2NvdW50cy5kZXYk"
+  src="https://novel-lion-92.clerk.accounts.dev/npm/@clerk/clerk-js@latest/dist/clerk.browser.js"
+  type="text/javascript"
+></script>
 </head>
 <body>
 
@@ -63,61 +70,12 @@
           <span id="loginErrorMsg">Invalid credentials. Try the demo login below.</span>
         </div>
 
-        <form onsubmit="event.preventDefault(); handleLogin();" autocomplete="on">
-          <div class="field" id="nameField" style="display:none">
-            <label>Full name</label>
-            <div class="field-wrap">
-              <i class="ti ti-user"></i>
-              <input type="text" id="nameInput" placeholder="Your name" autocomplete="name"/>
-            </div>
-          </div>
-          <div class="field">
-            <label>Email address</label>
-            <div class="field-wrap">
-              <i class="ti ti-mail"></i>
-              <input type="email" id="emailInput" placeholder="you@college.edu" autocomplete="email"/>
-            </div>
-          </div>
-          <div class="field">
-            <div class="field-row2">
-              <label>Password</label>
-              <span class="forgot">Forgot password?</span>
-            </div>
-            <div class="field-wrap">
-              <i class="ti ti-lock"></i>
-              <input type="password" id="passInput" placeholder="Enter your password" autocomplete="current-password"/>
-            </div>
-          </div>
-
-          <button class="login-btn" id="loginBtn" type="submit">
-            <i class="ti ti-arrow-right"></i> <span id="loginBtnText">Sign in to Dashboard</span>
-          </button>
-        </form>
-
-        <div class="auth-toggle" id="authToggle" onclick="toggleAuthMode()">New to MBA Partner? <a>Create an account</a></div>
-
-        <div class="login-divider">or try the demo</div>
-
-        <div class="demo-btns">
-          <button class="demo-btn" onclick="demoLogin('placement')">
-            <i class="ti ti-rocket"></i> Demo: Placement Bootcamp Student
-          </button>
-          <button class="demo-btn" onclick="demoLogin('bundle')">
-            <i class="ti ti-package"></i> Demo: Complete Bundle Student
-          </button>
-          <button class="demo-btn" onclick="demoLogin('finance')">
-            <i class="ti ti-coin"></i> Demo: Finance Track Student
-          </button>
-          <button class="demo-btn" onclick="demoLogin('marketing')">
-            <i class="ti ti-palette"></i> Demo: Marketing Bootcamp Student
-          </button>
-          <button class="demo-btn" onclick="demoLogin('consulting')">
-            <i class="ti ti-briefcase"></i> Demo: Consulting Track Student
-          </button>
-          <button class="demo-btn" onclick="demoLogin('tech')">
-            <i class="ti ti-device-laptop"></i> Demo: Tech Roles Student
-          </button>
+        <!-- Real sign-in/sign-up, handled by Clerk (see js/clerk-auth.js). -->
+        <div id="clerk-auth-loading" style="text-align:center;padding:24px 0;color:var(--ink3,#9AA0B0);font-size:13.5px">
+          <i class="ti ti-loader-2" style="font-size:20px;animation:spin .8s linear infinite;display:block;margin:0 auto 8px"></i>
+          Loading sign-in…
         </div>
+        <div id="clerk-auth"></div>
 
         <div class="login-footer">
           New student? <a href="index.html">Explore the main site</a>
@@ -328,5 +286,6 @@
   <script src="js/auth.js"></script>
   <script src="js/dashboard-data.js"></script>
   <script src="js/form.js"></script>
+  <script src="js/clerk-auth.js"></script>
 </body>
 </html>
