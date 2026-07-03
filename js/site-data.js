@@ -24,7 +24,8 @@ const SITE_SHEET = {
     colleges:   'Colleges',     // college collaborations / tie-ups
     videos:     'Videos',       // video testimonials
     gdpi:       'GDPI',         // CAT/OMETs GDPI-flagship students (CAT page)
-    hallOfFame: 'HallOfFame'    // 3-story photo+quote spotlight on the homepage
+    hallOfFame: 'HallOfFame',   // 3-story photo+quote spotlight on the homepage
+    freeSessions: 'FreeSessions' // Free Session YouTube cards (MBA + CAT toggles)
   }
 };
 
@@ -280,13 +281,22 @@ const SITE_SAMPLE = {
     { Name:'Nishant Khandelwal', School:'IIM Ahmedabad', Company:'IIM ABC Convert', Quote:'Mentors helped me craft my story for GDPI — went from 10% convert chance to actually getting in.', Photo:'https://static.wixstatic.com/media/67e5e0_9adcddd217334ce5818c5156afc9b22a~mv2.jpg/v1/crop/x_0,y_54,w_400,h_239/fill/w_550,h_329,fp_0.50_0.50,lg_1,q_80,enc_avif,quality_auto/1743480492229.jpg' },
     { Name:'Shen Shaji', School:'IIM Bangalore', Company:'Media.Net — Product Mgmt', Quote:'Live Projects boosted my CV and the Bootcamp shaped my SIP prep. Landed my dream PM role!', Photo:'https://static.wixstatic.com/media/67e5e0_44e10e2b5f034b028e21f1a59d58f4f9~mv2.jpg/v1/fill/w_550,h_329,fp_0.57_0.17,q_80,usm_0.66_1.00_0.01,enc_avif,quality_auto/1742217638011.jpg' },
     { Name:'Rutuja Thorat', School:'IIM Calcutta', Company:'Accenture Strategy', Quote:'MBA Partner cleared the information asymmetry for me. Got into Accenture Strategy for my SIP.', Photo:'https://static.wixstatic.com/media/67e5e0_cd37e4ff87d54ce2bef947d27e341bbd~mv2.jpg/v1/crop/x_0,y_507,w_1571,h_938/fill/w_550,h_329,fp_0.50_0.50,q_80,usm_0.66_1.00_0.01,enc_avif,quality_auto/IMG-20241218-WA0007_edited.jpg' }
+  ],
+
+  freeSessions: [
+    { Persona:'mba', Title:'B-School Comparison & CV Skeleton', YouTubeURL:'https://www.youtube.com/watch?v=zZXBRobYRCE&t=34s' },
+    { Persona:'mba', Title:'MBA Game Plan', YouTubeURL:'https://www.youtube.com/watch?v=eIgTrOVCyRw' },
+    { Persona:'mba', Title:'HR Contacts (Demo)', YouTubeURL:'https://www.youtube.com/watch?v=OhVg0Wf9JzU' },
+    { Persona:'cat', Title:'B-School Comparison & CV Skeleton', YouTubeURL:'https://www.youtube.com/watch?v=zZXBRobYRCE&t=34s' },
+    { Persona:'cat', Title:'MBA Game Plan', YouTubeURL:'https://www.youtube.com/watch?v=eIgTrOVCyRw' },
+    { Persona:'cat', Title:'HR Contacts (Demo)', YouTubeURL:'https://www.youtube.com/watch?v=OhVg0Wf9JzU' }
   ]
 };
 
 /* ---------- ADMIN API LOADER (preferred) ---------- */
 async function _fetchAdminApi() {
   const base = (typeof MBA_API_BASE !== 'undefined') ? MBA_API_BASE : '';
-  const names = ['placements', 'mentors', 'colleges', 'videos', 'gdpi', 'hallOfFame'];
+  const names = ['placements', 'mentors', 'colleges', 'videos', 'gdpi', 'hallOfFame', 'freeSessions'];
   const results = await Promise.all(names.map(n => fetch(base + '/api/public/' + n).then(r => r.ok ? r.json() : null).catch(() => null)));
   const out = {};
   names.forEach((n, i) => { out[n] = results[i]; });
@@ -321,15 +331,16 @@ async function loadSiteData() {
   // 2) Legacy: a directly-connected Google Sheet.
   if (!SITE_SHEET.SHEET_ID) { _siteDataCache = SITE_SAMPLE; return _siteDataCache; }
   try {
-    const [placements, mentors, colleges, videos, gdpi, hallOfFame] = await Promise.all([
+    const [placements, mentors, colleges, videos, gdpi, hallOfFame, freeSessions] = await Promise.all([
       _fetchSiteTab(SITE_SHEET.TABS.placements),
       _fetchSiteTab(SITE_SHEET.TABS.mentors),
       _fetchSiteTab(SITE_SHEET.TABS.colleges),
       _fetchSiteTab(SITE_SHEET.TABS.videos),
       _fetchSiteTab(SITE_SHEET.TABS.gdpi),
-      _fetchSiteTab(SITE_SHEET.TABS.hallOfFame)
+      _fetchSiteTab(SITE_SHEET.TABS.hallOfFame),
+      _fetchSiteTab(SITE_SHEET.TABS.freeSessions)
     ]);
-    _siteDataCache = { placements, mentors, colleges, videos, gdpi, hallOfFame };
+    _siteDataCache = { placements, mentors, colleges, videos, gdpi, hallOfFame, freeSessions };
   } catch (err) {
     console.error('Could not load site Google Sheet — using sample data.', err);
     _siteDataCache = SITE_SAMPLE;

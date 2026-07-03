@@ -124,6 +124,15 @@ const ADMIN_SECTIONS = [
     ]
   },
   {
+    key: 'freeSessions', label: 'Free Sessions (YouTube)', icon: 'ti-brand-youtube', group: 'Site content',
+    desc: 'The free YouTube masterclass cards shown under "Free Session" — pick which toggle (MBA Partner or CAT/OMETs) each video belongs to. Both sides can be edited independently here.',
+    fields: [
+      { name: 'Persona', label: 'Show on which toggle?', type: 'select', options: ['mba', 'cat'], required: true, col: true },
+      { name: 'Title', label: 'Video title', type: 'text', required: true, col: true },
+      { name: 'YouTubeURL', label: 'YouTube URL', type: 'text', required: true, col: true }
+    ]
+  },
+  {
     key: 'programs', label: 'Dashboard Programs', icon: 'ti-school', group: 'Student dashboard',
     desc: 'The catalogue of programs students can be enrolled into (student dashboard).',
     fields: [

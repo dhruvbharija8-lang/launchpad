@@ -50,7 +50,7 @@ function makeAdminRouter(name) {
 
 const COLLECTIONS = [
   'courses', 'combos', 'coupons', 'placements', 'mentors', 'colleges',
-  'videos', 'gdpi', 'hallOfFame', 'programs', 'sessions', 'materials', 'students', 'enrollments',
+  'videos', 'gdpi', 'hallOfFame', 'freeSessions', 'programs', 'sessions', 'materials', 'students', 'enrollments',
   // CAT / OMETs prep portal (kept separate from the collections above so
   // names don't clash — e.g. catMentors vs the homepage's mentors).
   'catMaterials', 'catMocks', 'catQuestions', 'catPyq', 'catPyqQuestions',

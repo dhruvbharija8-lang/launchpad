@@ -212,6 +212,97 @@ async function renderHallOfFame() {
     }
   } catch (e) { /* keep the built-in fallback stories — no big deal */ }
 }
+
+/* ===== FREE SESSIONS (YouTube) — shown on both the MBA Partner and
+   CAT/OMETs toggle views, each independently editable from the admin
+   dashboard via the "Free Sessions (YouTube)" section. ===== */
+const FREE_SESSIONS_FALLBACK = {
+  mba: [
+    { Title: 'B-School Comparison & CV Skeleton', YouTubeURL: 'https://www.youtube.com/watch?v=zZXBRobYRCE&t=34s' },
+    { Title: 'MBA Game Plan', YouTubeURL: 'https://www.youtube.com/watch?v=eIgTrOVCyRw' },
+    { Title: 'HR Contacts (Demo)', YouTubeURL: 'https://www.youtube.com/watch?v=OhVg0Wf9JzU' }
+  ],
+  cat: [
+    { Title: 'B-School Comparison & CV Skeleton', YouTubeURL: 'https://www.youtube.com/watch?v=zZXBRobYRCE&t=34s' },
+    { Title: 'MBA Game Plan', YouTubeURL: 'https://www.youtube.com/watch?v=eIgTrOVCyRw' },
+    { Title: 'HR Contacts (Demo)', YouTubeURL: 'https://www.youtube.com/watch?v=OhVg0Wf9JzU' }
+  ]
+};
+function youtubeId(url) {
+  if (!url) return '';
+  const m = url.match(/(?:youtu\.be\/|v=|\/embed\/|\/shorts\/)([a-zA-Z0-9_-]{6,})/);
+  return m ? m[1] : '';
+}
+function freeSessionCardHtml(v) {
+  const id = youtubeId(v.YouTubeURL);
+  return `<a class="free-card" href="${v.YouTubeURL}" target="_blank" rel="noopener">
+    <div class="free-thumb"><img src="https://img.youtube.com/vi/${id}/hqdefault.jpg" alt=""/><span class="free-play"><i class="ti ti-player-play-filled"></i></span></div>
+    <div class="free-body">
+      <div class="free-title">${v.Title}</div>
+      <div class="free-meta"><i class="ti ti-brand-youtube"></i> Watch on YouTube</div>
+    </div>
+  </a>`;
+}
+const FREE_SESSIONS_VISIBLE_LIMIT = 3;
+// Holds the full (unsliced) list per persona + whether it's currently expanded,
+// so toggleFreeSessions() can expand/collapse without re-fetching.
+const freeSessionsState = {
+  mba: { full: [], expanded: false },
+  cat: { full: [], expanded: false }
+};
+function paintFreeGrid(persona) {
+  const el = document.getElementById(persona === 'mba' ? 'freeGridMba' : 'freeGridCat');
+  const btn = document.getElementById(persona === 'mba' ? 'freeShowAllMba' : 'freeShowAllCat');
+  const st = freeSessionsState[persona];
+  if (!el) return;
+  const rows = st.expanded ? st.full : st.full.slice(0, FREE_SESSIONS_VISIBLE_LIMIT);
+  el.innerHTML = rows.map(freeSessionCardHtml).join('');
+  observeReveals(el);
+  if (btn) {
+    if (st.full.length > FREE_SESSIONS_VISIBLE_LIMIT) {
+      btn.style.display = 'inline-flex';
+      btn.innerHTML = st.expanded ? 'Show Less <i class="ti ti-chevron-up"></i>' : 'Show All <i class="ti ti-chevron-down"></i>';
+    } else {
+      btn.style.display = 'none';
+    }
+  }
+}
+function toggleFreeSessions(persona) {
+  const st = freeSessionsState[persona];
+  if (!st) return;
+  st.expanded = !st.expanded;
+  paintFreeGrid(persona);
+  if (!st.expanded) {
+    const el = document.getElementById(persona === 'mba' ? 'freeGridMba' : 'freeGridCat');
+    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }
+}
+async function renderFreeSessions() {
+  const elMba = document.getElementById('freeGridMba');
+  const elCat = document.getElementById('freeGridCat');
+  if (!elMba && !elCat) return;
+
+  // Paint the built-in fallback immediately so nothing sits blank.
+  freeSessionsState.mba.full = FREE_SESSIONS_FALLBACK.mba;
+  freeSessionsState.cat.full = FREE_SESSIONS_FALLBACK.cat;
+  if (elMba) paintFreeGrid('mba');
+  if (elCat) paintFreeGrid('cat');
+
+  try {
+    const base = (typeof MBA_API_BASE !== 'undefined') ? MBA_API_BASE : '';
+    const ctrl = new AbortController();
+    const timeout = setTimeout(() => ctrl.abort(), 4000);
+    const res = await fetch(base + '/api/public/freeSessions', { signal: ctrl.signal });
+    clearTimeout(timeout);
+    if (!res.ok) return;
+    const data = await res.json();
+    if (!Array.isArray(data) || !data.length) return;
+    const mbaRows = data.filter(v => (v.Persona || 'mba') === 'mba');
+    const catRows = data.filter(v => v.Persona === 'cat');
+    if (elMba && mbaRows.length) { freeSessionsState.mba.full = mbaRows; paintFreeGrid('mba'); }
+    if (elCat && catRows.length) { freeSessionsState.cat.full = catRows; paintFreeGrid('cat'); }
+  } catch (e) { /* keep the built-in fallback — no big deal */ }
+}
 function renderBenefitsCards() {
   const el = document.getElementById('benefitsCards');
   if (!el) return;
@@ -495,6 +586,7 @@ updateMobileCart();
 /* ===== INIT ===== */
 initTicker();
 renderHallOfFame();
+renderFreeSessions();
 renderBenefitsCards();
 observeReveals(document);
 // pull live prices from the Google Sheet (if configured)

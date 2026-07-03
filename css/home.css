@@ -705,3 +705,5 @@ button{cursor:pointer}
 .free-meta i{color:#E11D48;font-size:15px}
 @media(max-width:900px){.free-grid{grid-template-columns:1fr 1fr}}
 @media(max-width:600px){.free-grid{grid-template-columns:1fr}}
+.btn-ghost-navy{font-size:14px;font-weight:700;background:transparent;color:var(--navy);padding:13px 26px;border-radius:30px;border:2px solid var(--navy);cursor:pointer;font-family:inherit;transition:.2s;display:inline-flex;align-items:center;gap:8px}
+.btn-ghost-navy:hover{background:var(--navy);color:#fff}

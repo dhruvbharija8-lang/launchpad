@@ -236,6 +236,17 @@ const GDPI = [
   { Name: 'Sabeen', College: 'IIM Lucknow', Quote: 'Mock PIs made my final answers sharper and more confident.' }
 ];
 
+// The "Free Session" YouTube cards — Persona picks which toggle (mba/cat)
+// a video shows up on. Seeded with the same 3 videos on both toggles.
+const FREE_SESSIONS = [
+  { Persona: 'mba', Title: 'B-School Comparison & CV Skeleton', YouTubeURL: 'https://www.youtube.com/watch?v=zZXBRobYRCE&t=34s' },
+  { Persona: 'mba', Title: 'MBA Game Plan', YouTubeURL: 'https://www.youtube.com/watch?v=eIgTrOVCyRw' },
+  { Persona: 'mba', Title: 'HR Contacts (Demo)', YouTubeURL: 'https://www.youtube.com/watch?v=OhVg0Wf9JzU' },
+  { Persona: 'cat', Title: 'B-School Comparison & CV Skeleton', YouTubeURL: 'https://www.youtube.com/watch?v=zZXBRobYRCE&t=34s' },
+  { Persona: 'cat', Title: 'MBA Game Plan', YouTubeURL: 'https://www.youtube.com/watch?v=eIgTrOVCyRw' },
+  { Persona: 'cat', Title: 'HR Contacts (Demo)', YouTubeURL: 'https://www.youtube.com/watch?v=OhVg0Wf9JzU' }
+];
+
 // The 3-story photo+quote spotlight at the top of the homepage's "Hall of Fame" section.
 const HALL_OF_FAME = [
   { Name: 'Nishant Khandelwal', School: 'IIM Ahmedabad', Company: 'IIM ABC Convert', Quote: 'Mentors helped me craft my story for GDPI — went from 10% convert chance to actually getting in.', Photo: 'https://static.wixstatic.com/media/67e5e0_9adcddd217334ce5818c5156afc9b22a~mv2.jpg/v1/crop/x_0,y_54,w_400,h_239/fill/w_550,h_329,fp_0.50_0.50,lg_1,q_80,enc_avif,quality_auto/1743480492229.jpg' },
@@ -349,6 +360,7 @@ function run(force) {
     videos: withIds(VIDEOS),
     gdpi: withIds(GDPI),
     hallOfFame: withIds(HALL_OF_FAME),
+    freeSessions: withIds(FREE_SESSIONS),
     programs: withIds(PROGRAMS),
     sessions: withIds(SESSIONS),
     materials: withIds(MATERIALS),
@@ -383,7 +395,7 @@ function backfillMissingCollections() {
     catMaterials: CAT_MATERIALS, catMocks: CAT_MOCKS, catQuestions: CAT_QUESTIONS,
     catPyq: CAT_PYQ, catPyqQuestions: CAT_PYQ_QUESTIONS, catLeaderboard: CAT_LEADERBOARD,
     catGdpi: CAT_GDPI, catDomainQA: CAT_DOMAINQA, catMentors: CAT_MENTORS, catPricing: CAT_PRICING,
-    hallOfFame: HALL_OF_FAME
+    hallOfFame: HALL_OF_FAME, freeSessions: FREE_SESSIONS
   };
   let changed = false;
   Object.keys(DEFAULTS).forEach(key => {
