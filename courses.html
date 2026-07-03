@@ -11,6 +11,7 @@
 <link rel="stylesheet" href="css/courses.css">
 <link rel="stylesheet" href="css/chatbot-widget.css"/>
 <link rel="stylesheet" href="css/fonts.css"/>
+<link rel="stylesheet" href="css/social-rail.css"/>
 <style>
 .nav-free-res{position:relative;display:inline-flex;align-items:center}
 .nav-free-btn{display:inline-flex;align-items:center;gap:5px}
@@ -284,6 +285,12 @@ document.addEventListener('DOMContentLoaded',function(){
       <h1 id="headline"><span class="w" style="animation-delay:.05s">Find</span> <span class="w" style="animation-delay:.2s">your</span> <span class="w" style="animation-delay:.35s">edge.</span></h1>
       <p class="anim" style="animation-delay:.6s">Placement bootcamp, live project across domains and case competition prep — built to get you placed.</p>
 
+      <div class="search-container anim" style="animation-delay:.75s">
+        <div class="nav-search">
+          <i class="ti ti-search"></i>
+          <input id="searchInputHero" placeholder="Search courses & offerings" aria-label="Search"/>
+        </div>
+      </div>
     </div>
     
     <div class="trust-strip reveal">
@@ -466,6 +473,21 @@ document.addEventListener('DOMContentLoaded',function(){
   </div>
 </footer>
 
+<!-- FLOATING SOCIAL RAIL -->
+<div class="float-social" id="floatSocial">
+  <a class="float-social-btn whatsapp" href="https://chat.whatsapp.com/EdyvGJbQoV9Jj6eC0slSx9" target="_blank" aria-label="WhatsApp Community" title="Join WhatsApp Community">
+    <i class="ti ti-brand-whatsapp"></i><span class="float-social-label">WhatsApp</span>
+  </a>
+  <a class="float-social-btn instagram" href="https://documents1.netlify.app/?open=instagram" target="_blank" aria-label="Follow on Instagram" title="Follow on Instagram">
+    <i class="ti ti-brand-instagram"></i><span class="float-social-label">Instagram</span>
+  </a>
+  <a class="float-social-btn linkedin" href="https://documents1.netlify.app/?open=linkedin" target="_blank" aria-label="LinkedIn" title="Connect on LinkedIn">
+    <i class="ti ti-brand-linkedin"></i><span class="float-social-label">LinkedIn</span>
+  </a>
+  <a class="float-social-btn youtube" href="https://documents1.netlify.app/?open=youtube" target="_blank" aria-label="YouTube" title="Watch on YouTube">
+    <i class="ti ti-brand-youtube"></i><span class="float-social-label">YouTube</span>
+  </a>
+</div>
 
   <script src="js/auth.js"></script>
   <script src="js/courses-dynamic.js"></script>

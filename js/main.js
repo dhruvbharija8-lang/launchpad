@@ -167,10 +167,8 @@ window.onpopstate = () => {
 };
 
 /* ===== HOME RENDERS ===== */
-function renderHallOfFame() {
-  const el = document.getElementById('hofGrid');
-  if (!el) return;
-  el.innerHTML = HOF.map(h => `<div class="hof-card reveal">
+function hofCardHtml(h) {
+  return `<div class="hof-card reveal">
     <div class="hof-img-wrap">
       <img src="${IMG(h.img, 500)}" alt="${h.name}" loading="lazy"/>
     </div>
@@ -182,7 +180,24 @@ function renderHallOfFame() {
       <div class="hof-school">${h.school}</div>
       <div class="hof-quote">"${h.quote}"</div>
     </div>
-  </div>`).join('');
+  </div>`;
+}
+async function renderHallOfFame() {
+  const el = document.getElementById('hofGrid');
+  if (!el) return;
+  // Admin-editable "Hall of Fame Spotlight" section (falls back to the
+  // built-in HOF stories if the admin dashboard has nothing set yet or
+  // the API is unreachable — the site never breaks because of this).
+  let stories = HOF;
+  try {
+    if (typeof loadSiteData === 'function') {
+      const data = await loadSiteData();
+      if (Array.isArray(data.hallOfFame) && data.hallOfFame.length) {
+        stories = data.hallOfFame.map(h => ({ name: h.Name, school: h.School, company: h.Company, quote: h.Quote, img: h.Photo }));
+      }
+    }
+  } catch (e) { /* keep the built-in fallback stories */ }
+  el.innerHTML = stories.map(hofCardHtml).join('');
 }
 function renderBenefitsCards() {
   const el = document.getElementById('benefitsCards');

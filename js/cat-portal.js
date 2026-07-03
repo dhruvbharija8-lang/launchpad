@@ -14,7 +14,7 @@
 const CAT_SHEET = {
   SHEET_ID: '',     // <-- paste your Google Sheet ID here to go live
   TABS: {
-    materials:'CAT_Materials', mocks:'CAT_Mocks', questions:'CAT_Questions',
+    materials:'CAT_Materials', mocks:'CAT_Mocks', questions:'CAT_Questions', pyq:'CAT_PYQ',
     leaderboard:'CAT_Leaderboard', gdpi:'CAT_GDPI', domainqa:'CAT_DomainQA',
     mentors:'CAT_Mentors', pricing:'CAT_Pricing'
   }
@@ -30,13 +30,21 @@ const CAT_SAMPLE = {
     { Section:'LRDI', Title:'LRDI Set Bank',                 Meta:'200+ practice sets',      Type:'pdf',   Link:'#' },
     { Section:'VARC', Title:'Daily RC Practice',             Meta:'A fresh RC every day',    Type:'pdf',   Link:'#' }
   ],
+  // 8 exams covered — used to power the exam dropdown on Mock Tests & PYQ.
+  exams: ['CAT','XAT','SNAP','NMAT','MAH-CET','IIFT','CMAT','TISSNET'],
   mocks: [
-    { MockID:'varc-1',  Title:'VARC Mock 1',        Section:'VARC', Duration:40, Status:'live',   Attempts:1240, Note:'' },
-    { MockID:'qa-1',    Title:'QA Mock 1',          Section:'QA',   Duration:40, Status:'coming', Attempts:0,    Note:'Coming live on 28th June' },
-    { MockID:'lrdi-1',  Title:'LRDI Mock 1',        Section:'LRDI', Duration:40, Status:'coming', Attempts:0,    Note:'Coming soon' },
-    { MockID:'varc-2',  Title:'VARC Sectional 2',   Section:'VARC', Duration:40, Status:'coming', Attempts:0,    Note:'Coming soon' },
-    { MockID:'full-1',  Title:'Full-Length Mock 1', Section:'Full', Duration:120,Status:'coming', Attempts:0,    Note:'Coming soon' },
-    { MockID:'omet-1',  Title:'SNAP / NMAT / XAT Mock 1', Section:'OMET', Duration:60, Status:'coming', Attempts:0, Note:'Coming soon' }
+    { MockID:'varc-1',   Exam:'CAT',     Title:'VARC Mock 1',            Section:'VARC', Duration:40, Status:'live',   Attempts:1240, Note:'' },
+    { MockID:'qa-1',     Exam:'CAT',     Title:'QA Mock 1',              Section:'QA',   Duration:40, Status:'coming', Attempts:0,    Note:'Coming live on 28th June' },
+    { MockID:'lrdi-1',   Exam:'CAT',     Title:'LRDI Mock 1',            Section:'LRDI', Duration:40, Status:'coming', Attempts:0,    Note:'Coming soon' },
+    { MockID:'varc-2',   Exam:'CAT',     Title:'VARC Sectional 2',       Section:'VARC', Duration:40, Status:'coming', Attempts:0,    Note:'Coming soon' },
+    { MockID:'full-1',   Exam:'CAT',     Title:'Full-Length Mock 1',     Section:'Full', Duration:120,Status:'coming', Attempts:0,    Note:'Coming soon' },
+    { MockID:'xat-1',    Exam:'XAT',     Title:'XAT Verbal + Decision Making', Section:'VARC+DM', Duration:65, Status:'coming', Attempts:0, Note:'Coming soon' },
+    { MockID:'snap-1',   Exam:'SNAP',    Title:'SNAP QA + DI Mock 1',    Section:'QA+DI',Duration:60, Status:'coming', Attempts:0,    Note:'Coming soon' },
+    { MockID:'nmat-1',   Exam:'NMAT',    Title:'NMAT Language Skills Mock 1', Section:'Language', Duration:28, Status:'coming', Attempts:0, Note:'Coming soon' },
+    { MockID:'mahcet-1', Exam:'MAH-CET', Title:'MAH-CET Verbal Ability Mock 1', Section:'Verbal', Duration:36, Status:'coming', Attempts:0, Note:'Coming soon' },
+    { MockID:'iift-1',   Exam:'IIFT',    Title:'IIFT General Awareness Mock 1', Section:'GK', Duration:40, Status:'coming', Attempts:0, Note:'Coming soon' },
+    { MockID:'cmat-1',   Exam:'CMAT',    Title:'CMAT Quant Aptitude Mock 1', Section:'QA', Duration:45, Status:'coming', Attempts:0, Note:'Coming soon' },
+    { MockID:'tissnet-1',Exam:'TISSNET', Title:'TISSNET English Proficiency Mock 1', Section:'English', Duration:40, Status:'coming', Attempts:0, Note:'Coming soon' }
   ],
   // questions for the one live demo mock (varc-1). Correct = A/B/C/D.
   questions: [
@@ -45,6 +53,19 @@ const CAT_SAMPLE = {
     { MockID:'varc-1', Q:'Para-jumble: the opening sentence is usually…', OptionA:'A specific example', OptionB:'A general/independent statement', OptionC:'A pronoun reference', OptionD:'A conclusion', Correct:'B', Solution:'Openers are typically general, standalone statements.' },
     { MockID:'varc-1', Q:'Choose the antonym of “meticulous”.', OptionA:'Careless', OptionB:'Precise', OptionC:'Thorough', OptionD:'Diligent', Correct:'A', Solution:'Meticulous = careful; antonym is careless.' },
     { MockID:'varc-1', Q:'In an RC, the “tone” of the author refers to…', OptionA:'The length of the passage', OptionB:'The author’s attitude', OptionC:'The number of paragraphs', OptionD:'The vocabulary level', Correct:'B', Solution:'Tone = the author’s attitude toward the subject.' }
+  ],
+  // Previous Year Questions — real past-paper practice, grouped by exam/year/section.
+  pyq: [
+    { Exam:'CAT', Year:'2024', Section:'VARC', Title:'CAT 2024 VARC — Slot 1', Meta:'24 Qs · Full solutions', MockID:'pyq-cat24-varc-s1', Link:'' },
+    { Exam:'CAT', Year:'2024', Section:'VARC', Title:'CAT 2024 VARC — Slot 2', Meta:'24 Qs · Full solutions', MockID:'pyq-cat24-varc-s2', Link:'' },
+    { Exam:'CAT', Year:'2024', Section:'QA',   Title:'CAT 2024 Quant — Slot 1', Meta:'22 Qs · Full solutions', MockID:'pyq-cat24-qa-s1', Link:'' },
+    { Exam:'CAT', Year:'2024', Section:'LRDI', Title:'CAT 2024 LRDI — Slot 1', Meta:'20 Qs · Full solutions', MockID:'pyq-cat24-lrdi-s1', Link:'' },
+    { Exam:'CAT', Year:'2023', Section:'VARC', Title:'CAT 2023 VARC — Slot 1', Meta:'24 Qs · Full solutions', MockID:'pyq-cat23-varc-s1', Link:'' },
+    { Exam:'CAT', Year:'2023', Section:'QA',   Title:'CAT 2023 Quant — Slot 1', Meta:'22 Qs · Full solutions', MockID:'pyq-cat23-qa-s1', Link:'' },
+    { Exam:'CAT', Year:'2023', Section:'LRDI', Title:'CAT 2023 LRDI — Slot 1', Meta:'20 Qs · Full solutions', MockID:'pyq-cat23-lrdi-s1', Link:'' },
+    { Exam:'CAT', Year:'2022', Section:'VARC', Title:'CAT 2022 VARC — Slot 1', Meta:'24 Qs · Full solutions', MockID:'pyq-cat22-varc-s1', Link:'' },
+    { Exam:'XAT', Year:'2024', Section:'VARC', Title:'XAT 2024 Verbal Ability', Meta:'26 Qs · Full solutions', MockID:'', Link:'#' },
+    { Exam:'SNAP',Year:'2024', Section:'QA',   Title:'SNAP 2024 Quant & DI', Meta:'30 Qs · Full solutions', MockID:'', Link:'#' }
   ],
   leaderboard: [
     { Rank:1, Name:'Aarav S.',   College:'IIM Lucknow',   Score:'48/50', Mock:'VARC Mock 1' },
@@ -84,7 +105,12 @@ const CAT_SAMPLE = {
   ]
 };
 
-/* ---------------- LOADER (gviz) ---------------- */
+/* ---------------- LOADER ----------------
+   Primary source is this site's own admin dashboard (/api/public/cat*) —
+   whatever the admin edits/creates there shows up here automatically.
+   The Google Sheet path below still works if you ever set a SHEET_ID,
+   and CAT_SAMPLE is the last-resort fallback if neither is reachable
+   (e.g. viewing the site offline / API down). */
 async function _catTab(tab){
   const url = `https://docs.google.com/spreadsheets/d/${CAT_SHEET.SHEET_ID}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent(tab)}`;
   const res = await fetch(url); const text = await res.text();
@@ -92,19 +118,48 @@ async function _catTab(tab){
   const cols = json.table.cols.map(c=>(c.label||c.id||'').trim());
   return json.table.rows.map(r=>{const o={};r.c.forEach((c,i)=>o[cols[i]]=c?c.v:'');return o;});
 }
+const CAT_API = {
+  materials:'catMaterials', mocks:'catMocks', pyq:'catPyq',
+  leaderboard:'catLeaderboard', gdpi:'catGdpi', domainqa:'catDomainQA',
+  mentors:'catMentors', pricing:'catPricing'
+};
 let _catCache=null;
 async function loadCatData(){
   if(_catCache) return _catCache;
-  if(!CAT_SHEET.SHEET_ID){ _catCache=CAT_SAMPLE; return _catCache; }
+
+  if(CAT_SHEET.SHEET_ID){
+    try{
+      const t=CAT_SHEET.TABS;
+      const [materials,mocks,questions,pyq,leaderboard,gdpi,domainqa,mentors,pricing]=await Promise.all([
+        _catTab(t.materials),_catTab(t.mocks),_catTab(t.questions),_catTab(t.pyq),_catTab(t.leaderboard),
+        _catTab(t.gdpi),_catTab(t.domainqa),_catTab(t.mentors),_catTab(t.pricing)
+      ]);
+      _catCache={materials,mocks,questions,pyq,leaderboard,gdpi,domainqa,mentors,pricing,exams:CAT_SAMPLE.exams};
+      return _catCache;
+    }catch(e){ console.error('CAT sheet load failed — trying the admin dashboard instead.',e); }
+  }
+
   try{
-    const t=CAT_SHEET.TABS;
-    const [materials,mocks,questions,leaderboard,gdpi,domainqa,mentors,pricing]=await Promise.all([
-      _catTab(t.materials),_catTab(t.mocks),_catTab(t.questions),_catTab(t.leaderboard),
-      _catTab(t.gdpi),_catTab(t.domainqa),_catTab(t.mentors),_catTab(t.pricing)
-    ]);
-    _catCache={materials,mocks,questions,leaderboard,gdpi,domainqa,mentors,pricing};
-  }catch(e){ console.error('CAT sheet load failed — using sample data.',e); _catCache=CAT_SAMPLE; }
+    const keys=Object.keys(CAT_API);
+    const results=await Promise.all(keys.map(k=>fetch('/api/public/'+CAT_API[k]).then(r=>{
+      if(!r.ok) throw new Error('bad response for '+CAT_API[k]);
+      return r.json();
+    })));
+    const data={}; keys.forEach((k,i)=>data[k]=results[i]);
+    data.exams=CAT_SAMPLE.exams;
+    _catCache=data;
+  }catch(e){
+    console.warn('CAT admin API not reachable — using built-in sample data.',e);
+    _catCache=CAT_SAMPLE;
+  }
   return _catCache;
+}
+
+/* A mock/PYQ with a Deadline in the past is treated as no longer available. */
+function isCatExpired(entry){
+  if(!entry || !entry.Deadline) return false;
+  const d=new Date(entry.Deadline+'T23:59:59');
+  return !isNaN(d.getTime()) && d.getTime() < Date.now();
 }
 
 /* ---------------- RENDER ---------------- */
@@ -124,18 +179,77 @@ function renderMaterials(d){
       <div class="cp-card-act">${has?'<i class="ti ti-external-link"></i> Open / Download':'<i class="ti ti-clock"></i> Coming soon'}</div>
     </div>`;}).join('');
 }
+let mockExamFilter='all';
 function renderMocks(d){
   const el=_h('catMocks'); if(!el)return;
-  el.innerHTML=d.mocks.map(m=>{
+  const exams=['all',...(d.exams||[...new Set(d.mocks.map(m=>m.Exam).filter(Boolean))])];
+  const selEl=_h('catMockExamSelect');
+  if(selEl){
+    selEl.innerHTML=exams.map(x=>`<option value="${x}" ${x===mockExamFilter?'selected':''}>${x==='all'?'All exams':x}</option>`).join('');
+    selEl.onchange=()=>{ mockExamFilter=selEl.value; renderMocks(d); };
+  }
+  const list=mockExamFilter==='all'?d.mocks:d.mocks.filter(m=>m.Exam===mockExamFilter);
+  el.innerHTML=list.map(m=>{
     const live=String(m.Status).toLowerCase()==='live';
-    return `<div class="cp-mock${live?'':' soon'}">
-      <div class="cp-mock-top"><span class="cp-sec-tag">${m.Section}</span><span class="cp-mock-dur"><i class="ti ti-clock"></i> ${m.Duration} min</span></div>
+    const expired=isCatExpired(m);
+    const usable=live&&!expired;
+    const metaText=expired?'Deadline passed':(live?`${(m.Attempts||0).toLocaleString('en-IN')} attempts`:(m.Note||'Coming soon'));
+    return `<div class="cp-mock${usable?'':' soon'}">
+      <div class="cp-mock-top"><span class="cp-sec-tag">${m.Exam?m.Exam+' · ':''}${m.Section}</span><span class="cp-mock-dur"><i class="ti ti-clock"></i> ${m.Duration} min</span></div>
       <div class="cp-mock-title">${m.Title}</div>
-      <div class="cp-mock-meta">${live?`${(m.Attempts||0).toLocaleString('en-IN')} attempts`:(m.Note||'Coming soon')}</div>
-      ${live?`<button class="cp-mock-btn" onclick="startMock('${m.MockID}')"><i class="ti ti-player-play"></i> Start mock</button>`
-             :`<button class="cp-mock-btn ghost" disabled>${m.Note||'Coming soon'}</button>`}
-    </div>`;}).join('');
+      <div class="cp-mock-meta">${metaText}</div>
+      ${usable?`<button class="cp-mock-btn" onclick="startMock('${m.MockID}')"><i class="ti ti-player-play"></i> Start mock</button>`
+             :`<button class="cp-mock-btn ghost" disabled>${expired?'Deadline passed':(m.Note||'Coming soon')}</button>`}
+    </div>`;}).join('') || '<p style="color:var(--ink3);font-family:Inter,sans-serif;font-size:13px">No mocks for this exam yet.</p>';
 }
+/* ---------------- PYQ (Previous Year Questions) ---------------- */
+let pyqFilter='all';
+let pyqExamFilter='all';
+function renderPyq(d){
+  const el=_h('catPyq'); if(!el)return;
+  const list=(d.pyq||[]);
+
+  // Exam dropdown
+  const exams=['all',...(d.exams||[...new Set(list.map(p=>p.Exam).filter(Boolean))])];
+  const selEl=_h('catPyqExamSelect');
+  if(selEl){
+    selEl.innerHTML=exams.map(x=>`<option value="${x}" ${x===pyqExamFilter?'selected':''}>${x==='all'?'All exams':x}</option>`).join('');
+    selEl.onchange=()=>{ pyqExamFilter=selEl.value; pyqFilter='all'; renderPyq(d); };
+  }
+  const byExam=pyqExamFilter==='all'?list:list.filter(p=>p.Exam===pyqExamFilter);
+
+  // Year chips (scoped to the currently selected exam)
+  const years=['all',...new Set(byExam.map(p=>p.Year))].sort().reverse();
+  const chipsEl=_h('catPyqFilters');
+  if(chipsEl){
+    chipsEl.innerHTML=years.map(y=>`<button class="cp-pyq-chip ${y===pyqFilter?'on':''}" data-y="${y}">${y==='all'?'All years':y}</button>`).join('');
+    chipsEl.querySelectorAll('.cp-pyq-chip').forEach(b=>b.onclick=()=>{ pyqFilter=b.dataset.y; renderPyq(d); });
+  }
+  const filtered=pyqFilter==='all'?byExam:byExam.filter(p=>p.Year===pyqFilter);
+  el.innerHTML=filtered.map(p=>{
+    const expired=isCatExpired(p);
+    // PdfUrl (admin upload) also counts as an openable paper, alongside the legacy Link field.
+    const pdf=p.PdfUrl&&p.PdfUrl!=='';
+    const has=(p.Link&&p.Link!=='#'&&p.Link!=='')||pdf;
+    const playable=!!p.MockID&&!expired;
+    const openUrl=pdf?p.PdfUrl:p.Link;
+    let action='';
+    if(playable) action=`onclick="startMock('${p.MockID}')"`;
+    else if(has&&!expired) action=`onclick="window.open('${openUrl}','_blank')"`;
+    let actLabel='<i class="ti ti-clock"></i> Coming soon';
+    if(expired) actLabel='<i class="ti ti-lock"></i> Deadline passed';
+    else if(playable) actLabel='<i class="ti ti-player-play"></i> Attempt now';
+    else if(has) actLabel='<i class="ti ti-external-link"></i> Open / Download';
+    return `<div class="cp-card" ${action}>
+      <span class="cp-sec-tag">${p.Exam} ${p.Year} · ${p.Section}</span>
+      <div class="cp-ico"><i class="ti ${playable?'ti-player-play':'ti-file-text'}"></i></div>
+      <div class="cp-card-title">${p.Title}</div>
+      <div class="cp-card-meta">${p.Meta||''}</div>
+      <div class="cp-card-act">${actLabel}</div>
+    </div>`;
+  }).join('') || '<p style="color:var(--ink3);font-family:Inter,sans-serif;font-size:13px">No past papers for this year yet.</p>';
+}
+
 function renderLeaderboard(d){
   const el=_h('catLeaderboard'); if(!el)return;
   el.innerHTML=`<table class="cp-lb"><thead><tr><th>#</th><th>Name</th><th>College</th><th>Mock</th><th>Score</th></tr></thead><tbody>${
@@ -185,52 +299,27 @@ function renderPricing(d){
     </div>`;}).join('');
 }
 
-/* ---------------- MOCK PLAYER (demo; client-side scoring) ---------------- */
-let MOCK={id:null,qs:[],timer:null,left:0};
+/* ---------------- MOCK PLAYER ----------------
+   "Start mock" launches the full CAT-style exam engine (mock-exam.html)
+   — sectional timer, question palette, and a detailed results/
+   leaderboard screen — instead of the old plain-question popup. */
 function startMock(id){
-  const qs=(CAT_DATA.questions||[]).filter(q=>q.MockID===id);
-  const mock=(CAT_DATA.mocks||[]).find(m=>m.MockID===id)||{};
-  if(!qs.length){ alert('This mock is coming soon.'); return; }
-  MOCK={id,qs,timer:null,left:(Number(mock.Duration)||40)*60};
-  const body=_h('mockBody');
-  body.innerHTML=`<div class="mock-q-list">${qs.map((q,i)=>`
-    <div class="mock-q">
-      <div class="mock-q-head">Q${i+1}. ${q.Q}</div>
-      ${['A','B','C','D'].map(opt=>`<label class="mock-opt"><input type="radio" name="q${i}" value="${opt}"> <b>${opt}.</b> ${q['Option'+opt]}</label>`).join('')}
-    </div>`).join('')}</div>
-    <button class="mock-submit" onclick="submitMock()">Submit mock</button>`;
-  _h('mockTitle').textContent=mock.Title||'Mock';
-  _h('mockModal').classList.add('open'); document.body.style.overflow='hidden';
-  tickMock();
+  // Mock tests carry a Status/Duration; PYQ papers are attemptable the moment
+  // they have a MockID (no "coming soon" gate needed for those).
+  const mock=(CAT_DATA.mocks||[]).find(m=>m.MockID===id);
+  const pyq=(CAT_DATA.pyq||[]).find(p=>p.MockID===id);
+  const entry=mock||pyq;
+  if(mock && String(mock.Status||'').toLowerCase()!=='live'){ alert('This mock is coming soon.'); return; }
+  if(!entry){ alert('This is coming soon.'); return; }
+  if(isCatExpired(entry)){ alert('The deadline for this test has passed.'); return; }
+  const dur=Number(entry.Duration)||40;
+  const name=encodeURIComponent(entry.Title||'CAT Mock');
+  window.location.href=`mock-exam.html?mock=${encodeURIComponent(id)}&name=${name}&dur=${dur}`;
 }
-function tickMock(){
-  const t=_h('mockTimer');
-  function fmt(s){const m=Math.floor(s/60),x=s%60;return m+':'+String(x).padStart(2,'0');}
-  if(t)t.textContent=fmt(MOCK.left);
-  MOCK.timer=setInterval(()=>{ MOCK.left--; if(t)t.textContent=fmt(Math.max(MOCK.left,0)); if(MOCK.left<=0){clearInterval(MOCK.timer);submitMock();} },1000);
-}
-function submitMock(){
-  if(MOCK.timer)clearInterval(MOCK.timer);
-  let correct=0;
-  const rev=MOCK.qs.map((q,i)=>{
-    const sel=(document.querySelector(`input[name="q${i}"]:checked`)||{}).value||'—';
-    const ok=sel===q.Correct; if(ok)correct++;
-    return `<div class="mock-rev ${ok?'ok':'no'}"><div class="mock-q-head">Q${i+1}. ${q.Q}</div>
-      <div class="mock-rev-line">Your answer: <b>${sel}</b> · Correct: <b>${q.Correct}</b></div>
-      <div class="mock-rev-sol">${q.Solution||''}</div></div>`;
-  }).join('');
-  _h('mockBody').innerHTML=`<div class="mock-result">
-      <div class="mock-score">${correct}<span>/${MOCK.qs.length}</span></div>
-      <div class="mock-score-lbl">Your score</div>
-    </div>${rev}
-    <p class="mock-note">Demo scoring runs in the browser. On the live site, scoring &amp; the leaderboard run securely server-side (answers stay hidden until you submit).</p>`;
-}
-function closeMock(){ if(MOCK.timer)clearInterval(MOCK.timer); _h('mockModal').classList.remove('open'); document.body.style.overflow=''; }
 
 /* ---------------- INIT ---------------- */
 (async function(){
   CAT_DATA=await loadCatData();
-  renderMaterials(CAT_DATA); renderMocks(CAT_DATA); renderLeaderboard(CAT_DATA);
+  renderMaterials(CAT_DATA); renderMocks(CAT_DATA); renderPyq(CAT_DATA); renderLeaderboard(CAT_DATA);
   renderGdpi(CAT_DATA); renderDomainQA(CAT_DATA); renderMentors(CAT_DATA); renderPricing(CAT_DATA);
 })();
-document.addEventListener('keydown',e=>{if(e.key==='Escape')closeMock();});

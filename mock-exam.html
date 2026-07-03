@@ -262,7 +262,6 @@ button{cursor:pointer;font-family:inherit}
         <span><i class="ti ti-clock"></i> <span id="preDuration">40 minutes</span></span>
         <span><i class="ti ti-question-mark"></i> <span id="preQCount">5 questions</span></span>
         <span><i class="ti ti-award"></i> +3 / −1 marking</span>
-        <span><i class="ti ti-shield-check"></i> Proctored</span>
       </div>
     </div>
     <div class="pre-body">
@@ -270,14 +269,11 @@ button{cursor:pointer;font-family:inherit}
       <div class="pre-section">
         <h3><i class="ti ti-list-check"></i> Instructions</h3>
         <ul class="instr-list">
-          <li>This exam will open in full-screen mode. Do <strong>not</strong> exit full-screen during the exam.</li>
-          <li>Switching tabs or windows will be detected and counted as a violation.</li>
           <li>Each correct answer gives <strong>+3 marks</strong>. Wrong answer deducts <strong>−1 mark</strong>. Unattempted = 0.</li>
           <li>Click <strong>Save &amp; Next</strong> to save your answer and move forward. Use the palette to jump to any question.</li>
           <li>You can <strong>Mark for Review</strong> to revisit a question — marked questions with answers are still evaluated.</li>
-          <li>Right-click, copy, and paste are disabled during the exam.</li>
-          <li>Webcam monitoring is active. Ensure good lighting and keep your face visible.</li>
           <li>The exam will auto-submit when the timer reaches zero.</li>
+          <li>You can attempt this mock as many times as you like — it's for practice.</li>
         </ul>
       </div>
       <!-- QUESTION LEGEND -->
@@ -291,17 +287,6 @@ button{cursor:pointer;font-family:inherit}
           <div class="leg"><div class="leg-sq current"></div> Current</div>
         </div>
       </div>
-      <!-- PERMISSIONS -->
-      <div class="pre-section">
-        <h3><i class="ti ti-shield-lock"></i> Permissions Required</h3>
-        <div class="perm-grid">
-          <div class="perm-item" id="permCam"><div class="perm-ico"><i class="ti ti-video"></i></div><span>Camera (Webcam monitoring)</span><span class="perm-status">—</span></div>
-          <div class="perm-item" id="permMic"><div class="perm-ico"><i class="ti ti-microphone"></i></div><span>Microphone (Audio check)</span><span class="perm-status">—</span></div>
-          <div class="perm-item" id="permFs"><div class="perm-ico"><i class="ti ti-maximize"></i></div><span>Full-Screen Mode</span><span class="perm-status">Click Start</span></div>
-          <div class="perm-item granted" id="permClip"><div class="perm-ico"><i class="ti ti-clipboard-off"></i></div><span>Clipboard Restricted</span><span class="perm-status">Active</span></div>
-        </div>
-        <button class="start-btn" id="requestPermsBtn" onclick="requestPerms()" style="margin-top:14px;max-width:260px;padding:11px 24px;font-size:13px"><i class="ti ti-shield-check"></i> Request Camera & Mic</button>
-      </div>
       <!-- CANDIDATE FORM -->
       <div class="pre-section">
         <h3><i class="ti ti-user"></i> Candidate Details</h3>
@@ -312,7 +297,7 @@ button{cursor:pointer;font-family:inherit}
         <input class="cand-input" id="candCollege" placeholder="College / B-School" style="width:100%;margin-bottom:12px"/>
         <div class="check-row">
           <input type="checkbox" id="candAgree"/>
-          <label for="candAgree">I have read the instructions and agree to follow exam rules. I understand that violations may result in my exam being terminated.</label>
+          <label for="candAgree">I have read the instructions and am ready to begin.</label>
         </div>
         <button class="start-btn" id="startExamBtn" onclick="startExam()" disabled>
           <i class="ti ti-player-play-filled"></i> Start Exam
@@ -328,7 +313,6 @@ button{cursor:pointer;font-family:inherit}
   <div class="exam-bar">
     <span class="exam-bar-brand">MBA <span>Partner</span></span>
     <span class="exam-bar-title" id="examBarTitle">VARC Mock 1</span>
-    <div class="violation-badge" id="violBadge"></div>
     <div class="exam-timer-wrap">
       <div style="font-size:11px;color:#64748b;text-align:center;margin-right:4px">Time Left</div>
       <div class="exam-timer" id="examTimer">40:00</div>
@@ -341,12 +325,6 @@ button{cursor:pointer;font-family:inherit}
     <div class="exam-sidebar">
       <div class="sidebar-head"><h4>Question Palette</h4></div>
       <div class="q-palette" id="qPalette"></div>
-      <!-- WEBCAM -->
-      <div class="cam-preview" id="camPreview">
-        <video id="camVideo" autoplay muted playsinline></video>
-        <div class="cam-status" id="camStatusBadge">LIVE</div>
-      </div>
-      <div class="cam-label" id="camLabel">Webcam monitoring active</div>
       <div class="sidebar-stats">
         <div class="ss-row"><span>Answered</span><span class="ss-val ans" id="ssAns">0</span></div>
         <div class="ss-row"><span>Marked</span><span class="ss-val mrk" id="ssMrk">0</span></div>
@@ -387,18 +365,6 @@ button{cursor:pointer;font-family:inherit}
   </div>
 </div>
 
-<!-- VIOLATION WARNING MODAL -->
-<div class="violation-modal" id="violModal">
-  <div class="violation-box">
-    <div class="violation-ico"><i class="ti ti-alert-triangle"></i></div>
-    <h3>Violation Detected!</h3>
-    <p id="violMsg">You left the exam window. This has been recorded.</p>
-    <div class="violation-count">Violation <span id="violCountDisplay">1</span> of 3</div>
-    <p style="font-size:12px;color:#64748b;font-family:'Inter',sans-serif">After 3 violations, your exam will be auto-submitted.</p>
-    <button class="violation-ok" onclick="dismissViolation()"><i class="ti ti-shield-check"></i> I understand — Return to Exam</button>
-  </div>
-</div>
-
 <!-- ════ RESULT SCREEN ════ -->
 <div id="screenResult" class="hidden">
   <div class="result-hero">
@@ -426,7 +392,7 @@ button{cursor:pointer;font-family:inherit}
       <div class="rcard green"><div class="rcard-n" id="resCorrect">0</div><div class="rcard-l">Correct</div></div>
       <div class="rcard red"><div class="rcard-n" id="resWrong">0</div><div class="rcard-l">Incorrect</div></div>
       <div class="rcard orange"><div class="rcard-n" id="resSkipped">0</div><div class="rcard-l">Unattempted</div></div>
-      <div class="rcard navy"><div class="rcard-n" id="resViolations">0</div><div class="rcard-l">Violations</div></div>
+      <div class="rcard navy"><div class="rcard-n" id="resAttempted">0</div><div class="rcard-l">Attempted</div></div>
     </div>
 
     <!-- CHARTS -->
@@ -479,6 +445,28 @@ const ALL_QUESTIONS={
     {id:3,section:'VARC',passage:null,q:'The word "circumspect" most nearly means:',opts:['Impulsive and rash','Wary and cautious','Talkative and expressive','Ignorant and uninformed'],correct:1,solution:'Circumspect derives from Latin "circumspicere" — to look around. It means being wary, careful, and considering all circumstances before acting.',wrongWhy:['Impulsive is the antonym of circumspect','Correct — wary, careful, considered','Circumspect has no relation to talkativeness','Circumspect implies awareness, the opposite of ignorance']},
     {id:4,section:'VARC',passage:'The debate between free will and determinism has occupied philosophers for centuries. Compatibilists argue that free will and determinism can coexist — that a person can act freely while still being caused to act by prior events. Hard determinists reject this, claiming that if every event is causally determined, genuine freedom is an illusion. Libertarians (in the metaphysical sense) hold that some human actions are genuinely uncaused.',q:'Which statement best represents the compatibilist position?',opts:['Human beings have no freedom because all events are predetermined','Freedom and causal determination can exist simultaneously','Human choices are always uncaused and spontaneous','All metaphysical debates about freedom are meaningless'],correct:1,solution:'Compatibilism holds exactly that free will and determinism are compatible — one can be free while still being causally determined.',wrongWhy:['This is the hard determinist view, not compatibilist','Correct — this directly matches compatibilism as described in the passage','This describes the libertarian metaphysical position','This is a dismissive claim not supported by any position in the passage']},
     {id:5,section:'VARC',passage:null,q:'Choose the sentence that is correctly punctuated:',opts:["Its a beautiful day, isnt it?","It's a beautiful day, isn't it?","Its a beautiful day isnt it.","It's a beautiful day isn't it?"],correct:1,solution:'"It\'s" = it is (apostrophe required). "Isn\'t" = is not (apostrophe required). Comma before the tag question is standard.',wrongWhy:["Missing apostrophes in both 'Its' and 'isnt'","Correct — both contractions properly punctuated with the comma","Missing both apostrophes and uses wrong end punctuation for a question","Missing the comma before the tag question 'isn't it?'"]}
+  ],
+  /* ---- Previous Year Questions (real past-paper style sets) ---- */
+  'pyq-cat24-varc-s1':[
+    {id:1,section:'VARC',passage:'The rise of algorithmic decision-making in hiring has sparked debate about fairness and bias. Proponents argue that algorithms remove human prejudice from the process, applying identical criteria to every candidate. Critics counter that algorithms trained on historical data merely encode and automate the very biases they claim to eliminate, at a scale and speed no human recruiter could match. The truth likely lies between these positions: algorithms can reduce certain forms of bias while introducing others that are harder to detect precisely because they are hidden inside a "black box" of code.',q:'According to the passage, why might algorithmic bias be considered more dangerous than human bias?',opts:['Algorithms are always less accurate than humans','It operates at scale and speed while being hard to detect','Algorithms are illegal in most countries','Human recruiters are never biased'],correct:1,solution:'The passage states algorithms automate bias "at a scale and speed no human recruiter could match" and that this is hidden inside a "black box" — i.e., scale + speed + opacity.',wrongWhy:['The passage never claims algorithms are less accurate','Correct — scale, speed, and difficulty of detection','Not mentioned in the passage at all','The passage does not claim this — it discusses reducing "certain forms" of bias']},
+    {id:2,section:'VARC',passage:null,q:'Para-jumble — arrange into a coherent paragraph:\n1. This gap between production and consumption has fuelled debate on trade policy.\n2. Global food production has outpaced population growth for the last three decades.\n3. Yet hunger persists in several regions due to distribution failures.\n4. Some argue the solution lies in better logistics, not more farmland.',opts:['2-3-1-4','2-1-3-4','1-2-3-4','2-3-4-1'],correct:0,solution:'Logical order: production outpacing growth (2) → yet hunger persists due to distribution (3) → this gap fuels policy debate (1) → proposed solution (4).',wrongWhy:['Correct order','Sentence 1 cannot follow 2 directly — 3 must come first to establish "the gap"','Starting with "this gap" (1) makes no sense without prior context','Ends debate (1) before the counter-solution (4), reversing logical flow']},
+    {id:3,section:'VARC',passage:null,q:'The word "obfuscate" most nearly means:',opts:['To clarify','To confuse or obscure','To celebrate','To calculate precisely'],correct:1,solution:'Obfuscate means to deliberately make something unclear or difficult to understand.',wrongWhy:['This is the antonym','Correct — to confuse/obscure deliberately','Unrelated meaning','Unrelated meaning']},
+    {id:4,section:'VARC',passage:'Behavioural economists have long studied the "endowment effect" — the tendency for people to value something more highly simply because they own it. In experiments, participants who were given a mug demanded roughly twice as much to sell it as other participants were willing to pay to buy an identical mug. Standard economic theory, which assumes rational actors with stable preferences, struggles to explain this asymmetry.',q:'What does the mug experiment primarily demonstrate?',opts:['Mugs are overpriced in most markets','Ownership alone can inflate the perceived value of an item','Buyers are always more rational than sellers','Standard economic theory perfectly predicts consumer behaviour'],correct:1,solution:'The endowment effect described is exactly that mere ownership inflates the value one places on an item, which contradicts standard rational-actor theory.',wrongWhy:['Not the point of the experiment','Correct — this is the definition of the endowment effect illustrated','The passage does not compare buyer vs seller rationality','The passage says standard theory "struggles to explain" this — the opposite']},
+    {id:5,section:'VARC',passage:null,q:'Choose the option that best completes: "Despite ______ evidence, the committee remained ______ in its conclusion."',opts:['overwhelming; adamant','scarce; flexible','overwhelming; uncertain','scarce; adamant'],correct:0,solution:'"Despite" signals a contrast: strong (overwhelming) evidence against a firm (adamant) stance creates the intended contrast.',wrongWhy:['Correct — creates the contrast "despite" requires','No contrast — scarce evidence naturally allows flexibility','No real contrast — overwhelming evidence would usually reduce uncertainty, not fit "despite" as sharply','No contrast — scarce evidence would naturally support a firm stance, not oppose it']}
+  ],
+  'pyq-cat24-qa-s1':[
+    {id:1,section:'QA',passage:null,q:'If x + y = 12 and xy = 32, what is the value of x² + y²?',opts:['80','88','96','104'],correct:0,solution:'x² + y² = (x+y)² − 2xy = 12² − 2(32) = 144 − 64 = 80.',wrongWhy:['Correct — (x+y)²−2xy = 144−64 = 80','Incorrect arithmetic','Incorrect arithmetic','Incorrect arithmetic']},
+    {id:2,section:'QA',passage:null,q:'A shopkeeper marks up an item by 40% and then offers a 25% discount on the marked price. What is the net profit/loss percentage?',opts:['5% profit','10% profit','5% loss','No profit no loss'],correct:0,solution:'Let CP = 100. Marked price = 140. Selling price after 25% discount = 140 × 0.75 = 105. Profit = 105 − 100 = 5%.',wrongWhy:['Correct — SP = 140×0.75 = 105, a 5% profit on CP of 100','Miscalculates the discount amount','Incorrectly assumes a loss — there is a net gain','Ignores the markup-then-discount sequence, which does yield a net profit']},
+    {id:3,section:'QA',passage:null,q:'The average of 5 consecutive even numbers is 24. What is the largest number?',opts:['26','28','30','32'],correct:1,solution:'For 5 consecutive even numbers, the average equals the middle number: 24. So the numbers are 20, 22, 24, 26, 28. Largest = 28.',wrongWhy:['This is the second-largest, not the largest','Correct — largest of 20, 22, 24, 26, 28','Not part of this sequence','Not part of this sequence']},
+    {id:4,section:'QA',passage:null,q:'A can complete a job in 12 days, B in 15 days. They work together for 4 days, then A leaves. How many more days does B need to finish?',opts:['5.4 days','6 days','6.6 days','7 days'],correct:1,solution:'Combined rate = 1/12 + 1/15 = 5/60 + 4/60 = 9/60 = 3/20 per day. In 4 days: 4×3/20 = 12/20 = 3/5 of the work done. Remaining = 2/5. At B\'s rate (1/15/day): time = (2/5) ÷ (1/15) = 6 days.',wrongWhy:['Incorrect arithmetic on the remaining fraction','Correct — 6 days remaining for B alone','Incorrect arithmetic on the remaining fraction','Incorrect arithmetic on the remaining fraction']},
+    {id:5,section:'QA',passage:null,q:'What is the compound interest on ₹8,000 at 10% p.a. for 2 years, compounded annually?',opts:['₹1,600','₹1,680','₹1,640','₹1,720'],correct:1,solution:'Amount = 8000 × (1.1)² = 8000 × 1.21 = 9,680. Compound interest = 9,680 − 8,000 = ₹1,680.',wrongWhy:['This is the simple-interest value, not compound','Correct — CI = ₹1,680','Incorrect calculation','Incorrect calculation']}
+  ],
+  'pyq-cat23-varc-s1':[
+    {id:1,section:'VARC',passage:'Urban planners increasingly favour "15-minute cities" — neighbourhoods designed so that residents can meet most daily needs (work, groceries, healthcare, recreation) within a 15-minute walk or bike ride. Advocates say the model reduces car dependency and strengthens local community ties. Sceptics worry it could inadvertently restrict mobility, especially in cities where such planning is used to justify movement restrictions, and that it may work only in already-dense, wealthy neighbourhoods.',q:'What is the sceptics\' main concern regarding 15-minute cities, per the passage?',opts:['They are too expensive to build from scratch','They could restrict mobility and may only suit dense, wealthy areas','They will eliminate the need for public transport entirely','They have already failed in every city that tried them'],correct:1,solution:'The passage explicitly states sceptics worry about restricting mobility and the model working "only in already-dense, wealthy neighbourhoods."',wrongWhy:['Cost is not mentioned as a sceptic concern','Correct — matches the passage directly','Not claimed anywhere in the passage','The passage does not say they have failed everywhere']},
+    {id:2,section:'VARC',passage:null,q:'Odd one out:',opts:['Loquacious','Verbose','Taciturn','Garrulous'],correct:2,solution:'Loquacious, verbose, and garrulous all mean "talkative." Taciturn means the opposite — reserved and quiet.',wrongWhy:['Means talkative — fits the group','Means talkative — fits the group','Correct — the odd one out, meaning quiet/reserved','Means talkative — fits the group']},
+    {id:3,section:'VARC',passage:null,q:'Fill in the blank: "The negotiations were ______ , dragging on for months without resolution."',opts:['protracted','truncated','concise','abrupt'],correct:0,solution:'"Protracted" means prolonged/drawn out, matching "dragging on for months."',wrongWhy:['Correct — matches "dragging on for months"','Means shortened — opposite of the context','Means brief — opposite of the context','Means sudden/short — opposite of the context']},
+    {id:4,section:'VARC',passage:'Nudge theory, popularised by economists Richard Thaler and Cass Sunstein, proposes that subtle changes in how choices are presented ("choice architecture") can steer people toward better decisions without restricting their options or changing economic incentives. A classic example is placing healthier food at eye level in a cafeteria — no food is banned, yet consumption patterns shift. Critics argue nudges can be used manipulatively, particularly when the "chooser" is unaware they are being nudged at all.',q:'What distinguishes a "nudge" from a mandate, according to the passage?',opts:['A nudge is always more expensive to implement','A nudge preserves freedom of choice while a mandate does not','A nudge only works in cafeterias','A nudge changes economic incentives directly'],correct:1,solution:'The passage says nudges work "without restricting their options" — this is the key distinction from mandates, which do restrict choice.',wrongWhy:['Cost is not discussed in the passage','Correct — nudges preserve choice; mandates restrict it','The cafeteria is just one example, not the only application','The passage explicitly says nudges work without changing economic incentives']},
+    {id:5,section:'VARC',passage:null,q:'Choose the grammatically correct sentence:',opts:['Neither of the boys have finished their homework.','Neither of the boys has finished his homework.','Neither of the boy have finished their homework.','Neither of the boys has finished their homeworks.'],correct:1,solution:'"Neither" is singular, so it takes "has" and the singular possessive "his." "Homework" is uncountable (no plural "homeworks").',wrongWhy:['"Neither" requires singular "has," not "have"','Correct — singular verb + singular possessive + uncountable noun','Should be "boys" plural, and still needs "has"','"Homework" has no plural form "homeworks"']}
   ]
 };
 
@@ -486,7 +474,7 @@ const ALL_QUESTIONS={
 let QUESTIONS=[];
 let state={
   currentQ:0, answers:{}, marked:{}, startTime:null, endTime:null,
-  violations:0, timeLeft:0, timerInterval:null,
+  timeLeft:0, timerInterval:null,
   candName:'', candEmail:'', candCollege:'',
   qTimes:{}, qTimeStart:null
 };
@@ -496,6 +484,30 @@ document.getElementById('preTitle').textContent=EXAM_NAME;
 document.getElementById('preDuration').textContent=DURATION_MIN+' minutes';
 QUESTIONS=ALL_QUESTIONS[MOCK_ID]||ALL_QUESTIONS['varc-1'];
 document.getElementById('preQCount').textContent=QUESTIONS.length+' questions';
+
+/* Mocks/PYQ papers created from the admin dashboard aren't in the embedded
+   ALL_QUESTIONS set above — fetch their questions from the site's own API.
+   Swaps QUESTIONS in only if a match is found and the exam hasn't started
+   yet; otherwise the embedded set above stays as-is (offline-safe). */
+(async function loadAdminAuthoredQuestions(){
+  try{
+    const [qs,pyqQs]=await Promise.all([
+      fetch('/api/public/catQuestions').then(r=>r.ok?r.json():[]),
+      fetch('/api/public/catPyqQuestions').then(r=>r.ok?r.json():[])
+    ]);
+    const rows=[...qs,...pyqQs].filter(r=>r.MockID===MOCK_ID);
+    if(!rows.length || state.startTime) return;
+    const letterIdx={A:0,B:1,C:2,D:3};
+    const mapped=rows.map((r,i)=>({
+      id:i+1, section:r.Section||'', passage:r.Passage||null, q:r.Q,
+      opts:[r.OptionA,r.OptionB,r.OptionC,r.OptionD],
+      correct:letterIdx[String(r.Correct||'A').toUpperCase()] ?? 0,
+      solution:r.Solution||'', wrongWhy:['','','','']
+    }));
+    QUESTIONS=mapped;
+    document.getElementById('preQCount').textContent=QUESTIONS.length+' questions';
+  }catch(e){ /* API unreachable — embedded questions already shown, nothing to do */ }
+})();
 
 /* ── ENABLE START BUTTON WHEN FORM FILLED ── */
 function checkFormReady(){
@@ -507,29 +519,6 @@ function checkFormReady(){
 ['candName','candEmail','candCollege'].forEach(id=>document.getElementById(id).addEventListener('input',checkFormReady));
 document.getElementById('candAgree').addEventListener('change',checkFormReady);
 
-/* ── PERMISSIONS ── */
-let camStream=null;
-async function requestPerms(){
-  const btn=document.getElementById('requestPermsBtn');
-  btn.disabled=true; btn.innerHTML='<i class="ti ti-loader2"></i> Requesting…';
-  try{
-    camStream=await navigator.mediaDevices.getUserMedia({video:true,audio:true});
-    setPermUI('permCam','granted','Active');
-    setPermUI('permMic','granted','Active');
-    btn.innerHTML='<i class="ti ti-check"></i> Permissions Granted';
-    btn.style.background='var(--green)';
-  }catch(e){
-    setPermUI('permCam','denied','Denied');
-    setPermUI('permMic','denied','Denied');
-    btn.disabled=false; btn.innerHTML='<i class="ti ti-refresh"></i> Retry Permissions';
-  }
-}
-function setPermUI(id,cls,label){
-  const el=document.getElementById(id);
-  el.className='perm-item '+cls;
-  el.querySelector('.perm-status').textContent=label;
-}
-
 /* ── START EXAM ── */
 function startExam(){
   state.candName=document.getElementById('candName').value.trim();
@@ -540,30 +529,15 @@ function startExam(){
   state.qTimeStart=Date.now();
   QUESTIONS.forEach((_,i)=>{ state.qTimes[i]=0; });
 
-  // Go fullscreen
-  document.documentElement.requestFullscreen&&document.documentElement.requestFullscreen().catch(()=>{});
-
   // Hide pre, show exam
   document.getElementById('screenPre').classList.add('hidden');
   document.getElementById('screenExam').classList.remove('hidden');
   document.getElementById('examBarTitle').textContent=EXAM_NAME;
 
-  // Setup webcam in sidebar
-  if(camStream){
-    const vid=document.getElementById('camVideo');
-    vid.srcObject=camStream;
-    startFaceDetection();
-  } else {
-    document.getElementById('camPreview').innerHTML='<div style="padding:16px;text-align:center;color:#64748b;font-size:12px;font-family:Inter,sans-serif"><i class="ti ti-video-off" style="font-size:24px;display:block;margin-bottom:6px;opacity:.4"></i>Camera not available</div>';
-    document.getElementById('camStatusBadge').textContent='No Cam';
-    document.getElementById('camStatusBadge').className='cam-status err';
-  }
-
   buildSectionBar();
   buildPalette();
   renderQuestion(0);
   startTimer();
-  installAntiCheat();
 }
 
 /* ── SECTION BAR ── */
@@ -668,62 +642,6 @@ function startTimer(){
   },1000);
 }
 
-/* ── ANTI-CHEAT ── */
-function installAntiCheat(){
-  // Tab switch / window blur
-  document.addEventListener('visibilitychange',()=>{ if(document.hidden) recordViolation('Tab switching detected — you left the exam tab.'); });
-  window.addEventListener('blur',()=>recordViolation('Window focus lost — you left the exam window.'));
-  // Fullscreen exit
-  document.addEventListener('fullscreenchange',()=>{ if(!document.fullscreenElement) recordViolation('Full-screen mode exited. Please stay in full-screen during the exam.'); });
-  // Keyboard restrictions
-  document.addEventListener('keydown',e=>{
-    if((e.ctrlKey||e.metaKey)&&['c','v','x','a','t','w','r','n','p'].includes(e.key.toLowerCase())){e.preventDefault();showViolBadge('Keyboard shortcut blocked');}
-    if(e.key==='F12'||e.key==='F5'){ e.preventDefault(); showViolBadge('Dev tools / Refresh blocked'); }
-    if(e.key==='PrintScreen'){ showViolBadge('Screenshot blocked'); }
-  });
-  // Right-click
-  document.addEventListener('contextmenu',e=>{e.preventDefault();showViolBadge('Right-click disabled');});
-  // Copy/paste
-  document.addEventListener('copy',e=>e.preventDefault());
-  document.addEventListener('paste',e=>e.preventDefault());
-  document.addEventListener('cut',e=>e.preventDefault());
-}
-
-let violTimeout=null;
-function recordViolation(msg){
-  if(!document.getElementById('screenExam').classList.contains('hidden')){
-    state.violations++;
-    document.getElementById('violMsg').textContent=msg;
-    document.getElementById('violCountDisplay').textContent=state.violations;
-    document.getElementById('violModal').classList.add('open');
-    showViolBadge('⚠ Violation '+state.violations);
-    if(state.violations>=3){ setTimeout(()=>finalSubmit(),3000); }
-  }
-}
-function showViolBadge(msg){
-  const b=document.getElementById('violBadge');
-  b.textContent=msg; b.classList.add('show');
-  clearTimeout(violTimeout);
-  violTimeout=setTimeout(()=>b.classList.remove('show'),3000);
-}
-function dismissViolation(){ document.getElementById('violModal').classList.remove('open'); document.documentElement.requestFullscreen&&document.documentElement.requestFullscreen().catch(()=>{}); }
-
-/* ── FACE DETECTION (lightweight bounding-box approach) ── */
-function startFaceDetection(){
-  if(!window.FaceDetector) return;
-  const fd=new FaceDetector();
-  const vid=document.getElementById('camVideo');
-  const label=document.getElementById('camLabel');
-  setInterval(async()=>{
-    try{
-      const faces=await fd.detect(vid);
-      if(faces.length===0){ recordViolation('No face detected in camera. Please ensure your face is visible.'); label.textContent='⚠ No face detected'; label.style.color='#f87171'; }
-      else if(faces.length>1){ recordViolation('Multiple faces detected in camera.'); label.textContent='⚠ Multiple faces'; label.style.color='var(--yellow)'; }
-      else{ label.textContent='Webcam monitoring active'; label.style.color=''; }
-    }catch(e){}
-  },5000);
-}
-
 /* ── SUBMIT ── */
 function confirmSubmit(){
   updatePalette();
@@ -734,9 +652,6 @@ function finalSubmit(){
   trackQTime();
   state.endTime=Date.now();
   document.getElementById('submitModal').classList.remove('open');
-  document.getElementById('violModal').classList.remove('open');
-  if(camStream) camStream.getTracks().forEach(t=>t.stop());
-  if(document.fullscreenElement) document.exitFullscreen().catch(()=>{});
   showResults();
 }
 
@@ -774,7 +689,7 @@ function showResults(){
   document.getElementById('resCorrect').textContent=correct;
   document.getElementById('resWrong').textContent=wrong;
   document.getElementById('resSkipped').textContent=skipped;
-  document.getElementById('resViolations').textContent=state.violations;
+  document.getElementById('resAttempted').textContent=correct+wrong;
 
   // Charts
   renderDonut(correct,wrong,skipped);

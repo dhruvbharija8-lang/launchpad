@@ -53,9 +53,23 @@
 
   <!-- MOCKS -->
   <section class="cp-sec">
-    <div class="cp-sec-head"><div class="cp-label">Mock Tests</div><h2>Take a mock on the site</h2><p>VARC, QA, LRDI and full-length mocks — attempt, submit and see your score instantly.</p></div>
-    <div style="margin-bottom:18px"><a href="mock-exam.html" class="cp-mock-btn" style="display:inline-flex;width:auto;padding:12px 22px;text-decoration:none"><i class="ti ti-device-desktop-analytics"></i> Open the full CAT mock exam portal</a></div>
+    <div class="cp-sec-head"><div class="cp-label">Mock Tests</div><h2>Take a full CAT-style mock</h2><p>Sectional timer, question palette and instant results — just like the real exam.</p></div>
+    <div class="cp-exam-select-row" style="margin-bottom:18px">
+      <label for="catMockExamSelect" style="font-size:12.5px;font-weight:600;color:var(--ink2);margin-right:8px">Exam:</label>
+      <select id="catMockExamSelect" class="cp-exam-select"></select>
+    </div>
     <div class="cp-grid" id="catMocks"></div>
+  </section>
+
+  <!-- PYQ -->
+  <section class="cp-sec">
+    <div class="cp-sec-head"><div class="cp-label">Previous Year Questions</div><h2>Practice real past papers</h2><p>Actual CAT/XAT/SNAP questions from past years, section-wise, with full solutions.</p></div>
+    <div class="cp-exam-select-row" style="margin-bottom:14px">
+      <label for="catPyqExamSelect" style="font-size:12.5px;font-weight:600;color:var(--ink2);margin-right:8px">Exam:</label>
+      <select id="catPyqExamSelect" class="cp-exam-select"></select>
+    </div>
+    <div class="cp-pyq-filters" id="catPyqFilters" style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:18px"></div>
+    <div class="cp-grid" id="catPyq"></div>
   </section>
 
   <!-- LEADERBOARD -->
@@ -91,18 +105,6 @@
 </main>
 
 <footer class="cp-footer"><div class="cp-wrap">© 2026 MBA Partner · Initiative by Alumni of Old IIMs · <a href="tel:+917042732092">+91 70427 32092</a></div></footer>
-
-<!-- MOCK PLAYER MODAL -->
-<div class="mock-modal" id="mockModal">
-  <div class="mock-box" role="dialog" aria-modal="true">
-    <div class="mock-bar">
-      <div class="mock-title" id="mockTitle">Mock</div>
-      <div class="mock-timer" id="mockTimer">40:00</div>
-      <button class="mock-x" onclick="closeMock()" aria-label="Close">&times;</button>
-    </div>
-    <div class="mock-body" id="mockBody"></div>
-  </div>
-</div>
 
 <script src="js/cat-portal.js"></script>
   <script src="js/chatbot-widget.js"></script>

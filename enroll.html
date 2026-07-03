@@ -814,7 +814,7 @@ function renderGrid(){
         ${c.groupOffer?`<div class="group-offer-tag" style="cursor:pointer" onclick="openEnroll('${c.id}', true)"><i class="ti ti-users"></i> Enroll with a friend — 30% off each</div>`:''}
         <div class="card-cta">
           <button class="btn-enroll" onclick="openEnroll('${c.id}')"><i class="ti ti-bolt"></i> Enroll Now</button>
-          <button class="btn-details" onclick="window.location.href='courses.html'">Details</button>
+          <button class="btn-details" onclick="window.location.href='courses.html#/course/${c.id}'">Details</button>
         </div>
       </div>
     </div>`).join('');

@@ -406,6 +406,15 @@ button{cursor:pointer;font-family:inherit}
   .br-nav-links{display:none}
   .br-price-table{font-size:12px}
   .br-price-table th,.br-price-table td{padding:12px}
+  .br-nav-in{gap:8px}
+  .br-brand-tag{display:none}
+  .br-dl-btn{padding:8px 10px}
+  .br-dl-btn span{display:none}
+  .br-nav-cta{padding:9px 14px;font-size:11px}
+}
+@media(max-width:400px){
+  .br-brand-name{font-size:13px}
+  .br-mark{width:32px;height:32px;font-size:15px}
 }
 @media print{
   .br-nav,.br-ticker,.br-print-fab{display:none!important}

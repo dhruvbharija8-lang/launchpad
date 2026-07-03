@@ -81,7 +81,7 @@ button{cursor:pointer}
 /* ===== HERO (Catalog) ===== */
 .head{padding:60px 0 36px;text-align:center}
 .head .eyebrow{font-size:12px;font-weight:600;color:var(--orange);margin-bottom:14px;text-transform:uppercase;letter-spacing:.08em}
-.head h1{font-size:48px;font-weight:800;line-height:1.05;letter-spacing:-.03em;margin-bottom:18px;color:var(--navy)}
+.head h1{font-family:var(--font-heading, 'Playfair Display', 'Georgia', serif);font-size:48px;font-weight:800;line-height:1.05;letter-spacing:-.03em;margin-bottom:18px;color:var(--navy)}
 .head p{font-size:17px;color:var(--ink2);line-height:1.6;margin:0 auto;font-weight:400;max-width:1000px}
 @media(min-width:961px){.head p{white-space:nowrap}}
 
@@ -217,7 +217,7 @@ button{cursor:pointer}
 .dt-rating{display:flex;align-items:center;gap:10px;flex-wrap:wrap;font-size:14px;color:var(--ink2);font-family:'Inter',sans-serif}
 .dt-rating .num{color:#92590A;font-weight:800}.dt-rating .stars{color:var(--star)}
 .dt-banner{border-radius:var(--r);overflow:hidden;margin:24px auto 0;background:#0b132a;width:100%;max-width:711px;aspect-ratio:16/9;display:flex;align-items:center;justify-content:center;height:auto}
-.dt-banner img{width:100%;height:100%;object-fit:cover;display:block;transform:scale(1.14)}
+.dt-banner img{width:100%;height:100%;object-fit:contain;display:block}
 .dt-grid{display:grid;grid-template-columns:1fr 310px;gap:48px;padding:32px 0 60px}
 .dt-block{margin-bottom:38px}
 .dt-block h3{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--ink3);margin-bottom:16px}
@@ -245,7 +245,7 @@ button{cursor:pointer}
 /* ===== BUY BOX ===== */
 .buy{position:sticky;top:96px;background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:0;height:fit-content;box-shadow:0 8px 28px rgba(26,31,78,.1);overflow:hidden}
 .buy-vis{aspect-ratio:16/9;overflow:hidden;background:#0b132a;max-height:180px}
-.buy-vis img{width:100%;height:100%;object-fit:cover;display:block;transform:scale(1.14)}
+.buy-vis img{width:100%;height:100%;object-fit:contain;display:block}
 .buy-pad{padding:20px 22px 22px}
 .variant-group{margin-bottom:14px}
 .variant-label{font-size:10px;font-weight:700;color:var(--ink2);margin-bottom:8px;text-transform:uppercase;letter-spacing:.05em}

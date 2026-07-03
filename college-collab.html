@@ -13,6 +13,7 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css" />
   <link rel="stylesheet" href="css/chatbot-widget.css" />
   <link rel="stylesheet" href="css/fonts.css" />
+  <link rel="stylesheet" href="css/social-rail.css" />
   <script src="js/site-nav.js"></script>
   <script src="js/nav-auth.js"></script>
   <script src="js/api-config.js"></script>
@@ -2716,4 +2717,15 @@
       // 3. Show success state
       btn.innerHTML = '<i class="ti ti-circle-check"></i> Sent!';
       btn.style.background = '#22c55e';
-      if (note) note.i
+      if (note) note.innerHTML = '✅ Enquiry sent to our team — we\'ll reach out within 24 hours.';
+      setTimeout(() => {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="ti ti-send"></i> Send';
+        btn.style.background = '';
+      }, 4000);
+    }
+  </script>
+  <script src="js/chatbot-widget.js"></script>
+</body>
+
+</html>

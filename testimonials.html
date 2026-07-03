@@ -11,6 +11,7 @@
 <link rel="stylesheet" href="css/fonts.css"/>
 <link rel="stylesheet" href="css/style.css">
 <link rel="stylesheet" href="css/chatbot-widget.css"/>
+<link rel="stylesheet" href="css/social-rail.css"/>
 <script src="js/site-nav.js"></script>
 <script src="js/nav-auth.js"></script>
 <script src="js/api-config.js"></script>
@@ -167,6 +168,22 @@
   <div class="footer-bottom"><p>© 2026 MBA Partner. Initiative by Alumni of Old IIMs. All rights reserved.</p><div class="footer-social"><a href="https://chat.whatsapp.com/EdyvGJbQoV9Jj6eC0slSx9" target="_blank" class="whatsapp"><i class="ti ti-brand-whatsapp"></i></a><a href="https://t.me/+IrnzgXdUKqsyOTZl" target="_blank" class="telegram"><i class="ti ti-brand-telegram"></i></a><a href="https://documents1.netlify.app/?open=instagram" target="_blank" class="instagram"><i class="ti ti-brand-instagram"></i></a><a href="https://documents1.netlify.app/?open=linkedin" target="_blank" class="linkedin"><i class="ti ti-brand-linkedin"></i></a></div></div>
 </div></footer>
 
+<!-- FLOATING SOCIAL RAIL -->
+<div class="float-social" id="floatSocial">
+  <a class="float-social-btn whatsapp" href="https://chat.whatsapp.com/EdyvGJbQoV9Jj6eC0slSx9" target="_blank" aria-label="WhatsApp Community" title="Join WhatsApp Community">
+    <i class="ti ti-brand-whatsapp"></i><span class="float-social-label">WhatsApp</span>
+  </a>
+  <a class="float-social-btn instagram" href="https://documents1.netlify.app/?open=instagram" target="_blank" aria-label="Follow on Instagram" title="Follow on Instagram">
+    <i class="ti ti-brand-instagram"></i><span class="float-social-label">Instagram</span>
+  </a>
+  <a class="float-social-btn linkedin" href="https://documents1.netlify.app/?open=linkedin" target="_blank" aria-label="LinkedIn" title="Connect on LinkedIn">
+    <i class="ti ti-brand-linkedin"></i><span class="float-social-label">LinkedIn</span>
+  </a>
+  <a class="float-social-btn youtube" href="https://documents1.netlify.app/?open=youtube" target="_blank" aria-label="YouTube" title="Watch on YouTube">
+    <i class="ti ti-brand-youtube"></i><span class="float-social-label">YouTube</span>
+  </a>
+</div>
+
 <!-- LIGHTBOX -->
 <div class="lb" id="lb" onclick="if(event.target===this)closeLB()">
   <div class="lb-box" role="dialog" aria-modal="true">
@@ -176,4 +193,15 @@
     <div class="lb-open-q" id="lbQ"></div>
     <div class="lb-name" id="lbName"></div>
     <div class="lb-meta" id="lbMeta"></div>
-    <div class="lb-pill" style="margin-top:10px"><i class="ti ti-briefcase" style="font-size:13px"></i><span i
+    <div class="lb-pill" style="margin-top:10px"><i class="ti ti-briefcase" style="font-size:13px"></i><span id="lbOut"></span></div>
+  </div>
+</div>
+
+<div class="toast-wrap" id="toastWrap"></div>
+
+
+  <script src="js/site-data.js"></script>
+  <script src="js/navbar.js"></script>
+  <script src="js/chatbot-widget.js"></script>
+</body>
+</html>

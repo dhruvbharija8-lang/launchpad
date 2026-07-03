@@ -113,6 +113,17 @@ const ADMIN_SECTIONS = [
     ]
   },
   {
+    key: 'hallOfFame', label: 'Hall of Fame Spotlight', icon: 'ti-award', group: 'Site content',
+    desc: 'The 3 photo+quote spotlight stories at the top of the homepage\'s Hall of Fame section (the highlight reel — separate from the bulk Placements Wall).',
+    fields: [
+      { name: 'Name', label: 'Student name', type: 'text', required: true, col: true },
+      { name: 'School', label: 'B-school', type: 'text', col: true },
+      { name: 'Company', label: 'Company / outcome', type: 'text', col: true },
+      { name: 'Quote', label: 'Quote', type: 'textarea', required: true },
+      { name: 'Photo', label: 'Photo URL', type: 'text' }
+    ]
+  },
+  {
     key: 'programs', label: 'Dashboard Programs', icon: 'ti-school', group: 'Student dashboard',
     desc: 'The catalogue of programs students can be enrolled into (student dashboard).',
     fields: [
@@ -176,6 +187,132 @@ const ADMIN_SECTIONS = [
       { name: 'Progress', label: 'Progress % (0-100)', type: 'number', col: true },
       { name: 'NextSession', label: 'Next session name', type: 'text' },
       { name: 'NextDate', label: 'Next date', type: 'text' }
+    ]
+  },
+  {
+    key: 'catMocks', label: 'CAT Mock Tests', icon: 'ti-clipboard-list', group: 'CAT / OMETs Portal',
+    idField: 'MockID',
+    desc: 'Create new mock tests here — set which exam it belongs to, its section, duration, and an optional deadline after which it stops showing as available. Add the actual questions in "CAT Mock Questions" below using the same Mock ID.',
+    fields: [
+      { name: 'MockID', label: 'Mock ID (unique, no spaces, e.g. varc-2)', type: 'text', required: true, col: true },
+      { name: 'Exam', label: 'Exam', type: 'select', options: ['CAT', 'XAT', 'SNAP', 'NMAT', 'MAH-CET', 'IIFT', 'CMAT', 'TISSNET'], required: true, col: true },
+      { name: 'Title', label: 'Title', type: 'text', required: true, col: true },
+      { name: 'Section', label: 'Section (e.g. VARC, QA, LRDI)', type: 'text', col: true },
+      { name: 'Duration', label: 'Duration (minutes)', type: 'number', required: true },
+      { name: 'Status', label: 'Status', type: 'select', options: ['live', 'coming'], col: true },
+      { name: 'Attempts', label: 'Attempts count (shown as stat)', type: 'number' },
+      { name: 'Note', label: 'Note (e.g. "Coming soon")', type: 'text' },
+      { name: 'Deadline', label: 'Deadline (blank = always available)', type: 'date' }
+    ]
+  },
+  {
+    key: 'catQuestions', label: 'CAT Mock Questions', icon: 'ti-help-circle', group: 'CAT / OMETs Portal',
+    desc: 'Questions for each Mock Test above. Pick which paper a question belongs to from the dropdown — after saving, the form stays open and ready for the next question on the same paper.',
+    chainAdd: true, chainKey: 'MockID',
+    fields: [
+      { name: 'MockID', label: 'Mock Test (which paper is this question for?)', type: 'ref', refCollection: 'catMocks', refValue: 'MockID', refLabel: r => `${r.Title} — ${r.MockID}`, required: true, col: true },
+      { name: 'Passage', label: 'Passage (optional, leave blank for standalone questions)', type: 'textarea' },
+      { name: 'Q', label: 'Question', type: 'textarea', required: true, col: true },
+      { name: 'OptionA', label: 'Option A', type: 'text', required: true },
+      { name: 'OptionB', label: 'Option B', type: 'text', required: true },
+      { name: 'OptionC', label: 'Option C', type: 'text', required: true },
+      { name: 'OptionD', label: 'Option D', type: 'text', required: true },
+      { name: 'Correct', label: 'Correct option', type: 'select', options: ['A', 'B', 'C', 'D'], required: true, col: true },
+      { name: 'Solution', label: 'Solution / explanation', type: 'textarea' }
+    ]
+  },
+  {
+    key: 'catPyq', label: 'PYQ Papers', icon: 'ti-file-text', group: 'CAT / OMETs Portal',
+    desc: 'Past Year Question papers. Upload the official PDF here (students can open/download it), and optionally set a Mock ID to link it to a full interactive question set in "PYQ Questions" below. Set a deadline to stop showing it after a date.',
+    fields: [
+      { name: 'Exam', label: 'Exam', type: 'select', options: ['CAT', 'XAT', 'SNAP', 'NMAT', 'MAH-CET', 'IIFT', 'CMAT', 'TISSNET'], required: true, col: true },
+      { name: 'Year', label: 'Year', type: 'text', required: true, col: true },
+      { name: 'Section', label: 'Section', type: 'text', col: true },
+      { name: 'Title', label: 'Title', type: 'text', required: true, col: true },
+      { name: 'Meta', label: 'Small description (e.g. "24 Qs · Full solutions")', type: 'text' },
+      { name: 'MockID', label: 'Linked Mock ID (optional — for interactive question set)', type: 'text' },
+      { name: 'PdfUrl', label: 'PYQ Paper PDF', type: 'file' },
+      { name: 'Deadline', label: 'Deadline (blank = always available)', type: 'date' }
+    ]
+  },
+  {
+    key: 'catPyqQuestions', label: 'PYQ Questions', icon: 'ti-help-circle', group: 'CAT / OMETs Portal',
+    desc: 'Interactive question sets for PYQ papers. Pick which paper a question belongs to from the dropdown (only PYQ Papers that have a Linked Mock ID show up here) — after saving, the form stays open for the next question on the same paper.',
+    chainAdd: true, chainKey: 'MockID',
+    fields: [
+      { name: 'MockID', label: 'PYQ Paper (which paper is this question for?)', type: 'ref', refCollection: 'catPyq', refValue: 'MockID', refLabel: r => `${r.Title} — ${r.MockID}`, refFilter: r => !!r.MockID, required: true, col: true },
+      { name: 'Passage', label: 'Passage (optional)', type: 'textarea' },
+      { name: 'Q', label: 'Question', type: 'textarea', required: true, col: true },
+      { name: 'OptionA', label: 'Option A', type: 'text', required: true },
+      { name: 'OptionB', label: 'Option B', type: 'text', required: true },
+      { name: 'OptionC', label: 'Option C', type: 'text', required: true },
+      { name: 'OptionD', label: 'Option D', type: 'text', required: true },
+      { name: 'Correct', label: 'Correct option', type: 'select', options: ['A', 'B', 'C', 'D'], required: true, col: true },
+      { name: 'Solution', label: 'Solution / explanation', type: 'textarea' }
+    ]
+  },
+  {
+    key: 'catMaterials', label: 'CAT Study Materials', icon: 'ti-files', group: 'CAT / OMETs Portal',
+    desc: 'Free study material cards shown on the CAT/OMETs portal materials section.',
+    fields: [
+      { name: 'Section', label: 'Section (e.g. VARC, QA, LRDI)', type: 'text', required: true, col: true },
+      { name: 'Title', label: 'Title', type: 'text', required: true, col: true },
+      { name: 'Meta', label: 'Small description', type: 'text' },
+      { name: 'Type', label: 'Type', type: 'select', options: ['pdf', 'video', 'drive', 'zip'] },
+      { name: 'Link', label: 'Link', type: 'text' }
+    ]
+  },
+  {
+    key: 'catLeaderboard', label: 'CAT Leaderboard', icon: 'ti-medal', group: 'CAT / OMETs Portal',
+    desc: 'Top scorers shown on the mock test leaderboard.',
+    fields: [
+      { name: 'Rank', label: 'Rank', type: 'number', required: true, col: true },
+      { name: 'Name', label: 'Name', type: 'text', required: true, col: true },
+      { name: 'College', label: 'College', type: 'text', col: true },
+      { name: 'Score', label: 'Score (e.g. 48/50)', type: 'text', col: true },
+      { name: 'Mock', label: 'Mock name', type: 'text' }
+    ]
+  },
+  {
+    key: 'catGdpi', label: 'CAT GDPI', icon: 'ti-message-star', group: 'CAT / OMETs Portal',
+    desc: 'Mock PI / GD sessions shown on the CAT/OMETs portal.',
+    fields: [
+      { name: 'Type', label: 'Type', type: 'select', options: ['PI', 'GD'], col: true },
+      { name: 'Title', label: 'Title', type: 'text', required: true, col: true },
+      { name: 'Meta', label: 'Small description', type: 'text' },
+      { name: 'Link', label: 'Link', type: 'text' }
+    ]
+  },
+  {
+    key: 'catDomainQA', label: 'CAT Domain Q&A', icon: 'ti-bulb', group: 'CAT / OMETs Portal',
+    desc: 'Domain-wise interview question banks (Finance, Marketing, Consulting, etc).',
+    fields: [
+      { name: 'Domain', label: 'Domain', type: 'text', required: true, col: true },
+      { name: 'Title', label: 'Title', type: 'text', required: true, col: true },
+      { name: 'Meta', label: 'Small description', type: 'text' },
+      { name: 'Link', label: 'Link', type: 'text' }
+    ]
+  },
+  {
+    key: 'catMentors', label: 'CAT Mentors', icon: 'ti-users', group: 'CAT / OMETs Portal',
+    desc: 'Mentors shown specifically on the CAT/OMETs prep portal.',
+    fields: [
+      { name: 'Name', label: 'Name', type: 'text', required: true, col: true },
+      { name: 'School', label: 'B-school', type: 'text', col: true },
+      { name: 'Converted', label: 'Result (e.g. "CAT 99.8%ile")', type: 'text', col: true },
+      { name: 'Domain', label: 'Domain', type: 'text' },
+      { name: 'LinkedIn', label: 'LinkedIn URL', type: 'text' }
+    ]
+  },
+  {
+    key: 'catPricing', label: 'CAT Pricing Plans', icon: 'ti-tag', group: 'CAT / OMETs Portal',
+    desc: 'Pricing plans shown on the CAT/OMETs prep portal.',
+    fields: [
+      { name: 'Plan', label: 'Plan name', type: 'text', required: true, col: true },
+      { name: 'Price', label: 'Price (₹, 0 = free)', type: 'text', required: true, col: true },
+      { name: 'Period', label: 'Period label (e.g. "one-time", "free")', type: 'text' },
+      { name: 'Features', label: 'Features (separate each with a | character)', type: 'textarea' },
+      { name: 'Badge', label: 'Badge (e.g. "Bestseller", optional)', type: 'text' }
     ]
   }
 ];

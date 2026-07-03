@@ -162,9 +162,11 @@ async function renderCollectionSection(section) {
     </div>
     <div class="modal-overlay" id="modalOverlay"><div class="modal-card">
       <h3 id="modalTitle">Add</h3>
+      <div id="modalSubtitle" style="display:none;font-size:12.5px;color:var(--ink3,#8a8f98);margin:-10px 0 14px"></div>
       <form id="recordForm"></form>
       <div class="modal-actions">
         <button class="btn btn-ghost" id="modalCancel" type="button">Cancel</button>
+        <button class="btn btn-ghost" id="modalSaveNext" style="width:auto;display:none" type="button">Save &amp; add next question</button>
         <button class="btn btn-primary" id="modalSave" style="width:auto" type="button">Save</button>
       </div>
     </div></div>`;
@@ -220,8 +222,12 @@ async function loadAndRenderTable(section) {
   });
 }
 
-function fieldHtml(f, value) {
+function fieldHtml(f, value, refOptions) {
   const id = 'f_' + f.name;
+  if (f.type === 'ref') {
+    const opts = (refOptions || []).map(o => `<option value="${escapeHtml(o.value)}" ${String(value) === o.value ? 'selected' : ''}>${escapeHtml(o.label)}</option>`).join('');
+    return `<div class="field"><label>${f.label}</label><select id="${id}"><option value="">— select —</option>${opts}</select></div>`;
+  }
   if (f.type === 'textarea') {
     return `<div class="field"><label>${f.label}</label><textarea id="${id}" rows="3">${value == null ? '' : escapeHtml(value)}</textarea></div>`;
   }
@@ -235,6 +241,15 @@ function fieldHtml(f, value) {
   if (f.type === 'csv') {
     const v = Array.isArray(value) ? value.join(', ') : (value || '');
     return `<div class="field"><label>${f.label}</label><input id="${id}" value="${escapeHtml(v)}"/></div>`;
+  }
+  if (f.type === 'file') {
+    const cur = value
+      ? `<div style="margin-top:4px;font-size:12.5px"><a href="${escapeHtml(value)}" target="_blank" rel="noopener">View current file</a></div>`
+      : `<div style="margin-top:4px;font-size:12.5px;color:#8a8f98">No file uploaded yet</div>`;
+    return `<div class="field"><label>${f.label}</label><input type="file" accept="application/pdf" id="${id}_picker"/><input type="hidden" id="${id}" value="${escapeHtml(value || '')}"/>${cur}</div>`;
+  }
+  if (f.type === 'date') {
+    return `<div class="field"><label>${f.label}</label><input id="${id}" type="date" value="${value ? escapeHtml(value) : ''}"/></div>`;
   }
   const type = f.type === 'number' ? 'number' : 'text';
   const step = f.step ? `step="${f.step}"` : '';
@@ -258,25 +273,102 @@ function escapeHtml(s) {
   return String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 }
 
+async function uploadFile(file) {
+  const fd = new FormData();
+  fd.append('file', file);
+  const token = getToken();
+  const res = await fetch('/api/admin/upload', {
+    method: 'POST',
+    headers: token ? { Authorization: 'Bearer ' + token } : {},
+    body: fd
+  });
+  const body = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error(body.error || 'Upload failed');
+  return body;
+}
+
 let recordCtx = null;
-function openRecordModal(section, record) {
+let paperQuestionCount = 0; // how many questions added to the current paper this session
+async function openRecordModal(section, record, prefill) {
   recordCtx = { section, record };
+  const isChainAdd = !record && section.chainAdd;
+  const subtitleEl = document.getElementById('modalSubtitle');
+  const chainMockId = isChainAdd && prefill ? prefill[section.chainKey] : null;
+
   document.getElementById('modalTitle').textContent = record ? 'Edit' : 'Add ' + section.label.replace(/s$/, '');
+  if (!chainMockId) paperQuestionCount = 0; // fresh Add click (not a chained continuation) — reset the counter
+  if (isChainAdd && chainMockId) {
+    subtitleEl.style.display = 'block';
+    subtitleEl.textContent = `Building paper "${chainMockId}" — ${paperQuestionCount} question${paperQuestionCount === 1 ? '' : 's'} added so far in this session.`;
+  } else {
+    subtitleEl.style.display = 'none';
+  }
+
   const form = document.getElementById('recordForm');
-  form.innerHTML = section.fields.map(f => fieldHtml(f, record ? record[f.name] : (f.type === 'checkbox' ? true : ''))).join('');
+  form.innerHTML = '<div class="empty-msg">Loading…</div>';
   document.getElementById('modalOverlay').classList.add('open');
-  document.getElementById('modalSave').onclick = async () => {
+
+  // 'ref' fields (e.g. "which mock test does this question belong to?") need
+  // their options loaded from another collection before the form can render.
+  const refCache = {};
+  for (const f of section.fields) {
+    if (f.type === 'ref' && !(f.refCollection in refCache)) {
+      try { refCache[f.refCollection] = await api('/admin/' + f.refCollection); }
+      catch (e) { refCache[f.refCollection] = []; }
+    }
+  }
+  const refOptionsFor = f => {
+    if (f.type !== 'ref') return null;
+    let rows = refCache[f.refCollection] || [];
+    if (f.refFilter) rows = rows.filter(f.refFilter);
+    return rows.map(r => ({ value: r[f.refValue], label: f.refLabel ? f.refLabel(r) : r[f.refValue] }));
+  };
+
+  form.innerHTML = section.fields.map(f => {
+    let val;
+    if (record) val = record[f.name];
+    else if (prefill && f.name in prefill) val = prefill[f.name];
+    else val = f.type === 'checkbox' ? true : '';
+    return fieldHtml(f, val, refOptionsFor(f));
+  }).join('');
+
+  const saveBtn = document.getElementById('modalSave');
+  const saveNextBtn = document.getElementById('modalSaveNext');
+  saveBtn.textContent = isChainAdd ? 'Save & close' : 'Save';
+  saveNextBtn.style.display = isChainAdd ? 'inline-block' : 'none';
+
+  async function doSave(keepGoing) {
+    const fileFields = section.fields.filter(f => f.type === 'file');
+    for (const f of fileFields) {
+      const picker = document.getElementById('f_' + f.name + '_picker');
+      if (picker && picker.files && picker.files[0]) {
+        try {
+          const uploaded = await uploadFile(picker.files[0]);
+          document.getElementById('f_' + f.name).value = uploaded.url;
+        } catch (e) { toast('Upload failed: ' + e.message, true); return; }
+      }
+    }
     const payload = readForm(form, section.fields);
     const missing = section.fields.filter(f => f.required && !payload[f.name] && payload[f.name] !== 0);
     if (missing.length) { toast('Please fill in: ' + missing.map(f => f.label).join(', '), true); return; }
     try {
       if (record) await api('/admin/' + section.key + '/' + record._id, { method: 'PUT', body: JSON.stringify(payload) });
       else await api('/admin/' + section.key, { method: 'POST', body: JSON.stringify(payload) });
-      toast(record ? 'Saved' : 'Added');
-      closeRecordModal();
+      toast(record ? 'Saved' : 'Added to paper');
       loadAndRenderTable(section);
+      if (!record && keepGoing && section.chainKey) {
+        paperQuestionCount += 1;
+        const keepValue = payload[section.chainKey];
+        await openRecordModal(section, null, keepValue != null ? { [section.chainKey]: keepValue } : null);
+      } else {
+        paperQuestionCount = 0;
+        closeRecordModal();
+      }
     } catch (e) { toast(e.message, true); }
-  };
+  }
+
+  saveBtn.onclick = () => doSave(false);
+  saveNextBtn.onclick = () => doSave(true);
 }
 function closeRecordModal() { document.getElementById('modalOverlay').classList.remove('open'); recordCtx = null; }
 document.addEventListener('DOMContentLoaded', () => {

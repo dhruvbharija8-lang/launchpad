@@ -10,6 +10,7 @@ const { makePublicRouter, makeAdminRouter, COLLECTIONS, ADMIN_ONLY } = require('
 const settingsRouter = require('./routes/settings');
 const couponsRouter = require('./routes/coupons');
 const authRouter = require('./routes/auth');
+const { router: uploadRouter, UPLOAD_DIR } = require('./routes/upload');
 
 // First boot: create data/db.json with the site's own sample data
 // so nothing changes visually until the admin actually edits something.
@@ -33,8 +34,12 @@ COLLECTIONS.forEach(name => {
 });
 app.use('/api/admin/settings', settingsRouter);
 app.use('/api/admin/auth', authRouter);
+app.use('/api/admin/upload', uploadRouter); // PDF uploads (PYQ papers, etc.) — admin only
 
 app.get('/api/health', (req, res) => res.json({ ok: true }));
+
+// ---- Serve uploaded files (PYQ PDFs, etc.) publicly so students can open them ----
+app.use('/uploads', express.static(UPLOAD_DIR));
 
 // ---- Serve the admin dashboard's static files ----
 app.use('/admin', express.static(path.join(__dirname, '..', 'admin')));

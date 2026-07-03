@@ -1,0 +1,21 @@
+/* ============================================================
+   SHARED FLOATING SOCIAL RAIL
+   Used on every page (not just the home page) — a small vertical
+   strip of social links fixed to the right edge of the viewport.
+============================================================ */
+.float-social{position:fixed;right:0;top:50%;transform:translateY(-50%);z-index:90;display:flex;flex-direction:column;gap:0}
+.float-social-btn{display:flex;align-items:center;gap:0;padding:13px 12px;color:#fff;font-size:20px;cursor:pointer;text-decoration:none;position:relative;overflow:hidden;transition:padding .25s cubic-bezier(.4,0,.2,1),gap .25s;white-space:nowrap;margin-bottom:2px}
+.float-social-label{font-size:12px;font-weight:700;max-width:0;overflow:hidden;transition:max-width .3s ease,opacity .3s;opacity:0;font-family:'Inter',sans-serif}
+.float-social-btn:hover .float-social-label{max-width:100px;opacity:1}
+.float-social-btn:hover{padding-right:18px;gap:8px}
+.float-social-btn.whatsapp{background:#25D366;border-radius:12px 0 0 12px}
+.float-social-btn.whatsapp:hover{background:#1ebe5d}
+.float-social-btn.instagram{background:linear-gradient(135deg,#f09433,#e6683c 25%,#dc2743 50%,#cc2366 75%,#bc1888);border-radius:12px 0 0 12px}
+.float-social-btn.instagram:hover{filter:brightness(1.1)}
+.float-social-btn.linkedin{background:#0A66C2;border-radius:12px 0 0 12px}
+.float-social-btn.linkedin:hover{background:#0955a3}
+.float-social-btn.youtube{background:#FF0000;border-radius:12px 0 0 12px}
+.float-social-btn.youtube:hover{background:#d90000}
+.float-social-btn i{font-size:20px;flex-shrink:0;transition:transform .2s}
+.float-social-btn:hover i{transform:scale(1.1)}
+@media(max-width:600px){.float-social{top:auto;bottom:90px;transform:none}}
