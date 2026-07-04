@@ -170,6 +170,16 @@ function switchPersona(p) {
          <a onclick="goToCourses();return false;" href="#">Combo Bundles</a>`;
   }
 
+  // The top nav's "Enroll & Refer" link (desktop + mobile) needs to point at
+  // the CAT/OMETs portal's own dedicated enroll page (cat-enroll.html) while
+  // that persona is active, instead of always going to the MBA site's
+  // enroll.html.
+  const enrollTarget = p === 'cat' ? 'cat-enroll.html' : 'enroll.html';
+  document.querySelectorAll('[onclick*="enroll.html"]').forEach(el => {
+    const onclickAttr = el.getAttribute('onclick') || '';
+    el.setAttribute('onclick', onclickAttr.replace(/'(cat-)?enroll\.html'/, "'" + enrollTarget + "'"));
+  });
+
   // Re-observe animations on new content
   observeReveals(target);
   window.scrollTo({ top: 0, behavior: 'smooth' });

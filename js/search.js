@@ -93,6 +93,21 @@ const HOF = [
    if nothing was ever picked (e.g. a direct visit to courses.html). */
 function getPersona() { try { return localStorage.getItem('mbaPersona') || 'mba'; } catch (e) { return 'mba'; } }
 
+// The CAT/OMETs portal has its own dedicated Enroll & Refer page
+// (cat-enroll.html), separate from the MBA site's enroll.html — so every
+// "Enroll"-style button on this page needs to point at whichever one
+// matches the currently active persona toggle, not always the MBA one.
+function applyPersonaEnrollLinks() {
+  const target = getPersona() === 'cat' ? 'cat-enroll.html' : 'enroll.html';
+  document.querySelectorAll('[onclick*="enroll.html"]').forEach(el => {
+    const onclickAttr = el.getAttribute('onclick') || '';
+    el.setAttribute('onclick', onclickAttr.replace(/'(cat-)?enroll\.html'/, "'" + target + "'"));
+  });
+  const promoBtn = document.getElementById('groupPromoEnrollBtn');
+  if (promoBtn) promoBtn.onclick = () => { window.location.href = target; };
+}
+applyPersonaEnrollLinks();
+
 let cart = [], activeCat = 'all', query = '', sort = 'popular', appliedCoupon = null;
 let detailState = { courseId: null, selected: {} };
 let compareSlots = [null, null, null, null]; // up to 4 slots
@@ -756,10 +771,15 @@ function renderDetail(id) {
   // still guaranteed to work instead of silently staying dead from a stale
   // handler bound to whatever course was viewed previously.
   const fromEnrollPage = new URLSearchParams(location.search).get('from') === 'enroll';
+  // CAT/OMETs-track courses have their own dedicated Enroll & Refer page
+  // (cat-enroll.html) — separate from the MBA site's enroll.html — so a CAT
+  // course's "Details -> Enroll Now" round trip needs to land back there,
+  // not on the MBA page.
+  const enrollPage = (c.Track === 'cat') ? 'cat-enroll.html' : 'enroll.html';
   const dEnrollBtn = document.getElementById('dEnroll');
   if (dEnrollBtn) {
     dEnrollBtn.onclick = fromEnrollPage
-      ? () => { window.location.href = 'enroll.html?course=' + encodeURIComponent(c.id); }
+      ? () => { window.location.href = enrollPage + '?course=' + encodeURIComponent(c.id); }
       : () => { if (addToCart(c)) location.hash = '#/checkout'; };
   }
   const dCartBtn = document.getElementById('dCart');
