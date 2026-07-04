@@ -288,14 +288,19 @@ function renderMentors(d){
 }
 function renderPricing(d){
   const el=_h('catPricing'); if(!el)return;
+  const slugify=s=>String(s||'').toLowerCase().trim().replace(/[^a-z0-9]+/g,'-').replace(/(^-|-$)/g,'');
   el.innerHTML=d.pricing.map(p=>{
     const free=String(p.Price)==='0';
+    // Paid plans go to the dedicated CAT/OMETs Enroll & Refer page (pulls this
+    // same plan list live, so any admin edit here shows up there too) —
+    // the free plan has no checkout, so it just calls for details.
+    const href=free?'tel:+917042732092':`cat-enroll.html?course=${encodeURIComponent(slugify(p.Plan))}`;
     return `<div class="cp-price${p.Badge?' feat':''}">
       ${p.Badge?`<span class="cp-price-badge">${p.Badge}</span>`:''}
       <div class="cp-price-plan">${p.Plan}</div>
       <div class="cp-price-amt">${free?'Free':'₹'+Number(p.Price).toLocaleString('en-IN')}<span>${free?'':'/'+ (p.Period||'')}</span></div>
       <ul class="cp-price-feats">${String(p.Features||'').split('|').filter(Boolean).map(f=>`<li><i class="ti ti-check"></i> ${f}</li>`).join('')}</ul>
-      <a class="cp-price-btn" href="tel:+917042732092">${free?'Start free':'Enroll now'}</a>
+      <a class="cp-price-btn" href="${href}">${free?'Start free':'Enroll now'}</a>
     </div>`;}).join('');
 }
 

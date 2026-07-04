@@ -72,6 +72,15 @@ function autoProvisionFromSubmission(name, record) {
   try {
     if (name === 'orders' && record.Email) {
       autoProvisionStudent(record.Email, record.Name);
+      // CAT/OMETs portal orders (cat-enroll.html) use this same generic
+      // 'orders' collection for admin visibility + Razorpay verification,
+      // but their ItemIds are CAT pricing-plan slugs, not real entries in the
+      // MBA 'courses' collection. Provisioning a Program/Enrollment for them
+      // would create broken/unmatched cards on the MBA student dashboard
+      // (js/dashboard-data.js joins Enrollments -> courses by ProgramCode).
+      // CAT has no course-access dashboard of its own yet, so there's
+      // nothing useful to provision here beyond the login itself.
+      if (record.Portal === 'CAT') return;
       const ids = String(record.ItemIds || '').split(',').map(s => s.trim()).filter(Boolean);
       const titles = String(record.Items || '').split(',').map(s => s.trim());
       // record.Domains (if present) is a JSON string: [{ id: 'live-2', domains: ['marketing','hr'] }, ...]
