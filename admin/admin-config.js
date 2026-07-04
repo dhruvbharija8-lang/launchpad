@@ -281,7 +281,7 @@ const ADMIN_SECTIONS = [
     key: 'materials', label: 'Study Materials', icon: 'ti-files', group: 'Student dashboard',
     desc: 'Study material cards shown directly in the dashboard, per program.',
     fields: [
-      { name: 'ProgramCode', label: 'Program code', type: 'text', required: true, col: true },
+      { name: 'ProgramCode', label: 'Course (which course does this material belong to?)', type: 'ref', refCollection: 'courses', refValue: 'id', refLabel: r => `${r.title} — ${r.id}`, required: true, col: true },
       { name: 'Category', label: 'Category group', type: 'text', col: true },
       { name: 'Type', label: 'File type', type: 'select', options: ['pdf', 'ppt', 'drive', 'zip', 'sheet', 'video'] },
       { name: 'Name', label: 'Resource title', type: 'text', col: true },

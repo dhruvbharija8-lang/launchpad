@@ -189,6 +189,25 @@ async function loadAndRenderTable(section) {
   if (!rows.length) { wrap.innerHTML = '<div class="empty-msg">Nothing here yet — click Add to create the first one.</div>'; return; }
   const cols = section.fields.filter(f => f.col);
   const useCols = cols.length ? cols : section.fields.slice(0, 4);
+
+  // 'ref'/'multiref' columns (e.g. a Program Code pointing at the Courses
+  // collection) store just the raw id — resolve those to their human label
+  // here so the table shows the actual course/paper name instead of a
+  // cryptic code, matching what the dropdown already shows when editing.
+  const tableRefCache = {};
+  for (const f of useCols) {
+    if ((f.type === 'ref' || f.type === 'multiref') && !(f.refCollection in tableRefCache)) {
+      try { tableRefCache[f.refCollection] = await api('/admin/' + f.refCollection); }
+      catch (e) { tableRefCache[f.refCollection] = []; }
+    }
+  }
+  const resolveRefLabel = (f, val) => {
+    const rows2 = tableRefCache[f.refCollection] || [];
+    const match = rows2.find(r => String(r[f.refValue]) === String(val));
+    if (!match) return val; // fall back to raw value if not found (e.g. deleted/renamed)
+    return f.refLabel ? f.refLabel(match) : match[f.refValue];
+  };
+
   let html = '<table class="dtab"><thead><tr>';
   useCols.forEach(f => html += `<th>${f.label.replace(/\s*\(.*?\)/, '')}</th>`);
   html += '<th></th></tr></thead><tbody>';
@@ -196,9 +215,12 @@ async function loadAndRenderTable(section) {
     html += '<tr>';
     useCols.forEach(f => {
       let v = r[f.name];
-      if (f.type === 'checkbox') v = v ? '<span class="badge badge-on">Active</span>' : '<span class="badge badge-off">Off</span>';
+      let isHtml = false;
+      if (f.type === 'checkbox') { v = v ? '<span class="badge badge-on">Active</span>' : '<span class="badge badge-off">Off</span>'; isHtml = true; }
+      else if (f.type === 'ref' && v) v = resolveRefLabel(f, v);
+      else if (f.type === 'multiref' && Array.isArray(v)) v = v.map(x => resolveRefLabel(f, x)).join(', ');
       else if (Array.isArray(v)) v = v.join(', ');
-      html += `<td>${v == null ? '' : v}</td>`;
+      html += `<td>${v == null ? '' : (isHtml ? v : escapeHtml(String(v)))}</td>`;
     });
     html += `<td class="row-actions">
       <button class="btn btn-ghost btn-sm" data-edit="${r._id}"><i class="ti ti-edit"></i></button>
