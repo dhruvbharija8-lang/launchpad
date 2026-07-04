@@ -379,24 +379,7 @@ const LIVE_DOMAIN_LINKS_SINGLE = LIVE_DOMAINS_BASE.map(d => ({
   driveLinks: [{ Name: d.label + ' — Live Project Folder', Link: d.link }]
 }));
 
-// Every possible 2-domain combination (for 2-domain Live Project courses),
-// pre-created as blank rows so the admin can just open the matching pairing
-// and paste in its dedicated link(s), instead of needing to know the exact
-// "domainA,domainB" key format themselves. DomainKey is always the two domain
-// keys sorted + comma-joined, so lookup at runtime is order-independent.
-const LIVE_DOMAIN_LINKS_COMBOS = [];
-for (let i = 0; i < LIVE_DOMAINS_BASE.length; i++) {
-  for (let j = i + 1; j < LIVE_DOMAINS_BASE.length; j++) {
-    const a = LIVE_DOMAINS_BASE[i], b = LIVE_DOMAINS_BASE[j];
-    LIVE_DOMAIN_LINKS_COMBOS.push({
-      DomainKey: [a.key, b.key].sort().join(','),
-      DomainLabel: a.label + ' + ' + b.label,
-      driveLinks: []
-    });
-  }
-}
-
-const LIVE_DOMAIN_LINKS = LIVE_DOMAIN_LINKS_SINGLE.concat(LIVE_DOMAIN_LINKS_COMBOS);
+const LIVE_DOMAIN_LINKS = LIVE_DOMAIN_LINKS_SINGLE;
 
 // Static (non-domain-specific) course-materials rows, keyed by the real
 // course id from js/search.js's catalog (matches the ProgramCode a student
@@ -406,22 +389,45 @@ const LIVE_DOMAIN_LINKS = LIVE_DOMAIN_LINKS_SINGLE.concat(LIVE_DOMAIN_LINKS_COMB
 // Competition components, which are the same for every student.
 const BOOTCAMP_MATERIAL_LINK = 'https://drive.google.com/drive/folders/1PErADP9zT_qD-wUEqRCCd0nfEgaOT3dS';
 const CASE_MATERIAL_LINK = 'https://drive.google.com/drive/folders/1ku6u7exclm2qkblRvl-NAiMh_ddmnm4E';
+// One row per course/combo — driveLinks holds every resource for that course
+// (e.g. a combo like "Bootcamp + Case Competitions" gets both the Bootcamp
+// AND Case materials as two links on its one row, instead of two separate
+// rows). Any course not listed here still gets a blank row auto-created
+// below (see backfillMissingCollections) so every course shows up ready to
+// fill in from the admin dashboard.
 const REAL_MATERIALS = [
-  { ProgramCode: 'placement-bootcamp', Category: 'Placement Bootcamp', Type: 'drive', Name: 'Placement Bootcamp Materials', Meta: 'CV templates, mock PI/GD prep & more', Link: BOOTCAMP_MATERIAL_LINK },
-  { ProgramCode: 'placement-bootcamp-mini', Category: 'Placement Bootcamp', Type: 'drive', Name: 'Placement Bootcamp Materials', Meta: 'CV templates, mock PI/GD prep & more', Link: BOOTCAMP_MATERIAL_LINK },
-  { ProgramCode: 'case-dominate', Category: 'Case Competition', Type: 'drive', Name: 'Case Competition Materials', Meta: 'Frameworks, winning PPTs & more', Link: CASE_MATERIAL_LINK },
-  { ProgramCode: 'bootcamp-case-master', Category: 'Placement Bootcamp', Type: 'drive', Name: 'Placement Bootcamp Materials', Meta: 'CV templates, mock PI/GD prep & more', Link: BOOTCAMP_MATERIAL_LINK },
-  { ProgramCode: 'bootcamp-case-master', Category: 'Case Competition', Type: 'drive', Name: 'Case Competition Materials', Meta: 'Frameworks, winning PPTs & more', Link: CASE_MATERIAL_LINK },
-  { ProgramCode: 'bootcamp-case', Category: 'Placement Bootcamp', Type: 'drive', Name: 'Placement Bootcamp Materials', Meta: 'CV templates, mock PI/GD prep & more', Link: BOOTCAMP_MATERIAL_LINK },
-  { ProgramCode: 'bootcamp-case', Category: 'Case Competition', Type: 'drive', Name: 'Case Competition Materials', Meta: 'Frameworks, winning PPTs & more', Link: CASE_MATERIAL_LINK },
-  { ProgramCode: 'bootcamp-live-master', Category: 'Placement Bootcamp', Type: 'drive', Name: 'Placement Bootcamp Materials', Meta: 'CV templates, mock PI/GD prep & more', Link: BOOTCAMP_MATERIAL_LINK },
-  { ProgramCode: 'bootcamp-live', Category: 'Placement Bootcamp', Type: 'drive', Name: 'Placement Bootcamp Materials', Meta: 'CV templates, mock PI/GD prep & more', Link: BOOTCAMP_MATERIAL_LINK },
-  { ProgramCode: 'flagship-bundle-master', Category: 'Placement Bootcamp', Type: 'drive', Name: 'Placement Bootcamp Materials', Meta: 'CV templates, mock PI/GD prep & more', Link: BOOTCAMP_MATERIAL_LINK },
-  { ProgramCode: 'flagship-bundle-master', Category: 'Case Competition', Type: 'drive', Name: 'Case Competition Materials', Meta: 'Frameworks, winning PPTs & more', Link: CASE_MATERIAL_LINK },
-  { ProgramCode: 'flagship-bundle', Category: 'Placement Bootcamp', Type: 'drive', Name: 'Placement Bootcamp Materials', Meta: 'CV templates, mock PI/GD prep & more', Link: BOOTCAMP_MATERIAL_LINK },
-  { ProgramCode: 'flagship-bundle', Category: 'Case Competition', Type: 'drive', Name: 'Case Competition Materials', Meta: 'Frameworks, winning PPTs & more', Link: CASE_MATERIAL_LINK },
-  { ProgramCode: 'case-live', Category: 'Case Competition', Type: 'drive', Name: 'Case Competition Materials', Meta: 'Frameworks, winning PPTs & more', Link: CASE_MATERIAL_LINK }
+  { ProgramCode: 'placement-bootcamp', Category: 'Course Materials', driveLinks: [{ Name: 'Placement Bootcamp Materials', Link: BOOTCAMP_MATERIAL_LINK }] },
+  { ProgramCode: 'placement-bootcamp-mini', Category: 'Course Materials', driveLinks: [{ Name: 'Placement Bootcamp Materials', Link: BOOTCAMP_MATERIAL_LINK }] },
+  { ProgramCode: 'case-dominate', Category: 'Course Materials', driveLinks: [{ Name: 'Case Competition Materials', Link: CASE_MATERIAL_LINK }] },
+  { ProgramCode: 'bootcamp-case-master', Category: 'Course Materials', driveLinks: [
+      { Name: 'Placement Bootcamp Materials', Link: BOOTCAMP_MATERIAL_LINK },
+      { Name: 'Case Competition Materials', Link: CASE_MATERIAL_LINK }
+    ] },
+  { ProgramCode: 'bootcamp-case', Category: 'Course Materials', driveLinks: [
+      { Name: 'Placement Bootcamp Materials', Link: BOOTCAMP_MATERIAL_LINK },
+      { Name: 'Case Competition Materials', Link: CASE_MATERIAL_LINK }
+    ] },
+  { ProgramCode: 'bootcamp-live-master', Category: 'Course Materials', driveLinks: [{ Name: 'Placement Bootcamp Materials', Link: BOOTCAMP_MATERIAL_LINK }] },
+  { ProgramCode: 'bootcamp-live', Category: 'Course Materials', driveLinks: [{ Name: 'Placement Bootcamp Materials', Link: BOOTCAMP_MATERIAL_LINK }] },
+  { ProgramCode: 'flagship-bundle-master', Category: 'Course Materials', driveLinks: [
+      { Name: 'Placement Bootcamp Materials', Link: BOOTCAMP_MATERIAL_LINK },
+      { Name: 'Case Competition Materials', Link: CASE_MATERIAL_LINK }
+    ] },
+  { ProgramCode: 'flagship-bundle', Category: 'Course Materials', driveLinks: [
+      { Name: 'Placement Bootcamp Materials', Link: BOOTCAMP_MATERIAL_LINK },
+      { Name: 'Case Competition Materials', Link: CASE_MATERIAL_LINK }
+    ] },
+  { ProgramCode: 'case-live', Category: 'Course Materials', driveLinks: [{ Name: 'Case Competition Materials', Link: CASE_MATERIAL_LINK }] }
 ];
+
+// Any course/combo from the real catalog that isn't listed above still gets
+// a blank row here (empty driveLinks) so it shows up in Study Materials
+// ready to fill in — the admin never has to manually create a row for a
+// course to appear in the list.
+const REAL_MATERIALS_ALL_COURSES = COURSES.map(c => {
+  const existing = REAL_MATERIALS.find(m => m.ProgramCode === c.id);
+  return existing || { ProgramCode: c.id, Category: c.title, driveLinks: [] };
+});
 
 /* ---------------- CAT / OMETs prep portal ---------------- */
 const CAT_MATERIALS = [
@@ -511,7 +517,7 @@ function run(force) {
     freeSessions: withIds(FREE_SESSIONS),
     programs: withIds(PROGRAMS),
     sessions: withIds(SESSIONS),
-    materials: withIds(MATERIALS.concat(REAL_MATERIALS)),
+    materials: withIds(MATERIALS.concat(REAL_MATERIALS_ALL_COURSES)),
     students: withIds(STUDENTS),
     enrollments: withIds(ENROLLMENTS),
     liveDomainLinks: withIds(LIVE_DOMAIN_LINKS),
@@ -625,19 +631,29 @@ function backfillMissingCollections() {
       console.log('Upgraded stale case-live combo includes');
     }
   }
-  // One-time upgrade: add the real Placement Bootcamp / Case Competition
-  // Drive-materials rows (REAL_MATERIALS) for any (ProgramCode, Name) pair
-  // that isn't already in the 'materials' collection. Never touches a row
-  // the admin has already added or edited for that program.
+  // One-time upgrade: ensure every real course/combo has its own Study
+  // Materials row (REAL_MATERIALS_ALL_COURSES) so it shows up in the admin
+  // dashboard ready to fill in. Never touches a row that already exists for
+  // that ProgramCode — only adds courses that have no row at all yet.
   if (Array.isArray(data.materials)) {
-    const existingKeys = new Set(data.materials.map(m => m.ProgramCode + '||' + m.Name));
-    REAL_MATERIALS.forEach(m => {
-      const k = m.ProgramCode + '||' + m.Name;
-      if (!existingKeys.has(k)) {
+    const existingCodes = new Set(data.materials.map(m => m.ProgramCode));
+    REAL_MATERIALS_ALL_COURSES.forEach(m => {
+      if (!existingCodes.has(m.ProgramCode)) {
         data.materials.push({ _id: db.nextId(data.materials), ...m });
-        existingKeys.add(k);
+        existingCodes.add(m.ProgramCode);
         changed = true;
-        console.log('Backfilled missing material:', k);
+        console.log('Backfilled missing study-materials row for course:', m.ProgramCode);
+      }
+    });
+    // One-time upgrade: older rows stored a single 'Link' string field.
+    // Convert those into the new 'driveLinks' list format (so more than one
+    // resource can be added to the same course) without losing the existing
+    // link or touching any row that's already been converted/edited.
+    data.materials.forEach(m => {
+      if (!Array.isArray(m.driveLinks) && m.Link && m.Link !== '#') {
+        m.driveLinks = [{ Name: m.Name || m.Category || m.ProgramCode, Link: m.Link }];
+        changed = true;
+        console.log('Migrated old Link field to driveLinks list for:', m.ProgramCode, m.Name || '');
       }
     });
   }

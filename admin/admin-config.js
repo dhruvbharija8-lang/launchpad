@@ -36,8 +36,7 @@ const ADMIN_SECTIONS = [
       { name: 'compLiveProject', label: 'Comparison table: Live project', type: 'text' },
       { name: 'compCasePrep', label: 'Comparison table: Case competition prep', type: 'text' },
       { name: 'compCanva', label: 'Comparison table: Canva Pro', type: 'text' },
-      { name: 'compCertificate', label: 'Comparison table: Completion certificate', type: 'text' },
-      { name: 'driveLinks', label: 'Study materials — Drive links (shown to any student enrolled in this course)', type: 'linklist', col: true }
+      { name: 'compCertificate', label: 'Comparison table: Completion certificate', type: 'text' }
     ]
   },
   {
@@ -280,14 +279,11 @@ const ADMIN_SECTIONS = [
   },
   {
     key: 'materials', label: 'Study Materials', icon: 'ti-files', group: 'Student dashboard',
-    desc: 'Study material cards shown directly in the dashboard, per program.',
+    desc: 'One row per course/combo (already pre-created for every course below — just open a course\'s row and add its link(s)). Any student enrolled in that course sees every link added here on their dashboard\'s Materials & Drive page.',
     fields: [
-      { name: 'ProgramCode', label: 'Course (which course does this material belong to?)', type: 'ref', refCollection: 'courses', refValue: 'id', refLabel: r => `${r.title} — ${r.id}`, required: true, col: true },
-      { name: 'Category', label: 'Category group', type: 'text', col: true },
-      { name: 'Type', label: 'File type', type: 'select', options: ['pdf', 'ppt', 'drive', 'zip', 'sheet', 'video'] },
-      { name: 'Name', label: 'Resource title', type: 'text', col: true },
-      { name: 'Meta', label: 'Small description', type: 'text' },
-      { name: 'Link', label: 'Link (blank or # = "coming soon")', type: 'text' }
+      { name: 'ProgramCode', label: 'Course', type: 'ref', refCollection: 'courses', refValue: 'id', refLabel: r => `${r.title} — ${r.id}`, required: true, col: true },
+      { name: 'Category', label: 'Category / section label shown to students', type: 'text', col: true },
+      { name: 'driveLinks', label: 'Drive links (add as many as you like for this course)', type: 'linklist', col: true }
     ]
   },
   {
@@ -327,9 +323,9 @@ const ADMIN_SECTIONS = [
   },
   {
     key: 'liveDomainLinks', label: 'Live Project — Domain Drive Links', icon: 'ti-folder', group: 'Student dashboard',
-    desc: 'The Google Drive folder(s) for each Live Project domain, plus every possible 2-domain combination (for students who picked 2 domains) — already pre-created below so you can just open the matching row and paste your link(s) in. If a student picked 2 domains and a combo row for that exact pair has links, they see those; otherwise they see each individual domain\'s links.',
+    desc: 'The Google Drive folder(s) for each Live Project domain. A student sees the link(s) for whichever domain(s) they picked at checkout (stored on their Enrollments row). Domain key must stay lowercase and match what the checkout picker uses (operations / marketing / hr / finance / consulting / product).',
     fields: [
-      { name: 'DomainKey', label: 'Domain key (single: "marketing" — or a combo: "hr,marketing", comma-joined, alphabetical)', type: 'text', required: true, col: true },
+      { name: 'DomainKey', label: 'Domain key (lowercase, no spaces)', type: 'text', required: true, col: true },
       { name: 'DomainLabel', label: 'Domain label shown to students', type: 'text', col: true },
       { name: 'driveLinks', label: 'Drive links for this domain / combo', type: 'linklist', col: true }
     ]

@@ -172,7 +172,7 @@ async function fetchSheetTab(tabName) {
 /* Preferred: the admin-server API (edited from the admin dashboard). */
 async function _fetchDashboardApi() {
   const base = (typeof MBA_API_BASE !== 'undefined') ? MBA_API_BASE : '';
-  const names = ['students', 'programs', 'enrollments', 'sessions', 'materials', 'liveDomainLinks', 'courses'];
+  const names = ['students', 'programs', 'enrollments', 'sessions', 'materials', 'liveDomainLinks'];
   const results = await Promise.all(names.map(n => fetch(base + '/api/public/' + n).then(r => r.ok ? r.json() : null).catch(() => null)));
   const out = {};
   // A single newer/secondary collection (e.g. liveDomainLinks) briefly failing
@@ -244,12 +244,32 @@ function buildStudentView(data, email) {
       mentor: x.Mentor, type: x.Type, soon: _yes(x.Soon)
     }));
 
-  const materials = data.materials
+  // Each Study Materials row belongs to one course (ProgramCode) and can hold
+  // either the older single Name/Link fields (kept working for any existing
+  // row), or the newer 'driveLinks' list — add as many links as you like to
+  // one row instead of creating a separate row per link.
+  const materials = [];
+  data.materials
     .filter(x => myCodes.includes(x.ProgramCode))
-    .map(x => ({
-      category: x.Category || 'General', type: _lc(x.Type) || 'drive',
-      name: x.Name, meta: x.Meta, link: x.Link || '#'
-    }));
+    .forEach(x => {
+      const p = data.programs.find(pr => pr.ProgramCode === x.ProgramCode) || {};
+      if (Array.isArray(x.driveLinks) && x.driveLinks.length) {
+        x.driveLinks.forEach(link => {
+          if (!link || !link.Link) return;
+          materials.push({
+            category: x.Category || 'General', type: 'drive',
+            name: link.Name || x.Category || p.Title || x.ProgramCode,
+            meta: x.Meta || p.Title || x.ProgramCode,
+            link: link.Link
+          });
+        });
+      } else if (x.Name || x.Link) {
+        materials.push({
+          category: x.Category || 'General', type: _lc(x.Type) || 'drive',
+          name: x.Name, meta: x.Meta, link: x.Link || '#'
+        });
+      }
+    });
 
   // Live Project domain materials: resolved per-enrollment (not per-program),
   // since which Drive folder(s) a student sees depends on which domain(s)
@@ -304,29 +324,6 @@ function buildStudentView(data, email) {
           name: link.Name || ('Live Project — ' + (d.DomainLabel || key)),
           meta: p.Title || e.ProgramCode, link: link.Link
         });
-      });
-    });
-  });
-
-  // Per-course Drive links: set directly on each Course's own edit form
-  // (admin → Courses & Pricing → "Study materials — Drive links"), not on a
-  // separate Materials-collection row. Any student enrolled in a course
-  // (their enrollment's ProgramCode matches that course's id) automatically
-  // sees every link added there — add as many as you like per course.
-  const allCourses = Array.isArray(data.courses) ? data.courses : [];
-  myEnroll.forEach(e => {
-    const course = allCourses.find(c => c.id === e.ProgramCode);
-    const links = course && Array.isArray(course.driveLinks) ? course.driveLinks : [];
-    if (!links.length) return;
-    const p = data.programs.find(pr => pr.ProgramCode === e.ProgramCode) || {};
-    links.forEach(link => {
-      if (!link || !link.Link) return;
-      materials.push({
-        category: 'Study Materials',
-        type: 'drive',
-        name: link.Name || (course.title || e.ProgramCode),
-        meta: p.Title || course.title || e.ProgramCode,
-        link: link.Link
       });
     });
   });
