@@ -157,7 +157,10 @@ async function renderCollectionSection(section) {
   const main = document.getElementById('main');
   main.innerHTML = mainHead(section.label, section.desc) +
     `<div class="panel">
-      <div class="add-bar"><span></span><button class="btn btn-primary" style="width:auto" id="addBtn"><i class="ti ti-plus"></i> Add ${section.label.replace(/s$/, '')}</button></div>
+      <div class="add-bar">
+        <input type="text" id="tableSearch" placeholder="Search…" style="flex:1;max-width:320px;padding:9px 14px;border:1.5px solid var(--line);border-radius:10px;font-size:13.5px"/>
+        <button class="btn btn-primary" style="width:auto" id="addBtn"><i class="ti ti-plus"></i> Add ${section.label.replace(/s$/, '')}</button>
+      </div>
       <div class="table-wrap" id="tableWrap"><div class="empty-msg">Loading…</div></div>
     </div>
     <div class="modal-overlay" id="modalOverlay"><div class="modal-card">
@@ -208,41 +211,82 @@ async function loadAndRenderTable(section) {
     return f.refLabel ? f.refLabel(match) : match[f.refValue];
   };
 
-  let html = '<table class="dtab"><thead><tr>';
-  useCols.forEach(f => html += `<th>${f.label.replace(/\s*\(.*?\)/, '')}</th>`);
-  html += '<th></th></tr></thead><tbody>';
-  rows.forEach(r => {
-    html += '<tr>';
-    useCols.forEach(f => {
-      let v = r[f.name];
-      let isHtml = false;
-      if (f.type === 'checkbox') { v = v ? '<span class="badge badge-on">Active</span>' : '<span class="badge badge-off">Off</span>'; isHtml = true; }
-      else if (f.type === 'ref' && v) v = resolveRefLabel(f, v);
-      else if (f.type === 'multiref' && Array.isArray(v)) v = v.map(x => resolveRefLabel(f, x)).join(', ');
-      else if (f.type === 'linklist') v = Array.isArray(v) && v.length ? v.length + ' link' + (v.length > 1 ? 's' : '') + ' — ' + v.map(x => x.Name || x.Link).join(', ') : '—';
-      else if (Array.isArray(v)) v = v.join(', ');
-      html += `<td>${v == null ? '' : (isHtml ? v : escapeHtml(String(v)))}</td>`;
-    });
-    html += `<td class="row-actions">
-      <button class="btn btn-ghost btn-sm" data-edit="${r._id}"><i class="ti ti-edit"></i></button>
-      <button class="btn btn-danger btn-sm" data-del="${r._id}"><i class="ti ti-trash"></i></button>
-    </td></tr>`;
-  });
-  html += '</tbody></table>';
-  wrap.innerHTML = html;
+  // Resolve every column to its plain display text once per row — used for
+  // both rendering AND for sorting/searching, so what you type/see matches
+  // what's actually on screen (e.g. searching "finance" matches a resolved
+  // course name, not a raw course id).
+  const displayValue = (r, f) => {
+    const v = r[f.name];
+    if (f.type === 'checkbox') return v ? 'Active' : 'Off';
+    if (f.type === 'ref' && v) return String(resolveRefLabel(f, v));
+    if (f.type === 'multiref' && Array.isArray(v)) return v.map(x => resolveRefLabel(f, x)).join(', ');
+    if (f.type === 'linklist') return Array.isArray(v) && v.length ? v.length + ' link' + (v.length > 1 ? 's' : '') + ' — ' + v.map(x => x.Name || x.Link).join(', ') : '';
+    if (Array.isArray(v)) return v.join(', ');
+    return v == null ? '' : String(v);
+  };
 
-  wrap.querySelectorAll('[data-edit]').forEach(b => b.onclick = () => {
-    const rec = rows.find(r => r._id === b.dataset.edit);
-    openRecordModal(section, rec);
+  // Group related rows together instead of showing them in raw insertion
+  // order (e.g. Study Materials otherwise scatters a course's 6 domain rows
+  // randomly among 60+ others) — sort by each visible column in order, so
+  // rows sharing the first column's value cluster together, sub-sorted by
+  // the next column, and so on.
+  const sortedRows = rows.slice().sort((a, b) => {
+    for (const f of useCols) {
+      const av = displayValue(a, f).toLowerCase(), bv = displayValue(b, f).toLowerCase();
+      if (av < bv) return -1;
+      if (av > bv) return 1;
+    }
+    return 0;
   });
-  wrap.querySelectorAll('[data-del]').forEach(b => b.onclick = async () => {
-    if (!confirm('Delete this entry? This cannot be undone.')) return;
-    try {
-      await api('/admin/' + section.key + '/' + b.dataset.del, { method: 'DELETE' });
-      toast('Deleted');
-      loadAndRenderTable(section);
-    } catch (e) { toast(e.message, true); }
-  });
+
+  function renderRows(list) {
+    let html = '<table class="dtab"><thead><tr>';
+    useCols.forEach(f => html += `<th>${f.label.replace(/\s*\(.*?\)/, '')}</th>`);
+    html += '<th></th></tr></thead><tbody>';
+    if (!list.length) {
+      html += `<tr><td colspan="${useCols.length + 1}" style="text-align:center;color:var(--ink3,#8a8f98);padding:24px">No matches for that search.</td></tr>`;
+    }
+    list.forEach(r => {
+      html += '<tr>';
+      useCols.forEach(f => {
+        if (f.type === 'checkbox') {
+          html += `<td>${r[f.name] ? '<span class="badge badge-on">Active</span>' : '<span class="badge badge-off">Off</span>'}</td>`;
+        } else {
+          html += `<td>${escapeHtml(displayValue(r, f) || (f.type === 'linklist' ? '—' : ''))}</td>`;
+        }
+      });
+      html += `<td class="row-actions">
+        <button class="btn btn-ghost btn-sm" data-edit="${r._id}"><i class="ti ti-edit"></i></button>
+        <button class="btn btn-danger btn-sm" data-del="${r._id}"><i class="ti ti-trash"></i></button>
+      </td></tr>`;
+    });
+    html += '</tbody></table>';
+    wrap.innerHTML = html;
+
+    wrap.querySelectorAll('[data-edit]').forEach(b => b.onclick = () => {
+      const rec = rows.find(r => r._id === b.dataset.edit);
+      openRecordModal(section, rec);
+    });
+    wrap.querySelectorAll('[data-del]').forEach(b => b.onclick = async () => {
+      if (!confirm('Delete this entry? This cannot be undone.')) return;
+      try {
+        await api('/admin/' + section.key + '/' + b.dataset.del, { method: 'DELETE' });
+        toast('Deleted');
+        loadAndRenderTable(section);
+      } catch (e) { toast(e.message, true); }
+    });
+  }
+
+  renderRows(sortedRows);
+
+  const searchEl = document.getElementById('tableSearch');
+  if (searchEl) {
+    searchEl.oninput = () => {
+      const q = searchEl.value.trim().toLowerCase();
+      if (!q) { renderRows(sortedRows); return; }
+      renderRows(sortedRows.filter(r => useCols.some(f => displayValue(r, f).toLowerCase().includes(q))));
+    };
+  }
 }
 
 function fieldHtml(f, value, refOptions) {
