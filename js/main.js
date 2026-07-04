@@ -493,7 +493,15 @@ function updateBuyBoxPricing(c) {
 }
 function addToCart(c) {
   if (!groupsSatisfied(c)) { showToast('Please make a selection above before continuing'); return false; }
-  const v = resolveVariant(c); cart.push({ ...c, price: v.price, mrp: v.mrp, variantLabel: v.label }); syncCart(); showToast(c.title + ' added to cart' + (v.label ? ' · ' + v.label : '')); return true;
+  const v = resolveVariant(c);
+  // Capture the student's Live Project domain pick(s) (option group id
+  // 'domain') onto the cart item right now — detailState is transient and
+  // resets once they leave this page, so the cart item is the only place
+  // this selection survives until checkout builds the Domains payload.
+  const domainGroup = (c.optionGroups || []).find(g => g.id === 'domain');
+  const domainSel = domainGroup ? detailState.selected['domain'] : null;
+  const domains = domainSel ? (Array.isArray(domainSel) ? domainSel : [domainSel]) : [];
+  cart.push({ ...c, price: v.price, mrp: v.mrp, variantLabel: v.label, domains }); syncCart(); showToast(c.title + ' added to cart' + (v.label ? ' · ' + v.label : '')); return true;
 }
 function renderMentors() {
   document.getElementById('dMentors').innerHTML = MENTORS.map(m => `<div class="mentor-card"><div class="mentor-avatar">${m.initials}</div><div class="mentor-name">${m.name}</div><div class="mentor-school">${m.school}</div><div class="mentor-cred">${m.cred}</div></div>`).join('');
@@ -596,12 +604,20 @@ function renderCheckout() {
     const payBtn = document.getElementById('payNow');
     if (payBtn) payBtn.disabled = true;
     try {
+      // Only include entries for cart items that actually needed a Live
+      // Project domain pick — matches the same JSON shape enroll.html
+      // sends, so the server resolves it the same way regardless of which
+      // checkout flow the student used.
+      const domainsPayload = cart
+        .filter(c => Array.isArray(c.domains) && c.domains.length)
+        .map(c => ({ id: c.id, domains: c.domains }));
       const checkoutPayload = {
         Name: n, Email: e, Phone: ph, College: col,
         Items: cart.map(c => c.title).join(', '),
         ItemIds: cart.map(c => c.id).join(', '),
         Total: grandTotal,
-        Coupon: appliedCoupon ? appliedCoupon.code : ''
+        Coupon: appliedCoupon ? appliedCoupon.code : '',
+        Domains: domainsPayload.length ? JSON.stringify(domainsPayload) : ''
       };
       const orderData = await createRazorpayOrder(grandTotal, `order_${Date.now()}`, {
         email: e,
