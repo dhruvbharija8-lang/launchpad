@@ -175,8 +175,13 @@ async function _fetchDashboardApi() {
   const names = ['students', 'programs', 'enrollments', 'sessions', 'materials', 'liveDomainLinks'];
   const results = await Promise.all(names.map(n => fetch(base + '/api/public/' + n).then(r => r.ok ? r.json() : null).catch(() => null)));
   const out = {};
-  names.forEach((n, i) => { out[n] = results[i]; });
-  if (names.every(n => Array.isArray(out[n]))) return out;
+  // A single newer/secondary collection (e.g. liveDomainLinks) briefly failing
+  // to load shouldn't wipe out the ENTIRE real dashboard back to fake demo
+  // data — default any non-array result to [] and keep going. Only fall back
+  // to SAMPLE_DATA if the backend is genuinely unreachable (students itself
+  // failed), since that's the one collection every other computation depends on.
+  names.forEach((n, i) => { out[n] = Array.isArray(results[i]) ? results[i] : []; });
+  if (Array.isArray(results[0])) return out;
   return null;
 }
 
