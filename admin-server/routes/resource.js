@@ -91,14 +91,20 @@ function autoProvisionFromSubmission(name, record) {
         autoProvisionEnrollment(record.Email, id, domainMap[id] || '');
       });
     } else if (name === 'enrollmentRequests' && record.Email) {
+      // NOTE: this fire-and-forget request from enroll.html is only a
+      // signup/lead log for the admin dashboard — it fires in parallel with
+      // (not after) the Razorpay '/verify' call, which is the one that
+      // actually grants course access (and carries the correct Live Project
+      // Domains, from checkoutPayload). Provisioning the enrollment from
+      // BOTH places raced against each other: whichever request's
+      // read-then-write landed last could silently wipe out the Domains the
+      // other one had just set, since neither read the other's write first.
+      // So only create the student's login here — never touch Programs or
+      // Enrollments; the payment-verified 'orders' branch above is the only
+      // source of truth for what a student actually has access to.
       autoProvisionStudent(record.Email, record.Name);
-      if (record.CourseId) {
-        autoProvisionProgram(record.CourseId, record.Course);
-        autoProvisionEnrollment(record.Email, record.CourseId);
-      }
       if (record.Type === 'group' && record.Email2) {
         autoProvisionStudent(record.Email2, record.Name2);
-        if (record.CourseId) autoProvisionEnrollment(record.Email2, record.CourseId);
       }
     }
   } catch (e) { /* auto-provisioning is a nice-to-have — never let it break the actual save */ }
