@@ -273,6 +273,15 @@ function initDashboard() {
   renderMaterials(u.materials);
   renderProgress(u);
   renderOverviewStats(u);
+
+  // Closed/enrolled-students WhatsApp group — only shown once the student
+  // has actually purchased at least one course (open community group above
+  // stays visible for everyone regardless).
+  const waClosedBtn = document.getElementById('waClosedGroupBtn');
+  if (waClosedBtn) {
+    const purchased = typeof u.hasPurchased === 'boolean' ? u.hasPurchased : !!(u.courses && u.courses.length);
+    waClosedBtn.style.display = purchased ? '' : 'none';
+  }
 }
 
 // Overview stat cards — these used to be 4 fixed, hardcoded dummy numbers

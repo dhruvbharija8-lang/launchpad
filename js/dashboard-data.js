@@ -277,6 +277,7 @@ function buildStudentView(data, email) {
 
   return {
     name: s.Name, email: s.Email, role: s.Role, avatar: s.Avatar || (s.Name || '?')[0],
+    hasPurchased: courses.length > 0,
     courses, sessions, materials,
     cvDone: _num(s.CV_Done), cvTotal: _num(s.CV_Total) || 5,
     piDone: _num(s.PI_Done), piTotal: _num(s.PI_Total) || 7,
