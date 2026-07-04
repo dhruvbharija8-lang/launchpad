@@ -875,6 +875,14 @@ document.querySelectorAll('.fchip').forEach(btn=>{
 });
 renderGrid();
 
+/* ── ENROLLMENT MODAL ── */
+// Declared BEFORE the auto-open block below runs — openEnroll() assigns to
+// currentCourse, so if this "let" line came after that call (as it used to),
+// the reference-before-declaration throws a ReferenceError (temporal dead
+// zone) and the modal silently never opens, even though the URL correctly
+// has ?course=... on it.
+let currentCourse=null,couponDiscount=0,appliedCode='',currentEnrollMode='solo';
+
 // If we were sent here from a course's "Enroll Now" on its Details page
 // (courses.html?from=enroll), open the enroll modal for that exact course
 // automatically instead of making them find and click it again here.
@@ -882,9 +890,6 @@ renderGrid();
   const courseId = new URLSearchParams(location.search).get('course');
   if (courseId) openEnroll(courseId);
 })();
-
-/* ── ENROLLMENT MODAL ── */
-let currentCourse=null,couponDiscount=0,appliedCode='',currentEnrollMode='solo';
 
 function setEnrollMode(mode) {
   currentEnrollMode = mode;
