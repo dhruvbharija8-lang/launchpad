@@ -2517,7 +2517,12 @@
   </div>
 
   <script>
-    const colleges = [
+    // "Trusted Across India's Top B-Schools" grid + marquee — fetched from
+    // the admin dashboard's "College Collab — Partner Campuses" section, so
+    // it can be added/edited/removed without touching code. Falls back to
+    // the last-known set if the API is unreachable, so the section never
+    // renders empty.
+    let colleges = [
       { name: "IIM Raipur", city: "Raipur", badge: "Active" },
       { name: "IIM Kashipur", city: "Kashipur", badge: "Active" },
       { name: "IIM Udaipur", city: "Udaipur", badge: "Active" },
@@ -2525,9 +2530,10 @@
       { name: "DSE", city: "Delhi", badge: "Active" }
     ];
 
-    const grid = document.getElementById('collegesGrid');
-    if (grid) {
-      grid.innerHTML = colleges.map(c => `
+    function renderCollabColleges() {
+      const grid = document.getElementById('collegesGrid');
+      if (grid) {
+        grid.innerHTML = colleges.map(c => `
     <div class="college-card">
       <div class="college-icon"><i class="ti ti-building-bank"></i></div>
       <div class="college-name">${c.name}</div>
@@ -2542,22 +2548,38 @@
       <div class="college-badge" style="color:rgba(255,255,255,.5);background:rgba(255,255,255,.05);border-color:rgba(255,255,255,.12);cursor:pointer">Join us</div>
     </a>
   `;
-    }
+      }
 
-    const track = document.getElementById('marqueeTrack');
-    if (track) {
-      const set = colleges.map(c => `<div class="m-college"><i class="ti ti-building-bank"></i>${c.name}</div>`).join('');
-      track.innerHTML = set + set;
+      const track = document.getElementById('marqueeTrack');
+      if (track) {
+        const set = colleges.map(c => `<div class="m-college"><i class="ti ti-building-bank"></i>${c.name}</div>`).join('');
+        track.innerHTML = set + set;
+      }
     }
+    renderCollabColleges();
+
+    (async function loadCollabColleges() {
+      try {
+        const base = (typeof MBA_API_BASE !== 'undefined') ? MBA_API_BASE : '';
+        const res = await fetch(base + '/api/public/collabColleges');
+        if (!res.ok) return;
+        const rows = await res.json();
+        if (!Array.isArray(rows) || !rows.length) return;
+        colleges = rows.map(r => ({ name: r.Name, city: r.City, badge: r.Badge || '' }));
+        renderCollabColleges();
+      } catch (e) {
+        console.error('Collab colleges load failed — keeping built-in list.', e);
+      }
+    })();
 
     // Pricing data (rawPrice in ₹ for 40% collab discount calc)
     const pricing = [
-      { name: "Flagship Bundle", badge: "Best Value", rawPrice: 13999, icon: "ti ti-package", desc: "Everything in one — Bootcamp Master, Live Projects (2 domains), Case Competition prep, CV Audit, and full network access. Complete placement readiness.", featured: true },
-      { name: "Bootcamp + Live Project", badge: "Popular", rawPrice: 11499, icon: "ti ti-bolt", desc: "Placement Bootcamp Master paired with a live consulting project — strong CV bullet plus end-to-end interview prep in one go.", featured: false },
-      { name: "Bootcamp + Case Combo", badge: "", rawPrice: 9499, icon: "ti ti-layout-board", desc: "Bootcamp combined with Case Competition prep. Ideal for consulting aspirants targeting both PI rounds and national competitions.", featured: false },
-      { name: "Placement Bootcamp Master", badge: "", rawPrice: 7499, icon: "ti ti-rocket", desc: "Full-length mock PIs, GDs, ATS-optimised CV building, and domain-specific prep. Built for Day-1 readiness, tailored to your target role.", featured: false },
+      { name: "Flagship Bundle", badge: "Best Value", rawPrice: 15999, icon: "ti ti-package", desc: "Everything in one — Bootcamp Master, Live Projects (2 domains), Case Competition prep, CV Audit, and full network access. Complete placement readiness.", featured: true },
+      { name: "Bootcamp + Live Project", badge: "Popular", rawPrice: 13499, icon: "ti ti-bolt", desc: "Placement Bootcamp Master paired with a live consulting project — strong CV bullet plus end-to-end interview prep in one go.", featured: false },
+      { name: "Bootcamp + Case Combo", badge: "", rawPrice: 11499, icon: "ti ti-layout-board", desc: "Bootcamp combined with Case Competition prep. Ideal for consulting aspirants targeting both PI rounds and national competitions.", featured: false },
+      { name: "Placement Bootcamp Master", badge: "", rawPrice: 9499, icon: "ti ti-rocket", desc: "Full-length mock PIs, GDs, ATS-optimised CV building, and domain-specific prep. Built for Day-1 readiness, tailored to your target role.", featured: false },
       { name: "Live Project — 2 Domains", badge: "", rawPrice: 7500, icon: "ti ti-briefcase", desc: "Real consulting deliverables across two domains over 4–8 weeks. Two strong, verifiable CV bullets from actual client work.", featured: false },
-      { name: "Placement Bootcamp Mini", badge: "", rawPrice: 5499, icon: "ti ti-users", desc: "Core placement prep — mock PIs, GD practice, and a CV review pass. For students who need focused, fast-track readiness.", featured: false },
+      { name: "Placement Bootcamp Mini", badge: "", rawPrice: 7499, icon: "ti ti-users", desc: "Core placement prep — mock PIs, GD practice, and a CV review pass. For students who need focused, fast-track readiness.", featured: false },
       { name: "Live Project — 1 Domain", badge: "", rawPrice: 4000, icon: "ti ti-briefcase", desc: "One focused consulting project with Prodmark Consultants. A high-impact CV entry that interviewers actually ask about.", featured: false },
       { name: "Case Competitions Prep", badge: "", rawPrice: 3499, icon: "ti ti-trophy", desc: "Frameworks from AIR 1, 30+ winning decks, live mock rounds, and presentation coaching for students targeting national competitions.", featured: false },
       { name: "Power BI Certification", badge: "", rawPrice: 1499, icon: "ti ti-chart-bar", desc: "Hands-on Power BI certification for Analytics, Consulting, and Marketing aspirants. Build dashboards and walk into interviews with proof of skill.", featured: false },

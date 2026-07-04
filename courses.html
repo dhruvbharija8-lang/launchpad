@@ -276,9 +276,10 @@ document.addEventListener('DOMContentLoaded',function(){
     <div class="mobile-search-bar" id="mobileSearchBar">
       <div class="nav-search" style="display:flex; max-width:100%; border-color:var(--orange)">
         <i class="ti ti-search"></i>
-        <input id="searchInputMobile" placeholder="Search courses" aria-label="Search"/>
+        <input id="searchInputMobile" placeholder="Search courses" aria-label="Search" autocomplete="off"/>
         <button class="drawer-close" id="mobileSearchClose" style="margin-left:8px; background:transparent; color:#fff; border:none; font-size:24px; cursor:pointer">&times;</button>
       </div>
+      <div class="search-suggest dark" id="searchSuggestMobile"></div>
     </div>
 
   <div class="ticker" id="tickerBar">
@@ -295,8 +296,9 @@ document.addEventListener('DOMContentLoaded',function(){
       <div class="search-container anim" style="animation-delay:.75s">
         <div class="nav-search">
           <i class="ti ti-search"></i>
-          <input id="searchInputHero" placeholder="Search courses & offerings" aria-label="Search"/>
+          <input id="searchInputHero" placeholder="Search courses & offerings" aria-label="Search" autocomplete="off"/>
         </div>
+        <div class="search-suggest" id="searchSuggestHero"></div>
       </div>
     </div>
     

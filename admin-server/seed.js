@@ -263,6 +263,18 @@ const COLLAB_TESTIMONIALS = [
 const COLLEGES = ['IIM Ahmedabad', 'IIM Bangalore', 'IIM Calcutta', 'IIM Lucknow', 'IIM Indore', 'IIM Kozhikode',
   'IIM Mumbai', 'XLRI Jamshedpur', 'FMS Delhi', 'MDI Gurgaon'].map(Name => ({ Name }));
 
+// Separate from COLLEGES above — this is the "Trusted Across India's Top
+// B-Schools" grid + scrolling marquee specifically on the College
+// Collaboration page (currently-active partner campuses), not the general
+// colleges list used elsewhere.
+const COLLAB_COLLEGES = [
+  { Name: 'IIM Raipur', City: 'Raipur', Badge: 'Active' },
+  { Name: 'IIM Kashipur', City: 'Kashipur', Badge: 'Active' },
+  { Name: 'IIM Udaipur', City: 'Udaipur', Badge: 'Active' },
+  { Name: 'JBIMS', City: 'Mumbai', Badge: 'Active' },
+  { Name: 'DSE', City: 'Delhi', Badge: 'Active' }
+];
+
 const VIDEOS = [
   { Name: 'Mridul', College: 'IIM Calcutta', Company: '', Domain: '', VideoURL: 'https://drive.google.com/file/d/1O8GULMw1TSJq-BJgk1F8i7u3ywEITHeD/view', Duration: '' }
 ];
@@ -437,6 +449,7 @@ function run(force) {
     students: withIds(STUDENTS),
     enrollments: withIds(ENROLLMENTS),
     collabTestimonials: withIds(COLLAB_TESTIMONIALS),
+    collabColleges: withIds(COLLAB_COLLEGES),
     catMaterials: withIds(CAT_MATERIALS),
     catMocks: withIds(CAT_MOCKS),
     catQuestions: withIds(CAT_QUESTIONS),
@@ -469,6 +482,7 @@ function backfillMissingCollections() {
     catGdpi: CAT_GDPI, catDomainQA: CAT_DOMAINQA, catMentors: CAT_MENTORS, catPricing: CAT_PRICING,
     hallOfFame: HALL_OF_FAME, freeSessions: FREE_SESSIONS,
     collabTestimonials: COLLAB_TESTIMONIALS,
+    collabColleges: COLLAB_COLLEGES,
     // Visitor-submitted collections start empty — nothing to seed, they
     // just need to exist so the admin dashboard section doesn't error out
     // before anyone has submitted anything yet.

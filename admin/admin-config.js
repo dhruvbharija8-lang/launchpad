@@ -185,6 +185,15 @@ const ADMIN_SECTIONS = [
     ]
   },
   {
+    key: 'collabColleges', label: 'College Collab — Partner Campuses', icon: 'ti-building-bank', group: 'Site content',
+    desc: '"Trusted Across India\'s Top B-Schools" grid + scrolling marquee on the College Collaboration page. NOT the same list as the "Colleges" section below.',
+    fields: [
+      { name: 'Name', label: 'College name', type: 'text', required: true, col: true },
+      { name: 'City', label: 'City', type: 'text', required: true, col: true },
+      { name: 'Badge', label: 'Status badge (e.g. "Active")', type: 'text', col: true }
+    ]
+  },
+  {
     key: 'mentors', label: 'Mentors', icon: 'ti-users', group: 'Site content',
     desc: 'The "Meet Your Mentors" section on the home page.',
     fields: [

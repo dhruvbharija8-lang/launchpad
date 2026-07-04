@@ -133,7 +133,7 @@ function makeAdminRouter(name) {
 const COLLECTIONS = [
   'courses', 'combos', 'coupons', 'placements', 'mentors', 'colleges',
   'videos', 'gdpi', 'hallOfFame', 'freeSessions', 'programs', 'sessions', 'materials', 'students', 'enrollments',
-  'collabTestimonials',
+  'collabTestimonials', 'collabColleges',
   // Real visitor submissions — write-only from the public side (see
   // PUBLIC_WRITE_ONLY above), fully readable/editable from the admin
   // dashboard like every other collection.

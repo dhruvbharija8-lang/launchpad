@@ -408,6 +408,69 @@ if (heroSearchEl) heroSearchEl.addEventListener('input', e => applySearch(e.targ
 const mobileSearchEl = document.getElementById('searchInputMobile');
 if (mobileSearchEl) mobileSearchEl.addEventListener('input', e => applySearch(e.target.value));
 
+/* ===== SEARCH SUGGESTIONS (autocomplete dropdown) ===== */
+function buildSearchSuggestions(v) {
+  const q = (v || '').trim().toLowerCase();
+  if (!q) return [];
+  const persona = getPersona();
+  return COURSES
+    .filter(c => (c.Track || 'mba') === persona)
+    .filter(c => c.title.toLowerCase().includes(q))
+    .slice(0, 6);
+}
+function wireSearchSuggest(inputId, dropId) {
+  const input = document.getElementById(inputId);
+  const drop = document.getElementById(dropId);
+  if (!input || !drop) return;
+  let items = [];
+  let hlIdx = -1;
+
+  function draw() {
+    if (!items.length) { drop.classList.remove('open'); drop.innerHTML = ''; return; }
+    drop.innerHTML = items.map((c, i) => `
+      <div class="search-suggest-item${i === hlIdx ? ' hl' : ''}" data-id="${c.id}">
+        <i class="ti ti-arrow-up-right"></i>
+        <div>
+          <div class="ssi-title">${c.title}</div>
+          <div class="ssi-meta">${c.type || ''}${c.type ? ' · ' : ''}${fmt(c.price)}</div>
+        </div>
+      </div>
+    `).join('');
+    drop.classList.add('open');
+    drop.querySelectorAll('.search-suggest-item').forEach(el => {
+      el.onmousedown = e => e.preventDefault();
+      el.onclick = () => selectSuggestion(el.dataset.id);
+    });
+  }
+  function selectSuggestion(id) {
+    drop.classList.remove('open');
+    input.value = '';
+    query = '';
+    input.blur();
+    location.hash = '#/course/' + id;
+  }
+  input.addEventListener('input', () => {
+    items = buildSearchSuggestions(input.value);
+    hlIdx = -1;
+    draw();
+  });
+  input.addEventListener('focus', () => {
+    items = buildSearchSuggestions(input.value);
+    hlIdx = -1;
+    draw();
+  });
+  input.addEventListener('keydown', e => {
+    if (!items.length || !drop.classList.contains('open')) return;
+    if (e.key === 'ArrowDown') { e.preventDefault(); hlIdx = Math.min(hlIdx + 1, items.length - 1); draw(); }
+    else if (e.key === 'ArrowUp') { e.preventDefault(); hlIdx = Math.max(hlIdx - 1, 0); draw(); }
+    else if (e.key === 'Enter' && hlIdx >= 0) { e.preventDefault(); selectSuggestion(items[hlIdx].id); }
+    else if (e.key === 'Escape') { drop.classList.remove('open'); }
+  });
+  input.addEventListener('blur', () => setTimeout(() => drop.classList.remove('open'), 120));
+}
+wireSearchSuggest('searchInputHero', 'searchSuggestHero');
+wireSearchSuggest('searchInputMobile', 'searchSuggestMobile');
+
 
 /* ===== DETAIL ===== */
 function variantGroupHtml(g) {
