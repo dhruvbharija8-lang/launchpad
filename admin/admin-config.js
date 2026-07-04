@@ -279,11 +279,12 @@ const ADMIN_SECTIONS = [
   },
   {
     key: 'materials', label: 'Study Materials', icon: 'ti-files', group: 'Student dashboard',
-    desc: 'One row per course/combo (already pre-created for every course below — just open a course\'s row and add its link(s)). Any student enrolled in that course sees every link added here on their dashboard\'s Materials & Drive page.',
+    desc: 'One row per course/combo (already pre-created for every course below — just open a course\'s row and add its link(s)). Any Live-Project-containing course (standalone or combo) instead gets one row PER DOMAIN — e.g. "Bootcamp + Live Project — Finance" — since access depends on which domain the student picked at checkout. A student only sees the row(s) matching what they actually chose.',
     fields: [
       { name: 'ProgramCode', label: 'Course', type: 'ref', refCollection: 'courses', refValue: 'id', refLabel: r => `${r.title} — ${r.id}`, required: true, col: true },
+      { name: 'Domain', label: 'Domain (leave blank unless this row is for a specific Live Project domain)', type: 'select', options: ['', 'operations', 'marketing', 'hr', 'finance', 'consulting', 'product'], col: true },
       { name: 'Category', label: 'Category / section label shown to students', type: 'text', col: true },
-      { name: 'driveLinks', label: 'Drive links (add as many as you like for this course)', type: 'linklist', col: true }
+      { name: 'driveLinks', label: 'Drive links (add as many as you like for this course/domain)', type: 'linklist', col: true }
     ]
   },
   {

@@ -420,14 +420,40 @@ const REAL_MATERIALS = [
   { ProgramCode: 'case-live', Category: 'Course Materials', driveLinks: [{ Name: 'Case Competition Materials', Link: CASE_MATERIAL_LINK }] }
 ];
 
-// Any course/combo from the real catalog that isn't listed above still gets
-// a blank row here (empty driveLinks) so it shows up in Study Materials
-// ready to fill in — the admin never has to manually create a row for a
-// course to appear in the list.
-const REAL_MATERIALS_ALL_COURSES = COURSES.map(c => {
-  const existing = REAL_MATERIALS.find(m => m.ProgramCode === c.id);
-  return existing || { ProgramCode: c.id, Category: c.title, driveLinks: [] };
+// Every course/combo that includes a Live Project component — a student's
+// Drive access for these depends on which domain(s) they picked at checkout,
+// not just which course. So instead of one row per course, these get one row
+// PER (course, domain) PAIR — e.g. "Bootcamp + Live Project — Finance",
+// "Bootcamp + Live Project — Marketing", etc. A student only sees the row(s)
+// matching the domain(s) they actually selected on that specific enrollment.
+const LIVE_PROJECT_COURSE_IDS = [
+  'live-1', 'live-1-2mo', 'live-2', 'live-2-2mo',
+  'bootcamp-live-master', 'bootcamp-live',
+  'flagship-bundle-master', 'flagship-bundle',
+  'case-live'
+];
+const LIVE_PROJECT_DOMAIN_MATERIALS = [];
+COURSES.filter(c => LIVE_PROJECT_COURSE_IDS.includes(c.id)).forEach(c => {
+  LIVE_DOMAINS_BASE.forEach(d => {
+    LIVE_PROJECT_DOMAIN_MATERIALS.push({
+      ProgramCode: c.id,
+      Domain: d.key,
+      Category: c.title + ' — ' + d.label,
+      driveLinks: []
+    });
+  });
 });
+
+// Every other real course/combo (no Live Project component) gets one plain
+// row — any course not listed in REAL_MATERIALS still gets a blank row here
+// so it shows up in Study Materials ready to fill in.
+const REAL_MATERIALS_ALL_COURSES = COURSES
+  .filter(c => !LIVE_PROJECT_COURSE_IDS.includes(c.id))
+  .map(c => {
+    const existing = REAL_MATERIALS.find(m => m.ProgramCode === c.id);
+    return existing || { ProgramCode: c.id, Category: c.title, driveLinks: [] };
+  })
+  .concat(LIVE_PROJECT_DOMAIN_MATERIALS);
 
 /* ---------------- CAT / OMETs prep portal ---------------- */
 const CAT_MATERIALS = [
@@ -636,13 +662,17 @@ function backfillMissingCollections() {
   // dashboard ready to fill in. Never touches a row that already exists for
   // that ProgramCode — only adds courses that have no row at all yet.
   if (Array.isArray(data.materials)) {
-    const existingCodes = new Set(data.materials.map(m => m.ProgramCode));
+    // Key by ProgramCode + Domain (Domain blank for non-Live-Project courses)
+    // since Live Project courses now get one row PER domain, not one row total.
+    const rowKey = m => m.ProgramCode + '||' + (m.Domain || '');
+    const existingKeys = new Set(data.materials.map(rowKey));
     REAL_MATERIALS_ALL_COURSES.forEach(m => {
-      if (!existingCodes.has(m.ProgramCode)) {
+      const k = rowKey(m);
+      if (!existingKeys.has(k)) {
         data.materials.push({ _id: db.nextId(data.materials), ...m });
-        existingCodes.add(m.ProgramCode);
+        existingKeys.add(k);
         changed = true;
-        console.log('Backfilled missing study-materials row for course:', m.ProgramCode);
+        console.log('Backfilled missing study-materials row:', k);
       }
     });
     // One-time upgrade: older rows stored a single 'Link' string field.

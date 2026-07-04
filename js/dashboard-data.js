@@ -247,10 +247,20 @@ function buildStudentView(data, email) {
   // Each Study Materials row belongs to one course (ProgramCode) and can hold
   // either the older single Name/Link fields (kept working for any existing
   // row), or the newer 'driveLinks' list — add as many links as you like to
-  // one row instead of creating a separate row per link.
+  // one row instead of creating a separate row per link. Live-Project-
+  // containing courses instead get one row PER domain (row.Domain set) — a
+  // student only sees a domain-scoped row if they picked that exact domain
+  // on that specific course enrollment (stored on the enrollment's own
+  // Domains field, not shared across every student in the same course).
   const materials = [];
   data.materials
     .filter(x => myCodes.includes(x.ProgramCode))
+    .filter(x => {
+      if (!x.Domain) return true;
+      const enrollment = myEnroll.find(e => e.ProgramCode === x.ProgramCode);
+      const picked = String(enrollment && enrollment.Domains || '').split(',').map(k => _lc(k)).filter(Boolean);
+      return picked.includes(_lc(x.Domain));
+    })
     .forEach(x => {
       const p = data.programs.find(pr => pr.ProgramCode === x.ProgramCode) || {};
       if (Array.isArray(x.driveLinks) && x.driveLinks.length) {
