@@ -349,10 +349,18 @@ const ADMIN_SECTIONS = [
   },
   {
     key: 'catQuestions', label: 'CAT Mock Questions', icon: 'ti-help-circle', group: 'CAT / OMETs Portal',
-    desc: 'Questions for each Mock Test above. Added via Excel bulk import only (see the panel above the table) — a full mock can be 60-70 questions, so there\'s no one-by-one form for this section anymore. Existing questions can still be edited or deleted individually below.',
+    desc: 'Questions for each Mock Test above. Added via Excel bulk import only (see the panel above the table) — a full mock can be 60-70 questions, so there\'s no one-by-one form for this section anymore. You can either pick an existing Mock Test, or use "Create a new paper instead" to make a brand-new one and upload its questions in one go. Existing questions can still be edited or deleted individually below.',
     bulkImport: {
       mockCollection: 'catMocks', mockValue: 'MockID', mockLabel: r => `${r.Title} — ${r.MockID}`,
-      pickerLabel: 'Which Mock Test are these questions for?'
+      pickerLabel: 'Which Mock Test are these questions for?',
+      createFields: [
+        { name: 'MockID', label: 'Mock ID (unique, no spaces, e.g. varc-2)', type: 'text', required: true },
+        { name: 'Exam', label: 'Exam', type: 'select', options: ['CAT', 'XAT', 'SNAP', 'NMAT', 'MAH-CET', 'IIFT', 'CMAT', 'TISSNET'], required: true },
+        { name: 'Title', label: 'Title', type: 'text', required: true },
+        { name: 'Section', label: 'Section (e.g. VARC, QA, LRDI)', type: 'text' },
+        { name: 'Duration', label: 'Duration (minutes)', type: 'number', required: true },
+        { name: 'Deadline', label: 'Deadline (blank = always available)', type: 'date' }
+      ]
     },
     fields: [
       { name: 'MockID', label: 'Mock Test (which paper is this question for?)', type: 'ref', refCollection: 'catMocks', refValue: 'MockID', refLabel: r => `${r.Title} — ${r.MockID}`, required: true, col: true },
@@ -382,11 +390,20 @@ const ADMIN_SECTIONS = [
   },
   {
     key: 'catPyqQuestions', label: 'PYQ Questions', icon: 'ti-help-circle', group: 'CAT / OMETs Portal',
-    desc: 'Interactive question sets for PYQ papers. Added via Excel bulk import only (see the panel above the table) — only PYQ Papers that already have a Linked Mock ID set (in "PYQ Papers" above) show up in the picker. Existing questions can still be edited or deleted individually below.',
+    desc: 'Interactive question sets for PYQ papers. Added via Excel bulk import only (see the panel above the table) — only PYQ Papers that already have a Linked Mock ID set (in "PYQ Papers" above) show up in the picker. You can also use "Create a new paper instead" to make a brand-new PYQ Paper and upload its questions in one go. Existing questions can still be edited or deleted individually below.',
     bulkImport: {
       mockCollection: 'catPyq', mockValue: 'MockID', mockLabel: r => `${r.Title} — ${r.MockID}`,
       mockFilter: r => !!r.MockID,
-      pickerLabel: 'Which PYQ Paper are these questions for?'
+      pickerLabel: 'Which PYQ Paper are these questions for?',
+      createFields: [
+        { name: 'Exam', label: 'Exam', type: 'select', options: ['CAT', 'XAT', 'SNAP', 'NMAT', 'MAH-CET', 'IIFT', 'CMAT', 'TISSNET'], required: true },
+        { name: 'Year', label: 'Year', type: 'text', required: true },
+        { name: 'Section', label: 'Section', type: 'text' },
+        { name: 'Title', label: 'Title', type: 'text', required: true },
+        { name: 'Meta', label: 'Small description (e.g. "24 Qs · Full solutions")', type: 'text' },
+        { name: 'MockID', label: 'Mock ID (unique, no spaces — links the paper to its questions, e.g. cat-2023-varc)', type: 'text', required: true },
+        { name: 'Deadline', label: 'Deadline (blank = always available)', type: 'date' }
+      ]
     },
     fields: [
       { name: 'MockID', label: 'PYQ Paper (which paper is this question for?)', type: 'ref', refCollection: 'catPyq', refValue: 'MockID', refLabel: r => `${r.Title} — ${r.MockID}`, refFilter: r => !!r.MockID, required: true, col: true },

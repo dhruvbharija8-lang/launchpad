@@ -214,6 +214,28 @@ function downloadBulkTemplate() {
   URL.revokeObjectURL(url);
 }
 
+// Renders one inline "create new paper" field using a `bfnew_<name>` id
+// prefix so it never collides with the hidden edit-modal's own `f_<name>`
+// fields for the same collection.
+function bulkNewFieldHtml(f) {
+  const id = 'bfnew_' + f.name;
+  const common = `id="${id}" style="width:100%;padding:9px 12px;border:1.5px solid var(--line);border-radius:10px;font-size:13.5px"`;
+  let input;
+  if (f.type === 'select') {
+    input = `<select ${common}><option value="">Select…</option>${(f.options || []).map(o => `<option value="${o}">${o}</option>`).join('')}</select>`;
+  } else if (f.type === 'date') {
+    input = `<input type="date" ${common}/>`;
+  } else if (f.type === 'number') {
+    input = `<input type="number" ${common}/>`;
+  } else {
+    input = `<input type="text" ${common}/>`;
+  }
+  return `<div style="min-width:200px;flex:1">
+    <label style="display:block;font-size:12px;font-weight:600;color:var(--ink2,#5a6070);margin-bottom:4px">${f.label}${f.required ? ' *' : ''}</label>
+    ${input}
+  </div>`;
+}
+
 async function renderBulkImportPanel(section) {
   const panel = document.getElementById('bulkImportPanel');
   const cfg = section.bulkImport;
@@ -225,6 +247,10 @@ async function renderBulkImportPanel(section) {
 
   const optionsHtml = mockOptions.length
     ? mockOptions.map(r => `<option value="${r[cfg.mockValue]}">${(cfg.mockLabel ? cfg.mockLabel(r) : r[cfg.mockValue])}</option>`).join('')
+    : '';
+
+  const createFieldsHtml = cfg.createFields
+    ? cfg.createFields.map(bulkNewFieldHtml).join('')
     : '';
 
   panel.innerHTML = `
@@ -241,33 +267,95 @@ async function renderBulkImportPanel(section) {
       <div style="display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-bottom:12px">
         <button type="button" class="btn btn-ghost" style="width:auto" id="bulkTemplateBtn"><i class="ti ti-download"></i> Download template</button>
       </div>
+
       <div style="display:flex;flex-wrap:wrap;gap:10px;align-items:center">
-        <select id="bulkMockSelect" style="flex:1;min-width:220px;max-width:360px;padding:9px 12px;border:1.5px solid var(--line);border-radius:10px;font-size:13.5px">
+        <select id="bulkMockSelect" style="flex:1;min-width:220px;max-width:360px;padding:9px 12px;border:1.5px solid var(--line);border-radius:10px;font-size:13.5px" ${cfg.createFields ? '' : ''}>
           <option value="">${cfg.pickerLabel || 'Which paper are these questions for?'}</option>
           ${optionsHtml}
         </select>
+        ${cfg.createFields ? `<button type="button" class="btn btn-ghost" style="width:auto" id="bulkNewPaperToggle"><i class="ti ti-plus"></i> Create a new paper instead</button>` : ''}
+      </div>
+      ${!mockOptions.length ? `<div style="font-size:12.5px;color:#c0392b;margin-top:10px">${cfg.mockFilter ? 'No papers with a Linked Mock ID yet — set one in "PYQ Papers" first.' : 'No papers found yet — create one first.'}</div>` : ''}
+
+      ${cfg.createFields ? `
+      <div id="bulkNewPaperFields" style="display:none;margin-top:14px;padding-top:14px;border-top:1px dashed var(--line)">
+        <div style="font-weight:600;font-size:13px;margin-bottom:10px">New paper details</div>
+        <div style="display:flex;flex-wrap:wrap;gap:12px">${createFieldsHtml}</div>
+      </div>` : ''}
+
+      <div style="display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-top:14px">
         <input type="file" id="bulkFileInput" accept=".xlsx,.xls,.csv" style="font-size:13px"/>
         <button type="button" class="btn btn-primary" style="width:auto" id="bulkUploadBtn"><i class="ti ti-upload"></i> Upload &amp; add questions</button>
       </div>
-      ${!mockOptions.length ? `<div style="font-size:12.5px;color:#c0392b;margin-top:10px">${cfg.mockFilter ? 'No papers with a Linked Mock ID yet — set one in "PYQ Papers" first.' : 'No papers found yet — create one first.'}</div>` : ''}
       <div id="bulkResultMsg" style="font-size:13px;margin-top:12px"></div>
     </div>`;
 
   document.getElementById('bulkTemplateBtn').onclick = downloadBulkTemplate;
 
+  let creatingNew = false;
+  const newPaperToggle = document.getElementById('bulkNewPaperToggle');
+  const newPaperFields = document.getElementById('bulkNewPaperFields');
+  const mockSelect = document.getElementById('bulkMockSelect');
+  if (newPaperToggle) {
+    newPaperToggle.onclick = () => {
+      creatingNew = !creatingNew;
+      newPaperFields.style.display = creatingNew ? 'block' : 'none';
+      mockSelect.disabled = creatingNew;
+      newPaperToggle.innerHTML = creatingNew
+        ? '<i class="ti ti-x"></i> Cancel, pick an existing paper instead'
+        : '<i class="ti ti-plus"></i> Create a new paper instead';
+    };
+  }
+
   document.getElementById('bulkUploadBtn').onclick = async () => {
-    const mockId = document.getElementById('bulkMockSelect').value;
     const fileInput = document.getElementById('bulkFileInput');
     const resultEl = document.getElementById('bulkResultMsg');
+    const btn = document.getElementById('bulkUploadBtn');
     resultEl.innerHTML = '';
-    if (!mockId) { resultEl.innerHTML = '<span style="color:#c0392b">Pick which paper these questions belong to first.</span>'; return; }
     if (!fileInput.files.length) { resultEl.innerHTML = '<span style="color:#c0392b">Choose a file to upload.</span>'; return; }
+
+    let mockId = mockSelect.value;
+
+    btn.disabled = true;
+
+    // Step 1 (only when "create new paper" mode is on): create the paper's
+    // metadata row first, so its MockID exists before we bulk-import questions
+    // tagged with it. Keeps the two MongoDB collections separate (correct
+    // data model) while giving the admin one single click to do both.
+    if (creatingNew) {
+      btn.textContent = 'Creating paper…';
+      const newRecord = {};
+      let missing = [];
+      for (const f of cfg.createFields) {
+        const el = document.getElementById('bfnew_' + f.name);
+        const val = el ? el.value.trim() : '';
+        if (f.required && !val) missing.push(f.label);
+        if (val) newRecord[f.name] = f.type === 'number' ? Number(val) : val;
+      }
+      if (missing.length) {
+        resultEl.innerHTML = `<span style="color:#c0392b">Fill in: ${missing.join(', ')}</span>`;
+        btn.disabled = false; btn.innerHTML = '<i class="ti ti-upload"></i> Upload &amp; add questions';
+        return;
+      }
+      try {
+        const created = await api('/admin/' + cfg.mockCollection, {
+          method: 'POST',
+          body: JSON.stringify(newRecord)
+        });
+        mockId = created[cfg.mockValue] || newRecord[cfg.mockValue];
+      } catch (e) {
+        resultEl.innerHTML = `<span style="color:#c0392b">Could not create the paper: ${e.message}</span>`;
+        btn.disabled = false; btn.innerHTML = '<i class="ti ti-upload"></i> Upload &amp; add questions';
+        return;
+      }
+    }
+
+    if (!mockId) { resultEl.innerHTML = '<span style="color:#c0392b">Pick which paper these questions belong to first.</span>'; btn.disabled = false; btn.innerHTML = '<i class="ti ti-upload"></i> Upload &amp; add questions'; return; }
 
     const fd = new FormData();
     fd.append('file', fileInput.files[0]);
     fd.append('mockId', mockId);
-    const btn = document.getElementById('bulkUploadBtn');
-    btn.disabled = true; btn.textContent = 'Uploading…';
+    btn.textContent = 'Uploading…';
     try {
       const token = getToken();
       const res = await fetch('/api/admin/bulk-import/' + section.key, {
@@ -278,7 +366,7 @@ async function renderBulkImportPanel(section) {
       const body = await res.json().catch(() => ({}));
       if (!res.ok) throw new Error(body.error || 'Upload failed');
 
-      let msg = `<span style="color:var(--green,#1a7f4b);font-weight:700">${body.added} question${body.added === 1 ? '' : 's'} added.</span>`;
+      let msg = `<span style="color:var(--green,#1a7f4b);font-weight:700">${creatingNew ? 'Paper created. ' : ''}${body.added} question${body.added === 1 ? '' : 's'} added.</span>`;
       if (body.skipped && body.skipped.length) {
         msg += `<div style="margin-top:8px;color:#c0392b">${body.skipped.length} row${body.skipped.length === 1 ? '' : 's'} skipped:<ul style="margin:6px 0 0 18px;padding:0">` +
           body.skipped.map(s => `<li>Row ${s.row}: ${s.reason}</li>`).join('') + '</ul></div>';
@@ -286,7 +374,10 @@ async function renderBulkImportPanel(section) {
       resultEl.innerHTML = msg;
       fileInput.value = '';
       if (body.added) await loadAndRenderTable(section);
-      toast(`${body.added} question${body.added === 1 ? '' : 's'} added`);
+      toast(`${creatingNew ? 'Paper created — ' : ''}${body.added} question${body.added === 1 ? '' : 's'} added`);
+      // Refresh the panel so the new paper shows up in the picker and the
+      // create-new fields/toggle reset to a clean state for the next upload.
+      if (creatingNew) await renderBulkImportPanel(section);
     } catch (e) {
       resultEl.innerHTML = `<span style="color:#c0392b">${e.message}</span>`;
     } finally {
