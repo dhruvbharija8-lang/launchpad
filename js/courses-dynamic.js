@@ -17,6 +17,7 @@
 const COMBO_INCLUDES = {
   'flagship-bundle-master': ['placement-bootcamp', 'live-2', 'case-dominate'],
   'flagship-bundle': ['placement-bootcamp', 'live-1', 'case-dominate'],
+  'bootcamp-case-master': ['placement-bootcamp', 'case-dominate'],
   'bootcamp-case':   ['placement-bootcamp', 'case-dominate'],
   'bootcamp-live-master': ['placement-bootcamp', 'live-2'],
   'bootcamp-live':   ['placement-bootcamp', 'live-1'],
