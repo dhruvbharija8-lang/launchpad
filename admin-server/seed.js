@@ -58,7 +58,7 @@ const SETTINGS = {
   testimonialsExternalUrl: 'https://www.mbapartner.in/testimonials',
   phone: '+91 70427 32092',
   email: 'bharat.kapoor@prodmarkconsulting.in',
-  catWhatsappCommunity: '',
+  catWhatsappCommunity: 'https://chat.whatsapp.com/DnSsAPGR7FzJsvguk0LeX2?s=cl&p=a&ilr=2',
   catTelegramCommunity: ''
 };
 
@@ -631,6 +631,15 @@ function backfillMissingCollections() {
         changed = true;
       }
     });
+    // One-time upgrade: the CAT/OMETs community WhatsApp link had no default
+    // yet (it fell back to the main MBA portal's link) — now it has its own
+    // dedicated link. Only fill it in if it's still blank, so an admin who
+    // already set their own CAT WhatsApp link isn't overridden.
+    if (!data.settings.catWhatsappCommunity) {
+      data.settings.catWhatsappCommunity = SETTINGS.catWhatsappCommunity;
+      changed = true;
+      console.log('Set default CAT/OMETs WhatsApp community link');
+    }
   }
   // One-time upgrade: the 'courses' collection was seeded before several new
   // course/combo cards existed on the site (Master/Mini splits, the 2x2 Live
