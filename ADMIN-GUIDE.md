@@ -105,7 +105,7 @@ Go to **Coupons** → **Add Coupon**:
   unlimited — note: usage isn't tracked automatically yet, this field is a manual
   reference for now).
 
-Two demo codes ship built-in: `MBA10` (10% off) and `GROUP30` (30% off, the 2-student
+Two demo codes ship built-in: `MBA10` (10% off) and `GROUP20` (20% off, the 2-student
 offer, on the courses.html cart). Edit or turn these off the same way as any other coupon.
 
 ---

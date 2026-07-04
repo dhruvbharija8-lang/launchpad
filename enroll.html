@@ -481,7 +481,7 @@ button{cursor:pointer;font-family:inherit}
   <div class="wrap">
     <div class="enroll-eyebrow"><i class="ti ti-bolt"></i> Enroll & Earn Together</div>
     <h1 class="enroll-h1">Browse, Pick &amp; <span>Enroll Now</span></h1>
-    <p class="enroll-sub">All MBA Partner programs in one place. Apply referral codes for discounts, or enroll with a friend to get 30% off.</p>
+    <p class="enroll-sub">All MBA Partner programs in one place. Apply referral codes for discounts, or enroll with a friend to get 20% off.</p>
     <button class="enroll-offer-pill" onclick="document.getElementById('referralSec').scrollIntoView({behavior:'smooth'})">
       <i class="ti ti-gift"></i> Referral System — Earn ₹750 per friend
     </button>
@@ -492,7 +492,7 @@ button{cursor:pointer;font-family:inherit}
 
   <!-- OFFER STRIP -->
   <div class="offer-strip">
-    <div class="offer-chip" style="cursor:pointer" onclick="openEnroll('flagship-bundle', true)"><i class="ti ti-users"></i> Enroll with a friend — both get 30% off</div>
+    <div class="offer-chip" style="cursor:pointer" onclick="openEnroll('flagship-bundle', true)"><i class="ti ti-users"></i> Enroll with a friend — both get 20% off</div>
     <div class="offer-chip"><i class="ti ti-tag"></i> Referral code = 10% off for new students</div>
     <div class="offer-chip"><i class="ti ti-currency-rupee"></i> Refer & earn ₹750 per successful enrollment</div>
   </div>
@@ -856,7 +856,7 @@ function renderGrid(){
           ${c.mrp?`<div class="card-mrp">${fmt(c.mrp)}</div>`:''}
           ${c.off?`<div class="card-off">${c.off}</div>`:''}
         </div>
-        ${c.groupOffer?`<div class="group-offer-tag" style="cursor:pointer" onclick="openEnroll('${c.id}', true)"><i class="ti ti-users"></i> Enroll with a friend — 30% off each</div>`:''}
+        ${c.groupOffer?`<div class="group-offer-tag" style="cursor:pointer" onclick="openEnroll('${c.id}', true)"><i class="ti ti-users"></i> Enroll with a friend — 20% off each</div>`:''}
         <div class="card-cta">
           <button class="btn-enroll" onclick="openEnroll('${c.id}')"><i class="ti ti-bolt"></i> Enroll Now</button>
           <button class="btn-details" onclick="window.location.href='courses.html?from=enroll#/course/${c.id}'">Details</button>
@@ -1075,11 +1075,11 @@ function applyCoupon(){
   try{ refs=JSON.parse(localStorage.getItem('mbaReferrals')||'{}'); }catch(e){}
   
   // Check group discount
-  if(code==='GROUP30'){
-    couponDiscount=Math.round(currentCourse.price*0.30);
+  if(code==='GROUP20'){
+    couponDiscount=Math.round(currentCourse.price*0.20);
     appliedCode=code;
     msg.className='coupon-msg ok';
-    msg.textContent='Group offer applied — 30% off! Enroll together to avail.';
+    msg.textContent='Group offer applied — 20% off! Enroll together to avail.';
     document.getElementById('emTotal').textContent=fmt(currentCourse.price-couponDiscount);
     return;
   }
@@ -1104,7 +1104,7 @@ function applyCoupon(){
   }
   couponDiscount=0; appliedCode='';
   msg.className='coupon-msg err';
-  msg.textContent='Invalid code. Try GROUP30 for 30% off with a friend.';
+  msg.textContent='Invalid code. Try GROUP20 for 20% off with a friend.';
   document.getElementById('emTotal').textContent=fmt(currentCourse.price);
 }
 
@@ -1173,7 +1173,7 @@ async function submitEnrollment(btn){
       data[email]={ name,code:refCode,earnings:0,referrals:[],pending:0 };
     }
     // If someone used a referral code, credit the referrer
-    if(appliedCode && appliedCode!=='GROUP30' && appliedCode!=='MBA10'){
+    if(appliedCode && appliedCode!=='GROUP20' && appliedCode!=='MBA10'){
       Object.values(data).forEach(r=>{
         if(r.code===appliedCode){
           r.referrals.push({friend:name,course:currentCourse.title,status:'confirmed',bonus:750});
