@@ -28,7 +28,15 @@ const ADMIN_SECTIONS = [
       { name: 'sub', label: 'Short description (card subtitle)', type: 'textarea' },
       { name: 'tagline', label: 'Tagline', type: 'text' },
       { name: 'desc', label: 'Full description (course detail page)', type: 'textarea' },
-      { name: 'img', label: 'Image path', type: 'text' }
+      { name: 'img', label: 'Image path', type: 'text' },
+      { name: 'featsText', label: 'Feature bullets on detail page (one per line)', type: 'textarea' },
+      { name: 'curriculumText', label: 'Curriculum modules on detail page (one per line — format: Module title | short description)', type: 'textarea' },
+      { name: 'compCvSlots', label: 'Comparison table: CV review slots', type: 'text' },
+      { name: 'compMockPIs', label: 'Comparison table: Mock PI / GD sessions', type: 'text' },
+      { name: 'compLiveProject', label: 'Comparison table: Live project', type: 'text' },
+      { name: 'compCasePrep', label: 'Comparison table: Case competition prep', type: 'text' },
+      { name: 'compCanva', label: 'Comparison table: Canva Pro', type: 'text' },
+      { name: 'compCertificate', label: 'Comparison table: Completion certificate', type: 'text' }
     ]
   },
   {

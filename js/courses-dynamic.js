@@ -97,19 +97,48 @@ async function hydrateCoursesFromApi() {
     let changed = false;
     const EDITABLE = ['title', 'cat', 'type', 'price', 'mrp', 'off', 'badge', 'rating', 'students',
       'level', 'hours', 'instr', 'sub', 'tagline', 'desc', 'img', 'Track'];
+    // Course detail page content (feature bullets, curriculum modules, and
+    // the comparison-table row) — these are admin textarea/text fields on
+    // the "Courses & Pricing" section, stored flat, and parsed back into
+    // the shapes the detail page (js/search.js renderDetail) expects.
+    const COMP_FIELD_MAP = {
+      compCvSlots: 'cvSlots', compMockPIs: 'mockPIs', compLiveProject: 'liveProject',
+      compCasePrep: 'casePrep', compCanva: 'canva', compCertificate: 'certificate'
+    };
+    function mergeDetailFields(c, r) {
+      if (r.featsText) {
+        const arr = String(r.featsText).split('\n').map(s => s.trim()).filter(Boolean);
+        if (arr.length) { c.feats = arr; changed = true; }
+      }
+      if (r.curriculumText) {
+        const arr = String(r.curriculumText).split('\n').map(s => s.trim()).filter(Boolean).map(line => {
+          const idx = line.indexOf('|');
+          return idx === -1 ? { t: line, s: '' } : { t: line.slice(0, idx).trim(), s: line.slice(idx + 1).trim() };
+        });
+        if (arr.length) { c.curriculum = arr; changed = true; }
+      }
+      Object.keys(COMP_FIELD_MAP).forEach(key => {
+        if (r[key] !== undefined && r[key] !== null && r[key] !== '') {
+          c.compInfo = c.compInfo || {};
+          c.compInfo[COMP_FIELD_MAP[key]] = r[key];
+          changed = true;
+        }
+      });
+    }
     rows.forEach(r => {
       const c = COURSES.find(k => k.id === r.id);
       if (c) {
         EDITABLE.forEach(key => {
           if (r[key] !== undefined && r[key] !== null && r[key] !== '') { c[key] = r[key]; changed = true; }
         });
+        mergeDetailFields(c, r);
         return;
       }
       // Brand-new course from the admin dashboard — not in the hardcoded
       // list at all. Add it with sane fallbacks so cards/detail pages
       // don't break on a missing field.
       if (!r.id || !r.title) return;
-      COURSES.push({
+      const newCourse = {
         id: r.id, Track: r.Track || 'mba', cat: r.cat || 'cert', type: r.type || 'Course',
         img: r.img || 'images/placement-bootcamp.png', badge: r.badge || null,
         rating: Number(r.rating) || 4.8, students: Number(r.students) || 0,
@@ -117,7 +146,9 @@ async function hydrateCoursesFromApi() {
         title: r.title, sub: r.sub || '', tagline: r.tagline || '', desc: r.desc || r.sub || '',
         price: Number(r.price) || 0, mrp: r.mrp ? Number(r.mrp) : null, off: r.off || null,
         feats: [], curriculum: [], compInfo: {}
-      });
+      };
+      mergeDetailFields(newCourse, r);
+      COURSES.push(newCourse);
       changed = true;
     });
     return changed;
