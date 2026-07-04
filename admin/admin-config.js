@@ -328,7 +328,7 @@ const ADMIN_SECTIONS = [
     fields: [
       { name: 'DomainKey', label: 'Domain key (lowercase, no spaces)', type: 'text', required: true, col: true },
       { name: 'DomainLabel', label: 'Domain label shown to students', type: 'text', col: true },
-      { name: 'driveLinks', label: 'Drive links for this domain / combo', type: 'linklist', col: true }
+      { name: 'driveLinks', label: 'Drive links for this domain', type: 'linklist', col: true }
     ]
   },
   {

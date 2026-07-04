@@ -432,6 +432,11 @@ const LIVE_PROJECT_COURSE_IDS = [
   'flagship-bundle-master', 'flagship-bundle',
   'case-live'
 ];
+// Pre-filled with the same 6 domain Drive folders already collected (the
+// resource pack for e.g. "Finance" is the same folder whether a student
+// bought it standalone or as part of a combo) — the admin can still open
+// any row and change/add links for that specific course+domain if a combo
+// ever needs a different resource than the standalone domain folder.
 const LIVE_PROJECT_DOMAIN_MATERIALS = [];
 COURSES.filter(c => LIVE_PROJECT_COURSE_IDS.includes(c.id)).forEach(c => {
   LIVE_DOMAINS_BASE.forEach(d => {
@@ -439,16 +444,25 @@ COURSES.filter(c => LIVE_PROJECT_COURSE_IDS.includes(c.id)).forEach(c => {
       ProgramCode: c.id,
       Domain: d.key,
       Category: c.title + ' — ' + d.label,
-      driveLinks: []
+      driveLinks: [{ Name: d.label + ' — Live Project Folder', Link: d.link }]
     });
   });
 });
 
-// Every other real course/combo (no Live Project component) gets one plain
-// row — any course not listed in REAL_MATERIALS still gets a blank row here
-// so it shows up in Study Materials ready to fill in.
+// Pure standalone Live Project courses (no other component) — these get
+// ONLY the per-domain rows above, no separate generic row, since there's
+// nothing about them that's the same for every student regardless of domain.
+const STANDALONE_LIVE_PROJECT_IDS = ['live-1', 'live-1-2mo', 'live-2', 'live-2-2mo'];
+
+// Every other real course/combo gets one plain, non-domain-specific row too
+// — this still applies to Live Project COMBOS (e.g. "Bootcamp + Live
+// Project"), since their Bootcamp/Case component is the same for every
+// student no matter which domain they picked; only their Live Project part
+// is domain-specific (covered separately by LIVE_PROJECT_DOMAIN_MATERIALS
+// above). Any course not listed in REAL_MATERIALS still gets a blank row
+// here so it shows up in Study Materials ready to fill in.
 const REAL_MATERIALS_ALL_COURSES = COURSES
-  .filter(c => !LIVE_PROJECT_COURSE_IDS.includes(c.id))
+  .filter(c => !STANDALONE_LIVE_PROJECT_IDS.includes(c.id))
   .map(c => {
     const existing = REAL_MATERIALS.find(m => m.ProgramCode === c.id);
     return existing || { ProgramCode: c.id, Category: c.title, driveLinks: [] };
@@ -686,6 +700,19 @@ function backfillMissingCollections() {
         console.log('Migrated old Link field to driveLinks list for:', m.ProgramCode, m.Name || '');
       }
     });
+    // One-time upgrade: any Live-Project-domain material row that was
+    // created blank by an earlier version of this seed (before the domain
+    // folder links were filled in) — auto-fill it with the matching domain's
+    // default Drive folder. Only touches rows still completely empty; any
+    // row the admin has already added a link to is left untouched.
+    LIVE_PROJECT_DOMAIN_MATERIALS.forEach(defaultRow => {
+      const row = data.materials.find(m => m.ProgramCode === defaultRow.ProgramCode && m.Domain === defaultRow.Domain);
+      if (row && (!Array.isArray(row.driveLinks) || !row.driveLinks.length)) {
+        row.driveLinks = defaultRow.driveLinks;
+        changed = true;
+        console.log('Filled in default domain link for:', defaultRow.ProgramCode, defaultRow.Domain);
+      }
+    });
   }
   // One-time upgrade: add any Live Project domain that's missing from an
   // already-seeded liveDomainLinks collection (e.g. "Product Management",
@@ -712,6 +739,21 @@ function backfillMissingCollections() {
         console.log('Migrated old DriveLink field to driveLinks list for:', d.DomainKey);
       }
     });
+    // Cleanup: an earlier version of this seed auto-created 15 "2-domain
+    // combo" rows (DomainKey like "hr,marketing") that are no longer part of
+    // the design — remove any of those that are still completely empty
+    // (never filled in), but leave any combo row alone if it somehow already
+    // has real links on it, so nothing anyone actually added gets deleted.
+    const beforeLen = data.liveDomainLinks.length;
+    data.liveDomainLinks = data.liveDomainLinks.filter(d => {
+      const isCombo = String(d.DomainKey || '').includes(',');
+      const hasLinks = (Array.isArray(d.driveLinks) && d.driveLinks.length) || d.DriveLink;
+      return !(isCombo && !hasLinks);
+    });
+    if (data.liveDomainLinks.length !== beforeLen) {
+      changed = true;
+      console.log('Removed', beforeLen - data.liveDomainLinks.length, 'empty 2-domain combo rows from liveDomainLinks');
+    }
   }
   if (changed) db.writeAll(data);
 }
