@@ -966,14 +966,14 @@ function updateFriendCalculation() {
 
 // Courses whose Live Project component requires the student to pick 1 or 2
 // domain(s) at checkout (matches the ProgramCode-level materials mapping in
-// admin-server/seed.js). "Product Management" isn't offered yet (no Drive
-// folder set up for it), so it's intentionally left off this list.
+// admin-server/seed.js).
 const LIVE_DOMAINS = [
   { key: 'operations', label: 'Operations' },
   { key: 'marketing', label: 'Marketing' },
   { key: 'hr', label: 'HR' },
   { key: 'finance', label: 'Finance' },
-  { key: 'consulting', label: 'Consulting' }
+  { key: 'consulting', label: 'Consulting' },
+  { key: 'product', label: 'Product Management' }
 ];
 const COURSE_DOMAIN_REQUIREMENT = {
   'live-1': 1, 'live-1-2mo': 1, 'live-2': 2, 'live-2-2mo': 2,

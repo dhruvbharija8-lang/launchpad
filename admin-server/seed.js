@@ -357,18 +357,18 @@ const ENROLLMENTS = [
   { Email: 'ananya@iimb.ac.in', ProgramCode: 'PB-MASTER', Progress: 55, NextSession: 'Mock PI #5', NextDate: 'Jul 1' }
 ];
 
-// The 5 Live Project domain Drive folders — which one(s) a student can see on
+// The 6 Live Project domain Drive folders — which one(s) a student can see on
 // their dashboard depends on which domain(s) they picked at checkout (stored
 // on their Enrollments row's Domains field by autoProvisionFromSubmission in
 // admin-server/routes/resource.js, then resolved by js/dashboard-data.js's
-// buildStudentView). "Product Management" isn't offered yet — no Drive link
-// for it exists, so it's intentionally left out of the checkout picker.
+// buildStudentView).
 const LIVE_DOMAIN_LINKS = [
   { DomainKey: 'operations', DomainLabel: 'Operations', DriveLink: 'https://drive.google.com/drive/folders/1ChQTI87hl20dSOadT_RmFsQe7nNjtx0O' },
   { DomainKey: 'marketing', DomainLabel: 'Marketing', DriveLink: 'https://drive.google.com/drive/folders/1ZSXhDdOYVkhXGsOl1hR3XWjoQWws_0ZU' },
   { DomainKey: 'hr', DomainLabel: 'HR', DriveLink: 'https://drive.google.com/drive/folders/1oSSC0q_KOmXEGh9Z1qq5OePWXko453aE' },
   { DomainKey: 'finance', DomainLabel: 'Finance', DriveLink: 'https://drive.google.com/drive/folders/1itw4RUcbT7k27_IpResMeph_6znazuX7' },
-  { DomainKey: 'consulting', DomainLabel: 'Consulting', DriveLink: 'https://drive.google.com/drive/folders/120bl1GT-Rf9yG0CCu7lqn4bI6gfbIeyL' }
+  { DomainKey: 'consulting', DomainLabel: 'Consulting', DriveLink: 'https://drive.google.com/drive/folders/120bl1GT-Rf9yG0CCu7lqn4bI6gfbIeyL' },
+  { DomainKey: 'product', DomainLabel: 'Product Management', DriveLink: 'https://drive.google.com/drive/folders/1V0VZLdnPcPZ5MA39pGfTrITBh4D7PSAJ' }
 ];
 
 // Static (non-domain-specific) course-materials rows, keyed by the real
@@ -611,6 +611,21 @@ function backfillMissingCollections() {
         existingKeys.add(k);
         changed = true;
         console.log('Backfilled missing material:', k);
+      }
+    });
+  }
+  // One-time upgrade: add any Live Project domain that's missing from an
+  // already-seeded liveDomainLinks collection (e.g. "Product Management",
+  // added after the first 5 domains). Never touches a domain row the admin
+  // has already added or edited.
+  if (Array.isArray(data.liveDomainLinks)) {
+    const existingDomainKeys = new Set(data.liveDomainLinks.map(d => d.DomainKey));
+    LIVE_DOMAIN_LINKS.forEach(d => {
+      if (!existingDomainKeys.has(d.DomainKey)) {
+        data.liveDomainLinks.push({ _id: db.nextId(data.liveDomainLinks), ...d });
+        existingDomainKeys.add(d.DomainKey);
+        changed = true;
+        console.log('Backfilled missing live domain link:', d.DomainKey);
       }
     });
   }
