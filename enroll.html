@@ -13,6 +13,7 @@
 <script src="js/nav-auth.js"></script>
 <script src="js/api-config.js"></script>
 <script src="js/site-settings.js"></script>
+<script src="js/razorpay.js"></script>
 <script
   async
   crossorigin="anonymous"
@@ -20,6 +21,19 @@
   src="https://novel-lion-92.clerk.accounts.dev/npm/@clerk/clerk-js@latest/dist/clerk.browser.js"
   type="text/javascript"
 ></script>
+<script>
+  // Lets the enrollment form pre-fill the name/email if the visitor is
+  // already signed in (via Clerk, from login.html) — resolves to the Clerk
+  // instance once its async script has actually finished loading, or to
+  // null after ~5s if it never arrives.
+  window.__clerkReady = (async function () {
+    let tries = 0;
+    while (!window.Clerk && tries < 50) { await new Promise(r => setTimeout(r, 100)); tries++; }
+    if (!window.Clerk) return null;
+    try { await Clerk.load(); } catch (e) { return null; }
+    return window.Clerk;
+  })();
+</script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 :root{
@@ -600,7 +614,7 @@ button{cursor:pointer;font-family:inherit}
         <span>Total to pay</span>
         <span id="emTotal">₹0</span>
       </div>
-      <button class="pay-btn" onclick="submitEnrollment()"><i class="ti ti-lock"></i> Pay Securely via Razorpay</button>
+      <button class="pay-btn" onclick="submitEnrollment(this)"><i class="ti ti-lock"></i> Pay Securely via Razorpay</button>
       <p class="pay-note">100% secure · Lifetime access · Certificate included</p>
     </div>
 
@@ -677,7 +691,7 @@ button{cursor:pointer;font-family:inherit}
         </div>
       </div>
 
-      <button class="pay-btn" onclick="submitFriendEnrollment()"><i class="ti ti-lock"></i> Pay Securely via Razorpay</button>
+      <button class="pay-btn" onclick="submitFriendEnrollment(this)"><i class="ti ti-lock"></i> Pay Securely via Razorpay</button>
       <p class="pay-note">100% secure · Lifetime access · Certificate included</p>
     </div>
 
@@ -784,16 +798,22 @@ button{cursor:pointer;font-family:inherit}
 <script>
 /* ── COURSE DATA ── */
 const COURSES=[
-  {id:'flagship-bundle',cat:'combo',type:'Flagship Bundle',badge:'Best Value',title:'The Complete Placement Bundle',desc:'Bootcamp, 2-month live project and case competition prep — everything in one track.',price:13999,mrp:14500,off:'Save ₹501',rating:4.9,students:4120,groupOffer:true,img:'images/complete-placement-bundle.png'},
-  {id:'placement-bootcamp',cat:'bootcamp',type:'Solo',badge:'Bestseller',title:'Placement Bootcamp',desc:'CV building, mock interviews and core domain sessions to make you Day-1 ready.',price:7499,mrp:7999,off:null,rating:4.8,students:6240,groupOffer:true,img:'images/placement-bootcamp.png'},
-  {id:'bootcamp-case',cat:'bootcamp',type:'Combo',badge:null,title:'Bootcamp + Case Competitions',desc:'Win case competitions while landing placements.',price:9499,mrp:9999,off:'5% off',rating:4.7,students:2110,groupOffer:true,img:'images/bootcamp-case.png'},
-  {id:'bootcamp-live',cat:'bootcamp',type:'Combo',badge:null,title:'Bootcamp + Live Project',desc:'Real consulting experience paired with full placement training.',price:11499,mrp:11999,off:'4% off',rating:4.8,students:1890,groupOffer:true,img:'images/bootcamp-live.png'},
-  {id:'live-1',cat:'live',type:'Internship',badge:null,title:'Live Project — 1 Domain',desc:'Build real deliverables, earn 5 verifiable CV points.',price:4000,mrp:4500,off:'11% off',rating:4.6,students:3320,groupOffer:true,img:'images/live-project-1-month.png'},
-  {id:'live-2',cat:'live',type:'Internship',badge:null,title:'Live Project — 2 Domains',desc:'Double exposure across two domains with AI-ready CV.',price:7500,mrp:7999,off:'6% off',rating:4.7,students:2480,groupOffer:true,img:'images/live-project-2-months.png'},
-  {id:'case-dominate',cat:'case',type:'Standalone',badge:'Bestseller',title:'Dominating Case Competitions',desc:'Learn to win from an AIR 1 mentor — 30+ winning PPTs.',price:3499,mrp:3999,off:'13% off',rating:4.9,students:5010,groupOffer:true,img:'images/case-competitions.png'},
-  {id:'case-live',cat:'case',type:'Combo',badge:null,title:'Case Competitions + Live Project',desc:'Combine case wins with real consulting experience.',price:8499,mrp:8999,off:'6% off',rating:4.7,students:1450,groupOffer:true,img:'images/case-live.png'},
-  {id:'adv-excel',cat:'cert',type:'Certification',badge:null,title:'Advanced Excel',desc:'Formulas, pivot tables, dashboards and automation.',price:1199,mrp:1499,off:null,rating:4.6,students:7820,groupOffer:false,img:'images/advanced-excel.png'},
-  {id:'power-bi',cat:'cert',type:'Certification',badge:null,title:'Power BI Certification',desc:'Build real-time dynamic dashboards.',price:1499,mrp:null,off:null,rating:4.7,students:5630,groupOffer:false,img:'images/power-bi.png'}
+  {id:'flagship-bundle-master',cat:'combo',type:'Flagship bundle',badge:'Best value',title:'The Complete Placement Bundle - Master',desc:'Every CV slot, every mock round, every edge — the top-tier version of our flagship track.',price:15999,mrp:16500,off:'Save ₹501',rating:4.9,students:4620,groupOffer:true,img:'images/complete-placement-bundle.png'},
+  {id:'flagship-bundle',cat:'combo',type:'Flagship bundle',badge:null,title:'The Complete Placement Bundle - Mini',desc:'From a recruiter-ready CV to live consulting experience and case-comp wins.',price:13999,mrp:14500,off:'Save ₹501',rating:4.9,students:4120,groupOffer:true,img:'images/complete-placement-bundle.png'},
+  {id:'placement-bootcamp',cat:'bootcamp',type:'Solo',badge:'Bestseller',title:'Placement Bootcamp - Master',desc:'Mentor-led prep to make you Day-1 ready — the full Master track.',price:9499,mrp:9999,off:'5% off',rating:4.8,students:6240,groupOffer:true,img:'images/placement-bootcamp.png'},
+  {id:'placement-bootcamp-mini',cat:'bootcamp',type:'Solo',badge:null,title:'Placement Bootcamp - Mini',desc:'Mentor-led prep to make you Day-1 ready — the lighter Mini track.',price:7499,mrp:7999,off:'6% off',rating:4.8,students:3180,groupOffer:true,img:'images/placement-bootcamp.png'},
+  {id:'bootcamp-case-master',cat:'bootcamp',type:'Combo',badge:'Best value',title:'Bootcamp + Case Competitions - Master',desc:'Land placements and win case competitions — the full Master track.',price:11499,mrp:11999,off:'4% off',rating:4.8,students:2650,groupOffer:true,img:'images/bootcamp-case.png'},
+  {id:'bootcamp-case',cat:'bootcamp',type:'Combo',badge:null,title:'Bootcamp + Case Competitions - Mini',desc:'Land placements and win case competitions.',price:9499,mrp:9999,off:'5% off',rating:4.7,students:2300,groupOffer:true,img:'images/bootcamp-case.png'},
+  {id:'bootcamp-live-master',cat:'bootcamp',type:'Combo',badge:'Best value',title:'Bootcamp + Live Project - Master',desc:'Work a real 2-month live project while preparing for placements — the full Master track.',price:13499,mrp:13999,off:'4% off',rating:4.8,students:2190,groupOffer:true,img:'images/bootcamp-live.png'},
+  {id:'bootcamp-live',cat:'bootcamp',type:'Combo',badge:null,title:'Bootcamp + Live Project - Mini',desc:'Work a real 2-month live project while preparing for placements.',price:11499,mrp:11999,off:'4% off',rating:4.8,students:1890,groupOffer:true,img:'images/bootcamp-live.png'},
+  {id:'live-1',cat:'live',type:'Internship',badge:null,title:'Live Project — 1 Domain, 1 Month',desc:'Work under a real consulting company — this is not a course.',price:4000,mrp:4500,off:'11% off',rating:4.6,students:3320,groupOffer:true,img:'images/live-project-1-month.png'},
+  {id:'live-1-2mo',cat:'live',type:'Internship',badge:null,title:'Live Project — 1 Domain, 2 Months',desc:'Go deeper into one domain over 2 months.',price:6500,mrp:7000,off:'7% off',rating:4.7,students:2890,groupOffer:true,img:'images/live-project-2-months.png'},
+  {id:'live-2',cat:'live',type:'Internship',badge:null,title:'Live Project — 2 Domains, 1 Month',desc:'Cover two domains at once in a single month.',price:7500,mrp:7999,off:'6% off',rating:4.7,students:2480,groupOffer:true,img:'images/live-project-2-months.png'},
+  {id:'live-2-2mo',cat:'live',type:'Internship',badge:null,title:'Live Project — 2 Domains, 2 Months',desc:'The deepest dual-domain consulting experience we offer.',price:11500,mrp:11999,off:'4% off',rating:4.8,students:1340,groupOffer:true,img:'images/live-project-2-months.png'},
+  {id:'case-dominate',cat:'case',type:'Standalone',badge:'Bestseller',title:'Dominating Case Competitions',desc:'Learn to win from Unstop national toppers.',price:3499,mrp:3999,off:'13% off',rating:4.9,students:5010,groupOffer:true,img:'images/case-competitions.png'},
+  {id:'case-live',cat:'case',type:'Combo',badge:null,title:'Case Competitions + Live Project',desc:'Double your CV impact.',price:8499,mrp:8999,off:'6% off',rating:4.7,students:1450,groupOffer:true,img:'images/case-live.png'},
+  {id:'adv-excel',cat:'cert',type:'Certification',badge:null,title:'Advanced Excel (incl. Power Query)',desc:'Master Excel skills that show up on your CV immediately.',price:1199,mrp:1499,off:null,rating:4.6,students:7820,groupOffer:false,img:'images/advanced-excel.png'},
+  {id:'power-bi',cat:'cert',type:'Certification',badge:null,title:'Power BI Certification',desc:'Flexible learning that fits your MBA schedule.',price:1499,mrp:null,off:null,rating:4.7,students:5630,groupOffer:false,img:'images/power-bi.png'}
 ];
 
 const fmt=n=>'₹'+Number(n).toLocaleString('en-IN');
@@ -947,9 +967,33 @@ function openEnroll(id, isFriend){
   
   // Set tab modes
   setEnrollMode(isFriend ? 'friend' : 'solo');
-  
+
   document.getElementById('enrollModal').classList.add('open');
   document.body.style.overflow='hidden';
+
+  // If the visitor is already signed in (via Clerk, from login.html), their
+  // name/email is already known — lock those two fields so the checkout
+  // email always matches the account their dashboard looks up by.
+  if (window.__clerkReady) {
+    window.__clerkReady.then(clerk => {
+      if (!clerk || !clerk.user) return;
+      const emailEl = document.getElementById('emEmail');
+      const nameEl = document.getElementById('emName');
+      const email = clerk.user.primaryEmailAddress ? clerk.user.primaryEmailAddress.emailAddress : '';
+      if (emailEl && email) {
+        emailEl.value = email;
+        emailEl.readOnly = true;
+        emailEl.style.background = '#F3F4F6';
+        emailEl.style.cursor = 'not-allowed';
+      }
+      if (nameEl && clerk.user.fullName) {
+        nameEl.value = clerk.user.fullName;
+        nameEl.readOnly = true;
+        nameEl.style.background = '#F3F4F6';
+        nameEl.style.cursor = 'not-allowed';
+      }
+    }).catch(() => {});
+  }
 }
 function closeEnrollModal(){
   document.getElementById('enrollModal').classList.remove('open');
@@ -999,7 +1043,7 @@ function applyCoupon(){
   document.getElementById('emTotal').textContent=fmt(currentCourse.price);
 }
 
-function submitEnrollment(){
+async function submitEnrollment(btn){
   const name=(document.getElementById('emName').value||'').trim();
   const email=(document.getElementById('emEmail').value||'').trim();
   const phone=(document.getElementById('emPhone').value||'').trim();
@@ -1008,54 +1052,83 @@ function submitEnrollment(){
     err.textContent='Please fill in your name, email and phone number.';
     err.style.display='block'; return;
   }
+  if(!currentCourse){
+    err.textContent='No course selected — please go back and pick a course.';
+    err.style.display='block'; return;
+  }
   err.style.display='none';
 
-  // Save to the admin dashboard ("Enroll Page Signups") — fire-and-forget,
-  // doesn't block or change any of the referral-code logic below.
-  try {
-    const base = (typeof MBA_API_BASE !== 'undefined') ? MBA_API_BASE : '';
-    fetch(base + '/api/public/enrollmentRequests', {
-      method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        Type: 'solo', Course: currentCourse ? currentCourse.title : '', CourseId: currentCourse ? currentCourse.id : '',
-        Name: name, Email: email, Phone: phone,
-        College: (document.getElementById('emCollege') || {}).value || '',
-        CouponUsed: appliedCode || ''
-      })
-    }).catch(()=>{});
-  } catch(e) {}
+  const finalAmount = currentCourse.price - couponDiscount;
+  if (btn) btn.disabled = true;
 
-  // Generate referral code
-  const refCode=generateRefCode(name,email);
-  
-  // Store enrollment + referral in localStorage
-  let data={};
-  try{ data=JSON.parse(localStorage.getItem('mbaReferrals')||'{}'); }catch(e){}
-  if(!data[email]){
-    data[email]={ name,code:refCode,earnings:0,referrals:[],pending:0 };
-  }
-  // If someone used a referral code, credit the referrer
-  if(appliedCode && appliedCode!=='GROUP30' && appliedCode!=='MBA10'){
-    Object.values(data).forEach(r=>{
-      if(r.code===appliedCode){
-        r.referrals.push({friend:name,course:currentCourse.title,status:'confirmed',bonus:750});
-        r.earnings+=750;
-      }
+  try {
+    // Real payment — creates a server-side Razorpay order, opens Checkout,
+    // and only resolves once the server has verified the signature. Nothing
+    // below this line runs unless the payment actually went through.
+    const checkoutPayload = {
+      Name: name, Email: email, Phone: phone,
+      College: (document.getElementById('emCollege') || {}).value || '',
+      Items: currentCourse.title, ItemIds: currentCourse.id,
+      Total: finalAmount, Coupon: appliedCode || ''
+    };
+    const orderData = await createRazorpayOrder(finalAmount, `enroll_${Date.now()}`, {
+      email, name, courseIds: currentCourse.id, coupon: appliedCode || ''
     });
+    await startRazorpayCheckout(orderData, checkoutPayload);
+
+    // Save to the admin dashboard ("Enroll Page Signups") — fire-and-forget,
+    // doesn't block or change any of the referral-code logic below.
+    try {
+      const base = (typeof MBA_API_BASE !== 'undefined') ? MBA_API_BASE : '';
+      fetch(base + '/api/public/enrollmentRequests', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          Type: 'solo', Course: currentCourse.title, CourseId: currentCourse.id,
+          Name: name, Email: email, Phone: phone,
+          College: (document.getElementById('emCollege') || {}).value || '',
+          CouponUsed: appliedCode || ''
+        })
+      }).catch(()=>{});
+    } catch(e) {}
+
+    // Generate referral code
+    const refCode=generateRefCode(name,email);
+
+    // Store enrollment + referral in localStorage
+    let data={};
+    try{ data=JSON.parse(localStorage.getItem('mbaReferrals')||'{}'); }catch(e){}
+    if(!data[email]){
+      data[email]={ name,code:refCode,earnings:0,referrals:[],pending:0 };
+    }
+    // If someone used a referral code, credit the referrer
+    if(appliedCode && appliedCode!=='GROUP30' && appliedCode!=='MBA10'){
+      Object.values(data).forEach(r=>{
+        if(r.code===appliedCode){
+          r.referrals.push({friend:name,course:currentCourse.title,status:'confirmed',bonus:750});
+          r.earnings+=750;
+        }
+      });
+    }
+    localStorage.setItem('mbaReferrals', JSON.stringify(data));
+
+    // Show success
+    document.getElementById('emBody').style.display='none';
+    document.getElementById('emBodyFriend').style.display='none';
+    document.getElementById('successSingleContent').style.display='block';
+    document.getElementById('successFriendContent').style.display='none';
+    document.getElementById('successRefCode').innerHTML=formatRefCode(refCode);
+    document.getElementById('emSuccess').className='success-screen show';
+    window._lastRefCode=refCode;
+  } catch (payErr) {
+    console.error('Enrollment payment failed:', payErr);
+    err.textContent = payErr.message || 'Payment could not be completed. Please try again.';
+    err.style.display = 'block';
+  } finally {
+    if (btn) btn.disabled = false;
   }
-  localStorage.setItem('mbaReferrals', JSON.stringify(data));
-  
-  // Show success
-  document.getElementById('emBody').style.display='none';
-  document.getElementById('emBodyFriend').style.display='none';
-  document.getElementById('successSingleContent').style.display='block';
-  document.getElementById('successFriendContent').style.display='none';
-  document.getElementById('successRefCode').innerHTML=formatRefCode(refCode);
-  document.getElementById('emSuccess').className='success-screen show';
-  window._lastRefCode=refCode;
 }
 
-function submitFriendEnrollment() {
+async function submitFriendEnrollment(btn) {
   const name1 = (document.getElementById('friendName1').value || '').trim();
   const phone1 = (document.getElementById('friendPhone1').value || '').trim();
   const email1 = (document.getElementById('friendEmail1').value || '').trim();
@@ -1074,53 +1147,89 @@ function submitFriendEnrollment() {
     err.style.display = 'block';
     return;
   }
+  const c1Id = document.querySelector('input[name="friendCourse1"]:checked')?.value;
+  const c2Id = document.querySelector('input[name="friendCourse2"]:checked')?.value;
+  const c1 = COURSES.find(c => c.id === c1Id);
+  const c2 = COURSES.find(c => c.id === c2Id);
+  if (!c1 || !c2) {
+    err.textContent = 'Please pick a course for both members.';
+    err.style.display = 'block';
+    return;
+  }
   err.style.display = 'none';
 
-  // Save to the admin dashboard ("Enroll Page Signups") — fire-and-forget,
-  // doesn't block or change any of the referral-code logic below.
+  const subtotal = c1.price + c2.price;
+  const discount = Math.round(subtotal * 0.20);
+  const finalAmount = subtotal - discount;
+  if (btn) btn.disabled = true;
+
   try {
-    const base = (typeof MBA_API_BASE !== 'undefined') ? MBA_API_BASE : '';
-    fetch(base + '/api/public/enrollmentRequests', {
-      method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        Type: 'group', Course: currentCourse ? currentCourse.title : '', CourseId: currentCourse ? currentCourse.id : '',
-        Name: name1, Email: email1, Phone: phone1, College: college1,
-        Name2: name2, Email2: email2, Phone2: phone2, College2: college2,
-        CouponUsed: appliedCode || ''
-      })
-    }).catch(()=>{});
-  } catch(e) {}
+    // Real payment — creates a server-side Razorpay order, opens Checkout,
+    // and only resolves once the server has verified the signature. Nothing
+    // below this line runs unless the payment actually went through.
+    const checkoutPayload = {
+      Name: name1, Email: email1, Phone: phone1,
+      College: college1,
+      Items: c1.title + ', ' + c2.title, ItemIds: c1.id + ',' + c2.id,
+      Total: finalAmount, Coupon: appliedCode || ''
+    };
+    const orderData = await createRazorpayOrder(finalAmount, `enroll_group_${Date.now()}`, {
+      email: email1, name: name1, courseIds: c1.id + ',' + c2.id, coupon: appliedCode || ''
+    });
+    await startRazorpayCheckout(orderData, checkoutPayload);
 
-  // Generate codes
-  const code1 = generateRefCode(name1, email1);
-  const code2 = generateRefCode(name2, email2);
-  
-  window._friendRefCode1 = code1;
-  window._friendRefCode2 = code2;
+    // Save to the admin dashboard ("Enroll Page Signups") — fire-and-forget,
+    // doesn't block or change any of the referral-code logic below.
+    try {
+      const base = (typeof MBA_API_BASE !== 'undefined') ? MBA_API_BASE : '';
+      fetch(base + '/api/public/enrollmentRequests', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          Type: 'group', Course: currentCourse ? currentCourse.title : '', CourseId: currentCourse ? currentCourse.id : '',
+          Name: name1, Email: email1, Phone: phone1, College: college1,
+          Name2: name2, Email2: email2, Phone2: phone2, College2: college2,
+          CouponUsed: appliedCode || ''
+        })
+      }).catch(()=>{});
+    } catch(e) {}
 
-  // Store in localStorage
-  let data = {};
-  try { data = JSON.parse(localStorage.getItem('mbaReferrals') || '{}'); } catch(e){}
-  
-  data[email1] = { name: name1, code: code1, earnings: 0, referrals: [], pending: 0 };
-  data[email2] = { name: name2, code: code2, earnings: 0, referrals: [], pending: 0 };
-  
-  localStorage.setItem('mbaReferrals', JSON.stringify(data));
+    // Generate codes
+    const code1 = generateRefCode(name1, email1);
+    const code2 = generateRefCode(name2, email2);
+    
+    window._friendRefCode1 = code1;
+    window._friendRefCode2 = code2;
 
-  // Hide forms
-  document.getElementById('emBody').style.display = 'none';
-  document.getElementById('emBodyFriend').style.display = 'none';
-  
-  // Show friend success content
-  document.getElementById('successSingleContent').style.display = 'none';
-  document.getElementById('successFriendContent').style.display = 'block';
-  
-  document.getElementById('friendSuccessLabel1').textContent = name1 + "'s Referral Code";
-  document.getElementById('friendSuccessCode1').innerHTML = formatRefCode(code1);
-  document.getElementById('friendSuccessLabel2').textContent = name2 + "'s Referral Code";
-  document.getElementById('friendSuccessCode2').innerHTML = formatRefCode(code2);
-  
-  document.getElementById('emSuccess').className = 'success-screen show';
+    // Store in localStorage
+    let data = {};
+    try { data = JSON.parse(localStorage.getItem('mbaReferrals') || '{}'); } catch(e){}
+    
+    data[email1] = { name: name1, code: code1, earnings: 0, referrals: [], pending: 0 };
+    data[email2] = { name: name2, code: code2, earnings: 0, referrals: [], pending: 0 };
+    
+    localStorage.setItem('mbaReferrals', JSON.stringify(data));
+
+    // Hide forms
+    document.getElementById('emBody').style.display = 'none';
+    document.getElementById('emBodyFriend').style.display = 'none';
+    
+    // Show friend success content
+    document.getElementById('successSingleContent').style.display = 'none';
+    document.getElementById('successFriendContent').style.display = 'block';
+    
+    document.getElementById('friendSuccessLabel1').textContent = name1 + "'s Referral Code";
+    document.getElementById('friendSuccessCode1').innerHTML = formatRefCode(code1);
+    document.getElementById('friendSuccessLabel2').textContent = name2 + "'s Referral Code";
+    document.getElementById('friendSuccessCode2').innerHTML = formatRefCode(code2);
+    
+    document.getElementById('emSuccess').className = 'success-screen show';
+  } catch (payErr) {
+    console.error('Group enrollment payment failed:', payErr);
+    err.textContent = payErr.message || 'Payment could not be completed. Please try again.';
+    err.style.display = 'block';
+  } finally {
+    if (btn) btn.disabled = false;
+  }
 }
 
 function copyFriendCode(num) {

@@ -827,15 +827,10 @@ function renderCheckout() {
   body.innerHTML = `<div class="co-title">Checkout</div><div class="co-sub">${cart.length} item${cart.length > 1 ? 's' : ''} in your cart</div>
   <div class="co-grid"><div>
     <div class="co-panel"><h3>Your details</h3>
-      <div class="field"><label>Full name</label><input placeholder="Ananya Sharma"/></div>
-      <div class="field-row"><div class="field"><label>Email</label><input type="email" placeholder="you@email.com"/></div><div class="field"><label>Phone</label><input placeholder="+91 …"/></div></div>
-      <div class="field"><label>College / B-School</label><input placeholder="IIM …"/></div>
-    </div>
-    <div class="co-panel"><h3>Payment method</h3>
-      <div class="pay-opt sel" data-pay="upi"><i class="ti ti-qrcode"></i><div class="pay-opt-t">UPI / QR</div></div>
-      <div class="pay-opt" data-pay="card"><i class="ti ti-credit-card"></i><div class="pay-opt-t">Credit / Debit card</div></div>
-      <div class="pay-opt" data-pay="netbanking"><i class="ti ti-building-bank"></i><div class="pay-opt-t">Net banking</div></div>
-      <div class="pay-note">Payments are processed securely via Razorpay. In test mode, UPI/QR may not work; use the demo payment button to continue.</div>
+      <div class="field"><label>Full name</label><input id="coName" placeholder="Ananya Sharma"/></div>
+      <div class="field-row"><div class="field"><label>Email</label><input id="coEmail" type="email" placeholder="you@email.com"/></div><div class="field"><label>Phone</label><input id="coPhone" placeholder="+91 …"/></div></div>
+      <div class="field"><label>College / B-School</label><input id="coCollege" placeholder="IIM …"/></div>
+      <div class="pay-note">Payments are processed securely via Razorpay.</div>
     </div>
     <div class="co-panel group-panel"><h3><i class="ti ti-users"></i> Enroll with a friend — 30% off</h3>
       <p class="group-note">When 2 students join together, you <b>both</b> get 30% off. Add your friend's details to apply.</p>
@@ -851,10 +846,31 @@ function renderCheckout() {
     <div class="coupon-row"><input id="couponInput" placeholder="Coupon code"/><button id="couponApply" type="button">Apply</button></div>
     <div class="sum-total"><span>Total</span><span>${fmt(grandTotal)}</span></div>
     <button class="co-pay-btn" id="payNow">Pay ${fmt(grandTotal)}</button>
-    <button class="co-pay-btn ghost" id="demoPay">Simulate payment</button>
   </div></div></div>`;
   body.querySelectorAll('[data-rm]').forEach(b => b.onclick = () => removeFromCart(Number(b.dataset.rm)));
-  body.querySelectorAll('.pay-opt').forEach(o => o.onclick = () => { body.querySelectorAll('.pay-opt').forEach(x => x.classList.remove('sel')); o.classList.add('sel'); });
+  // If the visitor is already signed in (via Clerk, from login.html), their
+  // name/email is already known — lock those two fields so the checkout
+  // email always matches the account their dashboard looks up by.
+  if (window.__clerkReady) {
+    window.__clerkReady.then(clerk => {
+      if (!clerk || !clerk.user) return;
+      const emailEl = document.getElementById('coEmail');
+      const nameEl = document.getElementById('coName');
+      const email = clerk.user.primaryEmailAddress ? clerk.user.primaryEmailAddress.emailAddress : '';
+      if (emailEl && email) {
+        emailEl.value = email;
+        emailEl.readOnly = true;
+        emailEl.style.background = '#F3F4F6';
+        emailEl.style.cursor = 'not-allowed';
+      }
+      if (nameEl && clerk.user.fullName) {
+        nameEl.value = clerk.user.fullName;
+        nameEl.readOnly = true;
+        nameEl.style.background = '#F3F4F6';
+        nameEl.style.cursor = 'not-allowed';
+      }
+    }).catch(() => {});
+  }
   document.getElementById('couponApply').onclick = async () => {
     const code = (document.getElementById('couponInput').value || '').trim().toUpperCase();
     if (!code) return;
@@ -893,10 +909,10 @@ function renderCheckout() {
     renderCheckout();
   };
   document.getElementById('payNow').onclick = async () => {
-    const n = (body.querySelector('input[placeholder="Ananya Sharma"]').value || '').trim();
-    const e = (body.querySelector('input[type="email"]').value || '').trim();
-    const ph = (body.querySelector('input[placeholder="+91 …"]').value || '').trim();
-    const col = (body.querySelector('input[placeholder="IIM …"]').value || '').trim();
+    const n = (document.getElementById('coName').value || '').trim();
+    const e = (document.getElementById('coEmail').value || '').trim();
+    const ph = (document.getElementById('coPhone').value || '').trim();
+    const col = (document.getElementById('coCollege').value || '').trim();
     if (!n || !e) { showToast('Please enter your name and email'); return; }
     const payBtn = document.getElementById('payNow');
     if (payBtn) payBtn.disabled = true;
@@ -928,16 +944,6 @@ function renderCheckout() {
     }
   };
 
-  const demoPayBtn = document.getElementById('demoPay');
-  if (demoPayBtn) {
-    demoPayBtn.onclick = () => {
-      const n = (body.querySelector('input[placeholder="Ananya Sharma"]').value || '').trim();
-      const e = (body.querySelector('input[type="email"]').value || '').trim();
-      if (!n || !e) { showToast('Please enter your name and email'); return; }
-      if (typeof DASH_DATA !== 'undefined') DASH_DATA = null;
-      openModal('paid', { total: grandTotal });
-    };
-  }
 }
 
 /* ===== ROUTING ===== */
@@ -982,7 +988,7 @@ document.getElementById('testiModal').addEventListener('click', e => { if (e.tar
 /* STANDARD MODAL */
 const modalData = {
   login: () => ({ ico: 'ti-user-circle', title: 'Member login', text: 'This connects to your existing Wix Members Area once integrated.', action: 'Got it', run: null }),
-  paid: c => ({ ico: 'ti-circle-check', title: 'Enrollment confirmed', text: 'Payment of ' + fmt(c.total) + ' successful (demo). On the live site this connects to Wix Payments / Razorpay.', action: 'Go to dashboard', run: () => { if (window.MBAauth) { MBAauth.addPurchasedCourses(cart.map(it => ({ id: it.id, title: it.title, type: it.type, emoji: it.emoji }))); } cart = []; appliedCoupon = null; syncCart(); location.href = 'login.html'; } })
+  paid: c => ({ ico: 'ti-circle-check', title: 'Enrollment confirmed', text: 'Payment of ' + fmt(c.total) + ' was successful.', action: 'Go to dashboard', run: () => { if (window.MBAauth) { MBAauth.addPurchasedCourses(cart.map(it => ({ id: it.id, title: it.title, type: it.type, emoji: it.emoji }))); } cart = []; appliedCoupon = null; syncCart(); location.href = 'login.html'; } })
 };
 let modalCtx = null;
 function openModal(k, ctx) { const d = modalData[k](ctx); modalCtx = d; document.getElementById('modalIco').innerHTML = '<i class="ti ' + d.ico + '"></i>'; document.getElementById('modalTitle').textContent = d.title; document.getElementById('modalText').textContent = d.text; document.getElementById('modalAction').textContent = d.action; document.getElementById('modal').classList.add('open'); }
