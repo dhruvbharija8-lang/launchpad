@@ -1,34 +1,44 @@
         /* ===== SCORE → PERCENTILE MAP ===== */
+        // Score → Percentile map, rebased to CAT 2024 trends (papers have gotten
+        // easier / test-taker pool has grown, so the same percentile now needs a
+        // noticeably lower raw score than in 2019-2021 — e.g. ~95 now gets 99%ile
+        // vs ~135 a few years ago). Source: CAT 2024 official percentile data.
         function scoreToPercentile(score) {
             score = parseFloat(score) || 0;
-            if (score >= 185) return 99.99;
-            if (score >= 170) return 99.9;
-            if (score >= 155) return 99.7;
-            if (score >= 145) return 99.4;
-            if (score >= 135) return 99.0;
-            if (score >= 125) return 98.5;
-            if (score >= 115) return 97.5;
-            if (score >= 105) return 96.0;
-            if (score >= 95) return 94.0;
-            if (score >= 85) return 91.5;
-            if (score >= 75) return 88.0;
-            if (score >= 65) return 83.0;
-            if (score >= 55) return 76.0;
-            if (score >= 45) return 68.0;
-            if (score >= 35) return 57.0;
-            return Math.max(0, score * 1.5);
+            if (score >= 130) return 99.99;
+            if (score >= 127) return 99.9;
+            if (score >= 115) return 99.7;
+            if (score >= 104) return 99.5;
+            if (score >= 95) return 99.0;
+            if (score >= 90) return 98.5;
+            if (score >= 79) return 97.0;
+            if (score >= 70) return 95.0;
+            if (score >= 64) return 93.0;
+            if (score >= 58) return 90.0;
+            if (score >= 49) return 85.0;
+            if (score >= 44) return 80.0;
+            if (score >= 37) return 75.0;
+            if (score >= 30) return 70.0;
+            if (score >= 25) return 65.0;
+            if (score >= 20) return 60.0;
+            if (score >= 14) return 50.0;
+            return Math.max(0, score * 3.2);
         }
 
-        function sectionToPercentile(score) {
+        // Sectional score → percentile, now split by section (VARC/DILR/QA each
+        // scale very differently — e.g. 27 in DILR is ~95%ile but 22 in QA is
+        // ~95%ile too, they are not interchangeable). Source: CAT 2024 sectional
+        // percentile data. 'sec' is 'varc' | 'dilr' | 'qa'.
+        const SECTIONAL_TABLES = {
+            varc: [[55, 99.9], [44, 99.5], [40, 99.0], [34, 97.0], [30, 95.0], [24, 90.0], [20, 85.0], [18, 80.0], [16, 75.0]],
+            dilr: [[50, 99.9], [41, 99.5], [38, 99.0], [31, 97.0], [27, 95.0], [23, 90.0], [20, 85.0], [17, 80.0], [15, 75.0]],
+            qa:   [[45, 99.9], [37, 99.5], [33, 99.0], [25, 97.0], [22, 95.0], [17, 90.0], [14, 85.0], [12, 80.0], [10, 75.0]]
+        };
+        function sectionToPercentile(score, sec) {
             score = parseFloat(score) || 0;
-            if (score >= 58) return 99;
-            if (score >= 50) return 97;
-            if (score >= 44) return 94;
-            if (score >= 38) return 90;
-            if (score >= 32) return 85;
-            if (score >= 26) return 75;
-            if (score >= 20) return 60;
-            return Math.max(0, score * 2);
+            const table = SECTIONAL_TABLES[sec] || SECTIONAL_TABLES.qa;
+            for (const [minScore, pct] of table) { if (score >= minScore) return pct; }
+            return Math.max(0, score * 3.5);
         }
 
         /* ===== SLIDER ===== */
@@ -44,9 +54,9 @@
             const v = parseInt(document.getElementById('varc').value) || 0;
             const d = parseInt(document.getElementById('dilr').value) || 0;
             const q = parseInt(document.getElementById('qa').value) || 0;
-            document.getElementById('varcPct').textContent = sectionToPercentile(v).toFixed(0);
-            document.getElementById('dilrPct').textContent = sectionToPercentile(d).toFixed(0);
-            document.getElementById('qaPct').textContent = sectionToPercentile(q).toFixed(0);
+            document.getElementById('varcPct').textContent = sectionToPercentile(v, 'varc').toFixed(0);
+            document.getElementById('dilrPct').textContent = sectionToPercentile(d, 'dilr').toFixed(0);
+            document.getElementById('qaPct').textContent = sectionToPercentile(q, 'qa').toFixed(0);
             // Auto-update slider to match total
             const total = v + d + q;
             if (total > 0 && total <= 198) {
@@ -106,9 +116,9 @@
             const gaps = document.getElementById('gaps').value;
 
             const percentile = scoreToPercentile(score);
-            const varcPct = sectionToPercentile(varc);
-            const dilrPct = sectionToPercentile(dilr);
-            const qaPct = sectionToPercentile(qa);
+            const varcPct = sectionToPercentile(varc, 'varc');
+            const dilrPct = sectionToPercentile(dilr, 'dilr');
+            const qaPct = sectionToPercentile(qa, 'qa');
             const minSectional = Math.min(varcPct, dilrPct, qaPct);
 
             // Get category cutoff key

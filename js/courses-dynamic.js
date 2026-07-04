@@ -21,7 +21,7 @@ const COMBO_INCLUDES = {
   'bootcamp-case':   ['placement-bootcamp', 'case-dominate'],
   'bootcamp-live-master': ['placement-bootcamp', 'live-2'],
   'bootcamp-live':   ['placement-bootcamp', 'live-1'],
-  'case-live':       ['case-dominate', 'live-1']
+  'case-live':       ['case-dominate', 'live-2']
 };
 
 /* Compute combo savings vs buying the parts separately. */
