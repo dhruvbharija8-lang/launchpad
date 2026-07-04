@@ -239,7 +239,8 @@ const ADMIN_SECTIONS = [
       { name: 'School', label: 'B-school', type: 'text', col: true },
       { name: 'Company', label: 'Company / outcome', type: 'text', col: true },
       { name: 'Quote', label: 'Quote', type: 'textarea', required: true },
-      { name: 'Photo', label: 'Photo URL', type: 'text' }
+      { name: 'Photo', label: 'Photo URL', type: 'text' },
+      { name: 'LinkedIn', label: 'LinkedIn profile URL', type: 'text', desc: 'Full profile link, e.g. https://www.linkedin.com/in/username. Leave blank to hide the LinkedIn icon.' }
     ]
   },
   {

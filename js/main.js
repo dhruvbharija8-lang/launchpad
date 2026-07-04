@@ -231,7 +231,7 @@ function hofCardHtml(h) {
     <div class="hof-content">
       <div class="hof-name-row">
         <span class="hof-name">${h.name}</span>
-        <a href="#" class="hof-linkedin" aria-label="LinkedIn Profile"><i class="ti ti-brand-linkedin"></i></a>
+        ${h.linkedin ? `<a href="${h.linkedin}" class="hof-linkedin" target="_blank" rel="noopener" aria-label="LinkedIn Profile"><i class="ti ti-brand-linkedin"></i></a>` : ''}
       </div>
       <div class="hof-school">${h.school}</div>
       <div class="hof-quote">"${h.quote}"</div>
@@ -262,7 +262,7 @@ async function renderHallOfFame() {
     if (!res.ok) return;
     const data = await res.json();
     if (Array.isArray(data) && data.length) {
-      const stories = data.map(h => ({ name: h.Name, school: h.School, company: h.Company, quote: h.Quote, img: h.Photo }));
+      const stories = data.map(h => ({ name: h.Name, school: h.School, company: h.Company, quote: h.Quote, img: h.Photo, linkedin: h.LinkedIn }));
       el.innerHTML = stories.map(hofCardHtml).join('');
       observeReveals(el);
     }
