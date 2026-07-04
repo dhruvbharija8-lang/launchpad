@@ -883,14 +883,6 @@ renderGrid();
 // has ?course=... on it.
 let currentCourse=null,couponDiscount=0,appliedCode='',currentEnrollMode='solo';
 
-// If we were sent here from a course's "Enroll Now" on its Details page
-// (courses.html?from=enroll), open the enroll modal for that exact course
-// automatically instead of making them find and click it again here.
-(function () {
-  const courseId = new URLSearchParams(location.search).get('course');
-  if (courseId) openEnroll(courseId);
-})();
-
 function setEnrollMode(mode) {
   currentEnrollMode = mode;
   const box = document.getElementById('enrollBox');
@@ -1408,6 +1400,20 @@ function showToast(msg){
   setTimeout(()=>{ t.classList.remove('show'); setTimeout(()=>t.remove(),300); },2400);
 }
 document.addEventListener('keydown',e=>{ if(e.key==='Escape'){ closeEnrollModal(); document.getElementById('refDashModal').classList.remove('open'); document.body.style.overflow=''; } });
+
+/* ── AUTO-OPEN ENROLL MODAL ── */
+// Placed at the very end of this script block, after every const/let/function
+// used by openEnroll()'s call chain (currentCourse, LIVE_DOMAINS,
+// COURSE_DOMAIN_REQUIREMENT, renderDomainPicker, etc.) has already been
+// declared — putting this earlier caused "Cannot access '<name>' before
+// initialization" errors (temporal dead zone) that silently broke the whole
+// script. If we were sent here from a course's "Enroll Now" on its Details
+// page (courses.html?from=enroll), open the enroll modal for that exact
+// course automatically instead of making the visitor find and click it again.
+(function () {
+  const courseId = new URLSearchParams(location.search).get('course');
+  if (courseId) openEnroll(courseId);
+})();
 </script>
 </body>
 </html>
