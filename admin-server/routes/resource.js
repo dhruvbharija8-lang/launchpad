@@ -48,12 +48,23 @@ function autoProvisionProgram(courseId, courseTitle) {
   programs.push(rec);
   db.setCollection('programs', programs);
 }
-function autoProvisionEnrollment(email, courseId) {
+// domains: optional comma-separated Live Project domain key(s) the student
+// picked at checkout for this specific course (e.g. 'marketing' or
+// 'marketing,hr') — resolved into actual Drive links by js/dashboard-data.js
+// (buildStudentView) via the liveDomainLinks collection. Only ever fills in
+// a blank Domains field; never overwrites one an admin has already set.
+function autoProvisionEnrollment(email, courseId, domains) {
   if (!email || !courseId) return;
   const enrollments = db.getCollection('enrollments');
-  const already = enrollments.some(e => (e.Email || '').toLowerCase() === email.toLowerCase() && e.ProgramCode === courseId);
-  if (already) return;
-  const rec = { _id: db.nextId(enrollments), Email: email, ProgramCode: courseId, Progress: 0, NextSession: 'Onboarding', NextDate: 'Soon' };
+  const idx = enrollments.findIndex(e => (e.Email || '').toLowerCase() === email.toLowerCase() && e.ProgramCode === courseId);
+  if (idx > -1) {
+    if (domains && !enrollments[idx].Domains) {
+      enrollments[idx].Domains = domains;
+      db.setCollection('enrollments', enrollments);
+    }
+    return;
+  }
+  const rec = { _id: db.nextId(enrollments), Email: email, ProgramCode: courseId, Progress: 0, NextSession: 'Onboarding', NextDate: 'Soon', Domains: domains || '' };
   enrollments.push(rec);
   db.setCollection('enrollments', enrollments);
 }
@@ -63,9 +74,21 @@ function autoProvisionFromSubmission(name, record) {
       autoProvisionStudent(record.Email, record.Name);
       const ids = String(record.ItemIds || '').split(',').map(s => s.trim()).filter(Boolean);
       const titles = String(record.Items || '').split(',').map(s => s.trim());
+      // record.Domains (if present) is a JSON string: [{ id: 'live-2', domains: ['marketing','hr'] }, ...]
+      // — set by the checkout pages when the purchased course needs a
+      // Live Project domain choice. Matched to each ItemId by its own id.
+      let domainMap = {};
+      try {
+        const parsed = JSON.parse(record.Domains || '[]');
+        if (Array.isArray(parsed)) {
+          parsed.forEach(d => {
+            if (d && d.id) domainMap[d.id] = Array.isArray(d.domains) ? d.domains.join(',') : (d.domains || '');
+          });
+        }
+      } catch (e) { /* malformed/absent Domains — just skip domain-tagging */ }
       ids.forEach((id, i) => {
         autoProvisionProgram(id, titles[i]);
-        autoProvisionEnrollment(record.Email, id);
+        autoProvisionEnrollment(record.Email, id, domainMap[id] || '');
       });
     } else if (name === 'enrollmentRequests' && record.Email) {
       autoProvisionStudent(record.Email, record.Name);
@@ -133,7 +156,7 @@ function makeAdminRouter(name) {
 const COLLECTIONS = [
   'courses', 'combos', 'coupons', 'placements', 'mentors', 'colleges',
   'videos', 'gdpi', 'hallOfFame', 'freeSessions', 'programs', 'sessions', 'materials', 'students', 'enrollments',
-  'collabTestimonials', 'collabColleges',
+  'collabTestimonials', 'collabColleges', 'liveDomainLinks',
   // Real visitor submissions — write-only from the public side (see
   // PUBLIC_WRITE_ONLY above), fully readable/editable from the admin
   // dashboard like every other collection.

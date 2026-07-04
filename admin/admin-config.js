@@ -319,7 +319,17 @@ const ADMIN_SECTIONS = [
       { name: 'ProgramCode', label: 'Program code (must match a Programs row)', type: 'text', required: true, col: true },
       { name: 'Progress', label: 'Progress % (0-100)', type: 'number', col: true },
       { name: 'NextSession', label: 'Next session name', type: 'text' },
-      { name: 'NextDate', label: 'Next date', type: 'text' }
+      { name: 'NextDate', label: 'Next date', type: 'text' },
+      { name: 'Domains', label: 'Live Project domain(s) chosen at checkout (comma-separated key, e.g. "marketing" or "marketing,hr") — auto-filled by Razorpay checkout', type: 'text' }
+    ]
+  },
+  {
+    key: 'liveDomainLinks', label: 'Live Project — Domain Drive Links', icon: 'ti-folder', group: 'Student dashboard',
+    desc: 'The Google Drive folder for each Live Project domain. A student sees the link(s) for whichever domain(s) they picked at checkout (stored on their Enrollments row). Domain key must stay lowercase and match what the checkout picker uses (operations / marketing / hr / finance / consulting).',
+    fields: [
+      { name: 'DomainKey', label: 'Domain key (lowercase, no spaces)', type: 'text', required: true, col: true },
+      { name: 'DomainLabel', label: 'Domain label shown to students', type: 'text', col: true },
+      { name: 'DriveLink', label: 'Google Drive folder link', type: 'text', col: true }
     ]
   },
   {

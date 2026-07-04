@@ -604,6 +604,11 @@ button{cursor:pointer;font-family:inherit}
         <div class="afield"><label>Phone</label><input id="emPhone" placeholder="+91 …"/></div>
       </div>
       <div class="afield"><label>College / B-School</label><input id="emCollege" placeholder="IIM Ahmedabad, XLRI…"/></div>
+      <div class="afield" id="emDomainWrap" style="display:none">
+        <label id="emDomainWrapLabel">Choose your Live Project domain</label>
+        <select id="emDomain1"></select>
+        <select id="emDomain2" style="display:none;margin-top:8px"></select>
+      </div>
       <div class="coupon-row">
         <input id="emCoupon" placeholder="Referral / Coupon code (optional)"/>
         <button onclick="applyCoupon()">Apply</button>
@@ -643,6 +648,11 @@ button{cursor:pointer;font-family:inherit}
               <!-- Dynamically populated -->
             </div>
           </div>
+          <div class="afield" id="friendDomainWrap1" style="display:none;margin-top:10px">
+            <label id="friendDomainWrapLabel1" style="font-size: 11px; color: var(--ink2); font-weight: 700;">Choose Live Project domain</label>
+            <select id="friendDomain1_1"></select>
+            <select id="friendDomain1_2" style="display:none;margin-top:8px"></select>
+          </div>
         </div>
 
         <!-- Member 2 -->
@@ -660,6 +670,11 @@ button{cursor:pointer;font-family:inherit}
             <div class="course-options-list" id="friendCourseList2">
               <!-- Dynamically populated -->
             </div>
+          </div>
+          <div class="afield" id="friendDomainWrap2" style="display:none;margin-top:10px">
+            <label id="friendDomainWrapLabel2" style="font-size: 11px; color: var(--ink2); font-weight: 700;">Choose Live Project domain</label>
+            <select id="friendDomain2_1"></select>
+            <select id="friendDomain2_2" style="display:none;margin-top:8px"></select>
           </div>
         </div>
       </div>
@@ -929,7 +944,10 @@ function updateFriendCalculation() {
   const c2 = COURSES.find(c => c.id === c2Id);
   
   if (!c1 || !c2) return;
-  
+
+  renderDomainPicker('friendDomainWrap1','friendDomain1_1','friendDomain1_2','friendDomainWrapLabel1', c1);
+  renderDomainPicker('friendDomainWrap2','friendDomain2_1','friendDomain2_2','friendDomainWrapLabel2', c2);
+
   const price1 = c1.price;
   const price2 = c2.price;
   const subtotal = price1 + price2;
@@ -946,6 +964,54 @@ function updateFriendCalculation() {
   document.getElementById('friendSummaryTotal').textContent = fmt(total);
 }
 
+// Courses whose Live Project component requires the student to pick 1 or 2
+// domain(s) at checkout (matches the ProgramCode-level materials mapping in
+// admin-server/seed.js). "Product Management" isn't offered yet (no Drive
+// folder set up for it), so it's intentionally left off this list.
+const LIVE_DOMAINS = [
+  { key: 'operations', label: 'Operations' },
+  { key: 'marketing', label: 'Marketing' },
+  { key: 'hr', label: 'HR' },
+  { key: 'finance', label: 'Finance' },
+  { key: 'consulting', label: 'Consulting' }
+];
+const COURSE_DOMAIN_REQUIREMENT = {
+  'live-1': 1, 'live-1-2mo': 1, 'live-2': 2, 'live-2-2mo': 2,
+  'bootcamp-live-master': 2, 'bootcamp-live': 1,
+  'flagship-bundle-master': 2, 'flagship-bundle': 1,
+  'case-live': 2
+};
+function domainOptionsHtml(){
+  return '<option value="">Select domain…</option>' + LIVE_DOMAINS.map(d => `<option value="${d.key}">${d.label}</option>`).join('');
+}
+// Shows/hides + (re)populates a domain picker (1 or 2 <select>s) for the
+// given course. Safe to call with course=null/undefined (just hides it).
+function renderDomainPicker(wrapId, sel1Id, sel2Id, labelId, course){
+  const wrap = document.getElementById(wrapId);
+  const sel1 = document.getElementById(sel1Id);
+  const sel2 = document.getElementById(sel2Id);
+  const label = document.getElementById(labelId);
+  if (!wrap || !sel1 || !sel2) return;
+  const need = course ? (COURSE_DOMAIN_REQUIREMENT[course.id] || 0) : 0;
+  if (!need) { wrap.style.display = 'none'; return; }
+  wrap.style.display = '';
+  if (label) label.textContent = need === 2 ? 'Choose your 2 Live Project domains' : 'Choose your Live Project domain';
+  sel1.innerHTML = domainOptionsHtml();
+  if (need === 2) { sel2.style.display = ''; sel2.innerHTML = domainOptionsHtml(); }
+  else { sel2.style.display = 'none'; sel2.value = ''; }
+}
+// Reads back whatever the student picked. Returns an array (length 0-2).
+function getSelectedDomains(sel1Id, sel2Id, need){
+  const el1 = document.getElementById(sel1Id);
+  const v1 = el1 ? (el1.value || '').trim() : '';
+  if (need === 2) {
+    const el2 = document.getElementById(sel2Id);
+    const v2 = el2 ? (el2.value || '').trim() : '';
+    return [v1, v2].filter(Boolean);
+  }
+  return v1 ? [v1] : [];
+}
+
 function openEnroll(id, isFriend){
   currentCourse=COURSES.find(c=>c.id===id);
   if(!currentCourse) return;
@@ -957,6 +1023,7 @@ function openEnroll(id, isFriend){
   document.getElementById('emMrp').textContent=currentCourse.mrp?fmt(currentCourse.mrp):'';
   document.getElementById('emOff').textContent=currentCourse.off||'';
   document.getElementById('emTotal').textContent=fmt(currentCourse.price);
+  renderDomainPicker('emDomainWrap','emDomain1','emDomain2','emDomainWrapLabel', currentCourse);
   document.getElementById('emCoupon').value='';
   document.getElementById('emCouponMsg').className='coupon-msg';
   document.getElementById('emCouponMsg').textContent='';
@@ -1056,6 +1123,12 @@ async function submitEnrollment(btn){
     err.textContent='No course selected — please go back and pick a course.';
     err.style.display='block'; return;
   }
+  const domainNeed = COURSE_DOMAIN_REQUIREMENT[currentCourse.id] || 0;
+  const selectedDomains = domainNeed ? getSelectedDomains('emDomain1','emDomain2', domainNeed) : [];
+  if (domainNeed && selectedDomains.length !== domainNeed) {
+    err.textContent = domainNeed === 2 ? 'Please select both Live Project domains.' : 'Please select your Live Project domain.';
+    err.style.display='block'; return;
+  }
   err.style.display='none';
 
   const finalAmount = currentCourse.price - couponDiscount;
@@ -1069,7 +1142,8 @@ async function submitEnrollment(btn){
       Name: name, Email: email, Phone: phone,
       College: (document.getElementById('emCollege') || {}).value || '',
       Items: currentCourse.title, ItemIds: currentCourse.id,
-      Total: finalAmount, Coupon: appliedCode || ''
+      Total: finalAmount, Coupon: appliedCode || '',
+      Domains: domainNeed ? JSON.stringify([{ id: currentCourse.id, domains: selectedDomains }]) : ''
     };
     const orderData = await createRazorpayOrder(finalAmount, `enroll_${Date.now()}`, {
       email, name, courseIds: currentCourse.id, coupon: appliedCode || ''
@@ -1156,6 +1230,20 @@ async function submitFriendEnrollment(btn) {
     err.style.display = 'block';
     return;
   }
+  const domainNeed1 = COURSE_DOMAIN_REQUIREMENT[c1.id] || 0;
+  const domainNeed2 = COURSE_DOMAIN_REQUIREMENT[c2.id] || 0;
+  const domains1 = domainNeed1 ? getSelectedDomains('friendDomain1_1','friendDomain1_2', domainNeed1) : [];
+  const domains2 = domainNeed2 ? getSelectedDomains('friendDomain2_1','friendDomain2_2', domainNeed2) : [];
+  if (domainNeed1 && domains1.length !== domainNeed1) {
+    err.textContent = 'Please select ' + (domainNeed1 === 2 ? 'both Live Project domains' : 'a Live Project domain') + ' for Member 1.';
+    err.style.display = 'block';
+    return;
+  }
+  if (domainNeed2 && domains2.length !== domainNeed2) {
+    err.textContent = 'Please select ' + (domainNeed2 === 2 ? 'both Live Project domains' : 'a Live Project domain') + ' for Member 2.';
+    err.style.display = 'block';
+    return;
+  }
   err.style.display = 'none';
 
   const subtotal = c1.price + c2.price;
@@ -1167,11 +1255,15 @@ async function submitFriendEnrollment(btn) {
     // Real payment — creates a server-side Razorpay order, opens Checkout,
     // and only resolves once the server has verified the signature. Nothing
     // below this line runs unless the payment actually went through.
+    const domainsPayload = [];
+    if (domainNeed1) domainsPayload.push({ id: c1.id, domains: domains1 });
+    if (domainNeed2) domainsPayload.push({ id: c2.id, domains: domains2 });
     const checkoutPayload = {
       Name: name1, Email: email1, Phone: phone1,
       College: college1,
       Items: c1.title + ', ' + c2.title, ItemIds: c1.id + ',' + c2.id,
-      Total: finalAmount, Coupon: appliedCode || ''
+      Total: finalAmount, Coupon: appliedCode || '',
+      Domains: domainsPayload.length ? JSON.stringify(domainsPayload) : ''
     };
     const orderData = await createRazorpayOrder(finalAmount, `enroll_group_${Date.now()}`, {
       email: email1, name: name1, courseIds: c1.id + ',' + c2.id, coupon: appliedCode || ''
@@ -1313,4 +1405,3 @@ document.addEventListener('keydown',e=>{ if(e.key==='Escape'){ closeEnrollModal(
 </script>
 </body>
 </html>
-

@@ -137,6 +137,15 @@ const SAMPLE_DATA = {
     { ProgramCode:'PM-ESS',    Category:'Fundamentals',  Type:'pdf',   Name:'Tech Fundamentals',           Meta:'For non-engineering PMs',         Link:'#' },
     { ProgramCode:'PM-ESS',    Category:'Case Prep',     Type:'drive', Name:'Product Case Studies',        Meta:'20+ real examples',               Link:'#' },
     { ProgramCode:'DATA-NT',   Category:'Practice',      Type:'drive', Name:'SQL Query Bank',              Meta:'Practice queries & solutions',    Link:'#' }
+  ],
+
+  // --- Tab: Live Domain Links (Live Project Drive folder per domain) ---
+  liveDomainLinks: [
+    { DomainKey:'operations', DomainLabel:'Operations', DriveLink:'#' },
+    { DomainKey:'marketing',  DomainLabel:'Marketing',  DriveLink:'#' },
+    { DomainKey:'hr',         DomainLabel:'HR',         DriveLink:'#' },
+    { DomainKey:'finance',    DomainLabel:'Finance',    DriveLink:'#' },
+    { DomainKey:'consulting', DomainLabel:'Consulting', DriveLink:'#' }
   ]
 };
 
@@ -163,7 +172,7 @@ async function fetchSheetTab(tabName) {
 /* Preferred: the admin-server API (edited from the admin dashboard). */
 async function _fetchDashboardApi() {
   const base = (typeof MBA_API_BASE !== 'undefined') ? MBA_API_BASE : '';
-  const names = ['students', 'programs', 'enrollments', 'sessions', 'materials'];
+  const names = ['students', 'programs', 'enrollments', 'sessions', 'materials', 'liveDomainLinks'];
   const results = await Promise.all(names.map(n => fetch(base + '/api/public/' + n).then(r => r.ok ? r.json() : null).catch(() => null)));
   const out = {};
   names.forEach((n, i) => { out[n] = results[i]; });
@@ -236,6 +245,30 @@ function buildStudentView(data, email) {
       category: x.Category || 'General', type: _lc(x.Type) || 'drive',
       name: x.Name, meta: x.Meta, link: x.Link || '#'
     }));
+
+  // Live Project domain materials: resolved per-enrollment (not per-program),
+  // since which Drive folder(s) a student sees depends on which domain(s)
+  // *they specifically* picked at checkout — stored on their own Enrollments
+  // row's Domains field, not on the shared Programs/Materials rows. This
+  // deliberately does NOT add a new course/program card — just extra
+  // material cards under the course they already see.
+  const domainLinks = Array.isArray(data.liveDomainLinks) ? data.liveDomainLinks : [];
+  myEnroll.forEach(e => {
+    const keys = String(e.Domains || '').split(',').map(k => _lc(k)).filter(Boolean);
+    if (!keys.length) return;
+    const p = data.programs.find(pr => pr.ProgramCode === e.ProgramCode) || {};
+    keys.forEach(key => {
+      const d = domainLinks.find(dl => _lc(dl.DomainKey) === key);
+      if (!d || !d.DriveLink) return;
+      materials.push({
+        category: 'Live Project',
+        type: 'drive',
+        name: 'Live Project — ' + (d.DomainLabel || key),
+        meta: p.Title || e.ProgramCode,
+        link: d.DriveLink
+      });
+    });
+  });
 
   return {
     name: s.Name, email: s.Email, role: s.Role, avatar: s.Avatar || (s.Name || '?')[0],

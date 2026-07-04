@@ -357,6 +357,45 @@ const ENROLLMENTS = [
   { Email: 'ananya@iimb.ac.in', ProgramCode: 'PB-MASTER', Progress: 55, NextSession: 'Mock PI #5', NextDate: 'Jul 1' }
 ];
 
+// The 5 Live Project domain Drive folders — which one(s) a student can see on
+// their dashboard depends on which domain(s) they picked at checkout (stored
+// on their Enrollments row's Domains field by autoProvisionFromSubmission in
+// admin-server/routes/resource.js, then resolved by js/dashboard-data.js's
+// buildStudentView). "Product Management" isn't offered yet — no Drive link
+// for it exists, so it's intentionally left out of the checkout picker.
+const LIVE_DOMAIN_LINKS = [
+  { DomainKey: 'operations', DomainLabel: 'Operations', DriveLink: 'https://drive.google.com/drive/folders/1ChQTI87hl20dSOadT_RmFsQe7nNjtx0O' },
+  { DomainKey: 'marketing', DomainLabel: 'Marketing', DriveLink: 'https://drive.google.com/drive/folders/1ZSXhDdOYVkhXGsOl1hR3XWjoQWws_0ZU' },
+  { DomainKey: 'hr', DomainLabel: 'HR', DriveLink: 'https://drive.google.com/drive/folders/1oSSC0q_KOmXEGh9Z1qq5OePWXko453aE' },
+  { DomainKey: 'finance', DomainLabel: 'Finance', DriveLink: 'https://drive.google.com/drive/folders/1itw4RUcbT7k27_IpResMeph_6znazuX7' },
+  { DomainKey: 'consulting', DomainLabel: 'Consulting', DriveLink: 'https://drive.google.com/drive/folders/120bl1GT-Rf9yG0CCu7lqn4bI6gfbIeyL' }
+];
+
+// Static (non-domain-specific) course-materials rows, keyed by the real
+// course id from js/search.js's catalog (matches the ProgramCode a student
+// gets auto-enrolled into on purchase). Live Project access is handled
+// separately/dynamically via LIVE_DOMAIN_LINKS + the student's chosen
+// domain(s) — these rows only cover the Placement Bootcamp and Case
+// Competition components, which are the same for every student.
+const BOOTCAMP_MATERIAL_LINK = 'https://drive.google.com/drive/folders/1PErADP9zT_qD-wUEqRCCd0nfEgaOT3dS';
+const CASE_MATERIAL_LINK = 'https://drive.google.com/drive/folders/1ku6u7exclm2qkblRvl-NAiMh_ddmnm4E';
+const REAL_MATERIALS = [
+  { ProgramCode: 'placement-bootcamp', Category: 'Placement Bootcamp', Type: 'drive', Name: 'Placement Bootcamp Materials', Meta: 'CV templates, mock PI/GD prep & more', Link: BOOTCAMP_MATERIAL_LINK },
+  { ProgramCode: 'placement-bootcamp-mini', Category: 'Placement Bootcamp', Type: 'drive', Name: 'Placement Bootcamp Materials', Meta: 'CV templates, mock PI/GD prep & more', Link: BOOTCAMP_MATERIAL_LINK },
+  { ProgramCode: 'case-dominate', Category: 'Case Competition', Type: 'drive', Name: 'Case Competition Materials', Meta: 'Frameworks, winning PPTs & more', Link: CASE_MATERIAL_LINK },
+  { ProgramCode: 'bootcamp-case-master', Category: 'Placement Bootcamp', Type: 'drive', Name: 'Placement Bootcamp Materials', Meta: 'CV templates, mock PI/GD prep & more', Link: BOOTCAMP_MATERIAL_LINK },
+  { ProgramCode: 'bootcamp-case-master', Category: 'Case Competition', Type: 'drive', Name: 'Case Competition Materials', Meta: 'Frameworks, winning PPTs & more', Link: CASE_MATERIAL_LINK },
+  { ProgramCode: 'bootcamp-case', Category: 'Placement Bootcamp', Type: 'drive', Name: 'Placement Bootcamp Materials', Meta: 'CV templates, mock PI/GD prep & more', Link: BOOTCAMP_MATERIAL_LINK },
+  { ProgramCode: 'bootcamp-case', Category: 'Case Competition', Type: 'drive', Name: 'Case Competition Materials', Meta: 'Frameworks, winning PPTs & more', Link: CASE_MATERIAL_LINK },
+  { ProgramCode: 'bootcamp-live-master', Category: 'Placement Bootcamp', Type: 'drive', Name: 'Placement Bootcamp Materials', Meta: 'CV templates, mock PI/GD prep & more', Link: BOOTCAMP_MATERIAL_LINK },
+  { ProgramCode: 'bootcamp-live', Category: 'Placement Bootcamp', Type: 'drive', Name: 'Placement Bootcamp Materials', Meta: 'CV templates, mock PI/GD prep & more', Link: BOOTCAMP_MATERIAL_LINK },
+  { ProgramCode: 'flagship-bundle-master', Category: 'Placement Bootcamp', Type: 'drive', Name: 'Placement Bootcamp Materials', Meta: 'CV templates, mock PI/GD prep & more', Link: BOOTCAMP_MATERIAL_LINK },
+  { ProgramCode: 'flagship-bundle-master', Category: 'Case Competition', Type: 'drive', Name: 'Case Competition Materials', Meta: 'Frameworks, winning PPTs & more', Link: CASE_MATERIAL_LINK },
+  { ProgramCode: 'flagship-bundle', Category: 'Placement Bootcamp', Type: 'drive', Name: 'Placement Bootcamp Materials', Meta: 'CV templates, mock PI/GD prep & more', Link: BOOTCAMP_MATERIAL_LINK },
+  { ProgramCode: 'flagship-bundle', Category: 'Case Competition', Type: 'drive', Name: 'Case Competition Materials', Meta: 'Frameworks, winning PPTs & more', Link: CASE_MATERIAL_LINK },
+  { ProgramCode: 'case-live', Category: 'Case Competition', Type: 'drive', Name: 'Case Competition Materials', Meta: 'Frameworks, winning PPTs & more', Link: CASE_MATERIAL_LINK }
+];
+
 /* ---------------- CAT / OMETs prep portal ---------------- */
 const CAT_MATERIALS = [
   { Section: 'VARC', Title: 'Aristotle RC — Tricks & Tips', Meta: 'Free RC technique guide', Type: 'pdf', Link: '#' },
@@ -445,9 +484,10 @@ function run(force) {
     freeSessions: withIds(FREE_SESSIONS),
     programs: withIds(PROGRAMS),
     sessions: withIds(SESSIONS),
-    materials: withIds(MATERIALS),
+    materials: withIds(MATERIALS.concat(REAL_MATERIALS)),
     students: withIds(STUDENTS),
     enrollments: withIds(ENROLLMENTS),
+    liveDomainLinks: withIds(LIVE_DOMAIN_LINKS),
     collabTestimonials: withIds(COLLAB_TESTIMONIALS),
     collabColleges: withIds(COLLAB_COLLEGES),
     catMaterials: withIds(CAT_MATERIALS),
@@ -483,6 +523,7 @@ function backfillMissingCollections() {
     hallOfFame: HALL_OF_FAME, freeSessions: FREE_SESSIONS,
     collabTestimonials: COLLAB_TESTIMONIALS,
     collabColleges: COLLAB_COLLEGES,
+    liveDomainLinks: LIVE_DOMAIN_LINKS,
     // Visitor-submitted collections start empty — nothing to seed, they
     // just need to exist so the admin dashboard section doesn't error out
     // before anyone has submitted anything yet.
@@ -556,6 +597,22 @@ function backfillMissingCollections() {
       changed = true;
       console.log('Upgraded stale case-live combo includes');
     }
+  }
+  // One-time upgrade: add the real Placement Bootcamp / Case Competition
+  // Drive-materials rows (REAL_MATERIALS) for any (ProgramCode, Name) pair
+  // that isn't already in the 'materials' collection. Never touches a row
+  // the admin has already added or edited for that program.
+  if (Array.isArray(data.materials)) {
+    const existingKeys = new Set(data.materials.map(m => m.ProgramCode + '||' + m.Name));
+    REAL_MATERIALS.forEach(m => {
+      const k = m.ProgramCode + '||' + m.Name;
+      if (!existingKeys.has(k)) {
+        data.materials.push({ _id: db.nextId(data.materials), ...m });
+        existingKeys.add(k);
+        changed = true;
+        console.log('Backfilled missing material:', k);
+      }
+    });
   }
   if (changed) db.writeAll(data);
 }
