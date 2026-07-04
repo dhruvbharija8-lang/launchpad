@@ -36,8 +36,22 @@
       <a href="cat-enroll.html">Enroll &amp; Refer</a>
       <a class="cp-nav-call" href="tel:+917042732092">Call Us</a>
     </div>
+    <button class="cp-mobile-menu-btn" id="cpMobileMenuBtn" aria-label="Menu"><i class="ti ti-menu-2"></i></button>
+  </div>
+  <div class="cp-mobile-nav" id="cpMobileNav">
+    <a href="index.html">Home</a>
+    <a href="cat-predictor.html">College Predictor</a>
+    <a href="exam-predictor.html">Exam Predictor</a>
+    <a href="cat-enroll.html">Enroll &amp; Refer</a>
+    <a class="cp-nav-call" href="tel:+917042732092">Call Us</a>
   </div>
 </nav>
+<script>
+  (function(){
+    var btn=document.getElementById('cpMobileMenuBtn'), menu=document.getElementById('cpMobileNav');
+    if(btn && menu) btn.addEventListener('click', function(){ menu.classList.toggle('open'); });
+  })();
+</script>
 
 <!-- HERO -->
 <header class="cp-hero">

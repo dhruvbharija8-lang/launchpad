@@ -75,7 +75,17 @@ button{cursor:pointer;font-family:inherit}
 .nav-free-item{display:flex;align-items:center;gap:10px;padding:10px 14px;border-radius:8px;font-size:13px;font-weight:600;color:#1B2A6B;transition:.15s;text-decoration:none}
 .nav-free-item:hover{background:#F0F2F8;color:#FF8B02}
 .nav-free-item i{font-size:16px;color:#FF8B02}
-@media(max-width:900px){.nav-links{display:none}}
+.mobile-menu-btn{display:none;align-items:center;justify-content:center;padding:8px;background:transparent;border:none;color:rgba(255,255,255,.8);font-size:22px;cursor:pointer}
+.mobile-nav{display:none;background:var(--navy2);border-top:1px solid rgba(255,255,255,.1);padding:16px 18px 20px;flex-direction:column;gap:6px}
+.mobile-nav.open{display:flex}
+.mobile-nav-a{font-size:14px;font-weight:500;color:rgba(255,255,255,.8);padding:11px 14px;border-radius:10px;display:block;transition:.2s;border:none;background:transparent;cursor:pointer;text-align:left;width:100%;text-decoration:none;font-family:inherit}
+.mobile-nav-a:hover{background:rgba(255,255,255,.08);color:#fff}
+.mobile-free-sub{display:none;overflow:hidden;flex-direction:column;gap:2px}
+.mobile-free-sub.open{display:flex}
+.mobile-free-btn{display:flex;align-items:center;gap:8px}
+.mobile-free-btn i:first-child{color:rgba(255,255,255,.8)}
+.mobile-nav-btns{display:flex;gap:10px;margin-top:8px}
+@media(max-width:900px){.nav-links{display:none}.mobile-menu-btn{display:flex}}
 
 /* HERO */
 .enroll-hero{background:linear-gradient(140deg,var(--navy) 0%,#1B2F8A 55%,#0e1d52 100%);padding:60px 0 48px;text-align:center;position:relative;overflow:hidden}
@@ -473,6 +483,21 @@ button{cursor:pointer;font-family:inherit}
       <button class="nav-login" id="loginBtn">Login</button>
       <a class="nav-call" href="tel:+917042732092">Call Us</a>
     </div>
+    <button class="mobile-menu-btn" id="mobileMenuBtn" aria-label="Menu"><i class="ti ti-menu-2"></i></button>
+  </div>
+  <div class="mobile-nav" id="mobileNav">
+    <a class="mobile-nav-a" href="index.html">Home</a>
+    <a class="mobile-nav-a active" href="courses.html">Courses</a>
+    <a class="mobile-nav-a" href="testimonials.html">Testimonials</a>
+    <button class="mobile-nav-a mobile-free-btn" id="mobileFreeResBtn"><i class="ti ti-book-download"></i> Free Resources <i class="ti ti-chevron-down" id="mobileFreeIcon" style="font-size:12px;transition:.2s;margin-left:auto"></i></button>
+    <div class="mobile-free-sub" id="mobileFreeMenu">
+      <a class="mobile-nav-a" href="https://documents1.netlify.app/" target="_blank" style="padding-left:28px"><i class="ti ti-file-cv"></i> Sample CV</a>
+      <a class="mobile-nav-a" href="https://documents1.netlify.app/" target="_blank" style="padding-left:28px"><i class="ti ti-book-2"></i> Compendium</a>
+    </div>
+    <div class="mobile-nav-btns">
+      <button class="nav-login" id="loginBtnMobile" style="flex:1">Login</button>
+      <a class="nav-call" href="tel:+917042732092" style="flex:1;text-align:center">Call Us</a>
+    </div>
   </div>
 </nav>
 
@@ -812,6 +837,23 @@ button{cursor:pointer;font-family:inherit}
 </div>
 
 <script>
+/* ── MOBILE NAV ── */
+// This page keeps its own hardcoded nav (doesn't load js/site-nav.js), so it
+// needs its own hamburger + Free Resources submenu wiring instead of relying
+// on that shared script — same behavior as index.html's mobile menu.
+(function () {
+  const menuBtn = document.getElementById('mobileMenuBtn');
+  const nav = document.getElementById('mobileNav');
+  if (menuBtn && nav) menuBtn.onclick = () => nav.classList.toggle('open');
+  const freeBtn = document.getElementById('mobileFreeResBtn');
+  const freeMenu = document.getElementById('mobileFreeMenu');
+  const freeIcon = document.getElementById('mobileFreeIcon');
+  if (freeBtn && freeMenu) freeBtn.onclick = () => {
+    const open = freeMenu.classList.toggle('open');
+    if (freeIcon) freeIcon.style.transform = open ? 'rotate(180deg)' : '';
+  };
+})();
+
 /* ── COURSE DATA ── */
 const COURSES=[
   {id:'flagship-bundle-master',cat:'combo',type:'Flagship bundle',badge:'Best value',title:'The Complete Placement Bundle - Master',desc:'Every CV slot, every mock round, every edge — the top-tier version of our flagship track.',price:15999,mrp:16500,off:'Save ₹501',rating:4.9,students:4620,groupOffer:true,img:'images/complete-placement-bundle.png'},

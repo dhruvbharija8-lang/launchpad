@@ -104,6 +104,43 @@
     .nav-dd-item.danger { color: #ef4444; }
     .nav-dd-item.danger:hover { background: #fff5f5; }
     .nav-dd-item i { font-size: 15px; opacity: .7; }
+
+    /* Mobile nav variant — a floating dropdown anchored to a tiny avatar
+       circle doesn't work inside a narrow, stacked mobile menu (it can open
+       off-screen or get clipped), so on mobile "My Dashboard" / "Sign Out"
+       are shown as normal full-width rows in the menu instead, matching the
+       existing "Free Resources" expandable submenu pattern. */
+    .mobile-profile-btn {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      width: 100%;
+    }
+    .nav-avatar-btn-sm {
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      color: #fff;
+      font-size: 12px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      line-height: 1;
+    }
+    .mobile-profile-name {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .mobile-profile-sub {
+      display: none;
+      flex-direction: column;
+      gap: 2px;
+    }
+    .mobile-profile-sub.open { display: flex; }
   `;
 
   const styleEl = document.createElement('style');
@@ -140,9 +177,78 @@
     return wrap;
   }
 
+  /* ── Mobile variant: full-width expandable rows instead of a dropdown ── */
+  function buildMobileProfileWidget() {
+    const wrap = document.createElement('div');
+    wrap.className = 'nav-mobile-profile';
+    wrap.innerHTML = `
+      <button class="mobile-nav-a mobile-profile-btn" id="mobileProfileBtn" type="button">
+        <span class="nav-avatar-btn-sm">${avatar}</span>
+        <span class="mobile-profile-name">${name || 'Student'}</span>
+        <i class="ti ti-chevron-down" id="mobileProfileChev" style="margin-left:auto;font-size:12px;transition:.2s"></i>
+      </button>
+      <div class="mobile-profile-sub" id="mobileProfileSub">
+        <button class="mobile-nav-a" style="padding-left:28px" type="button" onclick="window.location.href='login.html'">
+          <i class="ti ti-layout-dashboard"></i> My Dashboard
+        </button>
+        <button class="mobile-nav-a" style="padding-left:28px" type="button" id="mobileSignOutBtn">
+          <i class="ti ti-logout"></i> Sign Out
+        </button>
+      </div>
+    `;
+    return wrap;
+  }
+
+  async function doSignOut() {
+    try {
+      localStorage.removeItem(SESSION_KEY);
+      localStorage.removeItem(NAME_KEY);
+      localStorage.removeItem(AVATAR_KEY);
+    } catch(e) {}
+    // Clearing the local display state alone isn't a real sign-out — the
+    // actual Clerk session (used on login.html) stays active, so the
+    // next visit to Login silently logs the same account back in. Sign
+    // out of Clerk too, from wherever this button happens to be. Give
+    // Clerk's async script a brief moment to finish loading if it hasn't
+    // already (it usually has, by the time someone clicks Sign Out).
+    let tries = 0;
+    while (!window.Clerk && tries < 20) { await new Promise(r => setTimeout(r, 100)); tries++; }
+    if (window.Clerk) {
+      // Clerk.user is only populated AFTER Clerk.load() resolves — on
+      // pages that never call it (this button can appear on any page),
+      // Clerk.user looks empty even though the real session is still
+      // active, so the sign-out below would silently get skipped.
+      try { await Clerk.load(); } catch (e) {}
+      if (Clerk.user) {
+        try { await Clerk.signOut(); } catch (e) {}
+      }
+    }
+    window.location.reload();
+  }
+
   /* ── Replace a login button element with the profile widget ── */
   function replaceWithProfile(btn) {
     if (!btn) return;
+
+    // The mobile menu's login button (#loginBtnMobile) is a full-width row
+    // in a stacked list — a floating dropdown anchored to a small avatar
+    // circle can open off-screen or get clipped there, which is why
+    // "My Dashboard"/"Sign Out" were reported as invisible on mobile. Give
+    // it its own expandable-row treatment instead of the desktop dropdown.
+    if (btn.id === 'loginBtnMobile') {
+      const widget = buildMobileProfileWidget();
+      btn.replaceWith(widget);
+      const toggleBtn = widget.querySelector('#mobileProfileBtn');
+      const sub = widget.querySelector('#mobileProfileSub');
+      const chev = widget.querySelector('#mobileProfileChev');
+      toggleBtn.addEventListener('click', () => {
+        sub.classList.toggle('open');
+        if (chev) chev.style.transform = sub.classList.contains('open') ? 'rotate(180deg)' : '';
+      });
+      widget.querySelector('#mobileSignOutBtn').addEventListener('click', doSignOut);
+      return;
+    }
+
     const widget = buildProfileWidget();
     btn.replaceWith(widget);
 
@@ -157,32 +263,7 @@
 
     document.addEventListener('click', () => dropdown.classList.remove('open'));
 
-    signOutBtn.addEventListener('click', async () => {
-      try {
-        localStorage.removeItem(SESSION_KEY);
-        localStorage.removeItem(NAME_KEY);
-        localStorage.removeItem(AVATAR_KEY);
-      } catch(e) {}
-      // Clearing the local display state alone isn't a real sign-out — the
-      // actual Clerk session (used on login.html) stays active, so the
-      // next visit to Login silently logs the same account back in. Sign
-      // out of Clerk too, from wherever this dropdown happens to be. Give
-      // Clerk's async script a brief moment to finish loading if it hasn't
-      // already (it usually has, by the time someone clicks Sign Out).
-      let tries = 0;
-      while (!window.Clerk && tries < 20) { await new Promise(r => setTimeout(r, 100)); tries++; }
-      if (window.Clerk) {
-        // Clerk.user is only populated AFTER Clerk.load() resolves — on
-        // pages that never call it (this dropdown can appear on any page),
-        // Clerk.user looks empty even though the real session is still
-        // active, so the sign-out below would silently get skipped.
-        try { await Clerk.load(); } catch (e) {}
-        if (Clerk.user) {
-          try { await Clerk.signOut(); } catch (e) {}
-        }
-      }
-      window.location.reload();
-    });
+    signOutBtn.addEventListener('click', doSignOut);
   }
 
   /* ── Wire a login button to go to login.html ── */

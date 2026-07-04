@@ -251,13 +251,10 @@ function renderTabs() {
     return `<button class="tab ${isActive ? 'active' : ''}" data-c="${t.key}">${t.label}</button>`;
   }).join('');
 
-  const searchActive = query ? ' active' : '';
-  const searchHtml = `<div class="tab-search-wrapper${searchActive}">
-    <i class="ti ti-search"></i>
-    <input id="searchInputTabs" placeholder="Search..." value="${query}" aria-label="Search courses" />
-  </div>`;
-
-  document.getElementById('tabs').innerHTML = tabsHtml + searchHtml;
+  // The search box that used to sit inline in this tab row (both MBA and
+  // CAT/OMETs) has been removed per request — the hero/top search bars
+  // (desktop + mobile) are still there and fully wired via applySearch().
+  document.getElementById('tabs').innerHTML = tabsHtml;
 
   document.querySelectorAll('.tabs .tab').forEach(b => b.onclick = () => {
     activeCat = b.dataset.c;
@@ -265,11 +262,6 @@ function renderTabs() {
     renderTabs();
     renderCatalog();
   });
-
-  const tabsSearchInput = document.getElementById('searchInputTabs');
-  if (tabsSearchInput) {
-    tabsSearchInput.addEventListener('input', e => applySearch(e.target.value));
-  }
 }
 function renderSortMenu() {
   const lbl = document.getElementById('sortLabel');
