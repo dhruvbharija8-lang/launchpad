@@ -21,4 +21,4 @@
      const MBA_API_BASE = 'https://mba-partner-admin.onrender.com';
    and redeploy the site to Netlify after changing it.
 ============================================================ */
-const MBA_API_BASE = ''; // Use same-origin backend by default for local + single-host deployments
+const MBA_API_BASE = 'https://launchpad-07.onrender.com'; // Backend (admin-server) lives on Render; frontend is deployed separately on Vercel — must point at the Render URL, not same-origin.
