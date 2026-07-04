@@ -25,10 +25,13 @@ const COURSES = [
 ];
 
 const COMBOS = [
+  { comboId: 'flagship-bundle-master', includes: ['placement-bootcamp', 'live-2', 'case-dominate'] },
   { comboId: 'flagship-bundle', includes: ['placement-bootcamp', 'live-1', 'case-dominate'] },
+  { comboId: 'bootcamp-case-master', includes: ['placement-bootcamp', 'case-dominate'] },
   { comboId: 'bootcamp-case', includes: ['placement-bootcamp', 'case-dominate'] },
+  { comboId: 'bootcamp-live-master', includes: ['placement-bootcamp', 'live-2'] },
   { comboId: 'bootcamp-live', includes: ['placement-bootcamp', 'live-1'] },
-  { comboId: 'case-live', includes: ['case-dominate', 'live-1'] }
+  { comboId: 'case-live', includes: ['case-dominate', 'live-2'] }
 ];
 
 const COUPONS = [
@@ -516,6 +519,29 @@ function backfillMissingCollections() {
         console.log('Backfilled missing course:', c.id);
       }
     });
+  }
+  // One-time upgrade: the 'combos' collection was seeded with only 4 of the
+  // 7 combo cards (missing the 3 new Master-tier combos entirely), and the
+  // 'case-live' row pointed at the 1-month Live Project instead of the
+  // 2-month one it actually describes on the site (a stale default we
+  // shipped by mistake). Add any missing combo id, and only correct
+  // 'case-live' if it still holds that exact stale default — never touches
+  // a combo row the admin has customised.
+  if (Array.isArray(data.combos)) {
+    const existingComboIds = new Set(data.combos.map(c => c.comboId));
+    COMBOS.forEach(c => {
+      if (!existingComboIds.has(c.comboId)) {
+        data.combos.push({ _id: db.nextId(data.combos), ...c });
+        changed = true;
+        console.log('Backfilled missing combo:', c.comboId);
+      }
+    });
+    const caseLiveRow = data.combos.find(c => c.comboId === 'case-live');
+    if (caseLiveRow && JSON.stringify(caseLiveRow.includes) === JSON.stringify(['case-dominate', 'live-1'])) {
+      caseLiveRow.includes = ['case-dominate', 'live-2'];
+      changed = true;
+      console.log('Upgraded stale case-live combo includes');
+    }
   }
   if (changed) db.writeAll(data);
 }
