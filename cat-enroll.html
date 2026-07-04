@@ -60,6 +60,19 @@ button{cursor:pointer;font-family:inherit}
 .nav-sep{width:1px;height:22px;background:rgba(255,255,255,.15);margin:0 4px}
 .nav-call{font-size:13px;font-weight:700;background:var(--orange);color:#fff;padding:9px 20px;border-radius:30px;border:none;cursor:pointer;white-space:nowrap;display:inline-flex;align-items:center;text-decoration:none}
 .nav-call:hover{background:var(--orange-dark)}
+.nav-login{font-size:13px;font-weight:600;color:#fff;padding:8px 16px;border-radius:30px;border:1px solid rgba(255,255,255,.3);background:transparent;cursor:pointer}
+.nav-login:hover{background:rgba(255,255,255,.08)}
+/* Free Resources dropdown in nav */
+.nav-free-res{position:relative;display:inline-flex;align-items:center}
+.nav-free-btn{display:inline-flex;align-items:center;gap:5px;font-size:13px;font-weight:500;color:rgba(255,255,255,.75);padding:8px 13px;border-radius:8px;border:none;background:transparent;cursor:pointer;transition:.2s;white-space:nowrap}
+.nav-free-btn:hover,.nav-free-res:hover .nav-free-btn{color:#fff;background:rgba(255,255,255,.1)}
+.nav-free-chev{font-size:11px;margin-left:2px;transition:transform .2s}
+.nav-free-res:hover .nav-free-chev{transform:rotate(180deg)}
+.nav-free-menu{position:absolute;top:calc(100% + 8px);left:0;min-width:190px;background:#fff;border-radius:12px;box-shadow:0 8px 32px rgba(0,0,0,.16);padding:6px;opacity:0;visibility:hidden;transform:translateY(-6px) scale(.97);transition:opacity .2s,transform .2s,visibility .2s;z-index:200}
+.nav-free-res:hover .nav-free-menu{opacity:1;visibility:visible;transform:none}
+.nav-free-item{display:flex;align-items:center;gap:10px;padding:10px 14px;border-radius:8px;font-size:13px;font-weight:600;color:#101c4f;transition:.15s;text-decoration:none}
+.nav-free-item:hover{background:#F0F2F8;color:#FF8B02}
+.nav-free-item i{font-size:16px;color:#FF8B02}
 @media(max-width:900px){.nav-links{display:none}}
 
 /* HERO */
@@ -259,7 +272,15 @@ button{cursor:pointer;font-family:inherit}
       <a class="nav-a" href="cat-portal.html">CAT Prep Portal</a>
       <a class="nav-a" href="cat-predictor.html">College Predictor</a>
       <a class="nav-a active" href="cat-enroll.html">Enroll &amp; Refer</a>
+      <div class="nav-free-res">
+        <button class="nav-free-btn"><i class="ti ti-book-download" style="font-size:14px;margin-right:4px"></i>Free Resources<i class="ti ti-chevron-down nav-free-chev"></i></button>
+        <div class="nav-free-menu">
+          <a class="nav-free-item" href="https://documents1.netlify.app/" target="_blank"><i class="ti ti-file-cv"></i><span>Sample CV</span></a>
+          <a class="nav-free-item" href="https://documents1.netlify.app/" target="_blank"><i class="ti ti-book-2"></i><span>Compendium</span></a>
+        </div>
+      </div>
       <div class="nav-sep"></div>
+      <button class="nav-login" id="loginBtn">Login</button>
       <a class="nav-call" href="tel:+917042732092">Call Us</a>
     </div>
   </div>
