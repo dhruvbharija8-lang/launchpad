@@ -349,8 +349,11 @@ const ADMIN_SECTIONS = [
   },
   {
     key: 'catQuestions', label: 'CAT Mock Questions', icon: 'ti-help-circle', group: 'CAT / OMETs Portal',
-    desc: 'Questions for each Mock Test above. Pick which paper a question belongs to from the dropdown — after saving, the form stays open and ready for the next question on the same paper.',
-    chainAdd: true, chainKey: 'MockID',
+    desc: 'Questions for each Mock Test above. Added via Excel bulk import only (see the panel above the table) — a full mock can be 60-70 questions, so there\'s no one-by-one form for this section anymore. Existing questions can still be edited or deleted individually below.',
+    bulkImport: {
+      mockCollection: 'catMocks', mockValue: 'MockID', mockLabel: r => `${r.Title} — ${r.MockID}`,
+      pickerLabel: 'Which Mock Test are these questions for?'
+    },
     fields: [
       { name: 'MockID', label: 'Mock Test (which paper is this question for?)', type: 'ref', refCollection: 'catMocks', refValue: 'MockID', refLabel: r => `${r.Title} — ${r.MockID}`, required: true, col: true },
       { name: 'Passage', label: 'Passage (optional, leave blank for standalone questions)', type: 'textarea' },
@@ -379,8 +382,12 @@ const ADMIN_SECTIONS = [
   },
   {
     key: 'catPyqQuestions', label: 'PYQ Questions', icon: 'ti-help-circle', group: 'CAT / OMETs Portal',
-    desc: 'Interactive question sets for PYQ papers. Pick which paper a question belongs to from the dropdown (only PYQ Papers that have a Linked Mock ID show up here) — after saving, the form stays open for the next question on the same paper.',
-    chainAdd: true, chainKey: 'MockID',
+    desc: 'Interactive question sets for PYQ papers. Added via Excel bulk import only (see the panel above the table) — only PYQ Papers that already have a Linked Mock ID set (in "PYQ Papers" above) show up in the picker. Existing questions can still be edited or deleted individually below.',
+    bulkImport: {
+      mockCollection: 'catPyq', mockValue: 'MockID', mockLabel: r => `${r.Title} — ${r.MockID}`,
+      mockFilter: r => !!r.MockID,
+      pickerLabel: 'Which PYQ Paper are these questions for?'
+    },
     fields: [
       { name: 'MockID', label: 'PYQ Paper (which paper is this question for?)', type: 'ref', refCollection: 'catPyq', refValue: 'MockID', refLabel: r => `${r.Title} — ${r.MockID}`, refFilter: r => !!r.MockID, required: true, col: true },
       { name: 'Passage', label: 'Passage (optional)', type: 'textarea' },

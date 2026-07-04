@@ -548,7 +548,10 @@ function run(force) {
     courses: withIds(COURSES),
     combos: withIds(COMBOS),
     coupons: withIds(COUPONS),
-    placements: withIds(PLACEMENTS),
+    // Every placements row is MBA-track content unless explicitly marked
+    // otherwise — set that explicitly here so the admin table's "Show on
+    // which toggle?" column isn't blank for the whole list.
+    placements: withIds(PLACEMENTS.map(p => ({ Track: 'mba', ...p }))),
     mentors: withIds(MENTORS),
     colleges: withIds(COLLEGES),
     videos: withIds(VIDEOS),
@@ -655,6 +658,17 @@ function backfillMissingCollections() {
         changed = true;
         console.log('Backfilled missing course:', c.id);
       }
+    });
+  }
+  // One-time upgrade: existing 'placements' rows (from before the Track
+  // field existed) had no Track value at all, showing up blank in the admin
+  // table's "Show on which toggle?" column — even though the site already
+  // treated a missing Track as 'mba' by default. Set it explicitly so the
+  // admin table reflects reality; never touches a row that already has a
+  // Track value set (e.g. an admin-added CAT/OMETs placement).
+  if (Array.isArray(data.placements)) {
+    data.placements.forEach(p => {
+      if (!p.Track) { p.Track = 'mba'; changed = true; }
     });
   }
   // One-time upgrade: the 'combos' collection was seeded with only 4 of the

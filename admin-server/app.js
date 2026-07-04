@@ -12,6 +12,7 @@ const settingsRouter = require('./routes/settings');
 const couponsRouter = require('./routes/coupons');
 const authRouter = require('./routes/auth');
 const { router: uploadRouter, UPLOAD_DIR } = require('./routes/upload');
+const bulkQuestionsRouter = require('./routes/bulk-questions');
 
 async function start() {
   // Connect to MongoDB (or fall back to the local file) BEFORE seeding --
@@ -48,6 +49,7 @@ async function start() {
   app.use('/api/admin/settings', settingsRouter);
   app.use('/api/admin/auth', authRouter);
   app.use('/api/admin/upload', uploadRouter); // PDF uploads (PYQ papers, etc.) -- admin only
+  app.use('/api/admin/bulk-import', bulkQuestionsRouter); // Excel bulk question import -- admin only
 
   app.get('/api/health', function (req, res) { res.json({ ok: true }); });
 

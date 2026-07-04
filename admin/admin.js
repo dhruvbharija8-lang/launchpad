@@ -155,12 +155,19 @@ function renderAccountSection() {
 /* ---------------- GENERIC COLLECTION TABLE ---------------- */
 async function renderCollectionSection(section) {
   const main = document.getElementById('main');
-  main.innerHTML = mainHead(section.label, section.desc) +
-    `<div class="panel">
-      <div class="add-bar">
+  const addBarHtml = section.bulkImport
+    ? `<div class="add-bar">
+        <input type="text" id="tableSearch" placeholder="Search…" style="flex:1;max-width:320px;padding:9px 14px;border:1.5px solid var(--line);border-radius:10px;font-size:13.5px"/>
+      </div>
+      <div id="bulkImportPanel"></div>`
+    : `<div class="add-bar">
         <input type="text" id="tableSearch" placeholder="Search…" style="flex:1;max-width:320px;padding:9px 14px;border:1.5px solid var(--line);border-radius:10px;font-size:13.5px"/>
         <button class="btn btn-primary" style="width:auto" id="addBtn"><i class="ti ti-plus"></i> Add ${section.label.replace(/s$/, '')}</button>
-      </div>
+      </div>`;
+
+  main.innerHTML = mainHead(section.label, section.desc) +
+    `<div class="panel">
+      ${addBarHtml}
       <div class="table-wrap" id="tableWrap"><div class="empty-msg">Loading…</div></div>
     </div>
     <div class="modal-overlay" id="modalOverlay"><div class="modal-card">
@@ -174,10 +181,118 @@ async function renderCollectionSection(section) {
       </div>
     </div></div>`;
 
-  document.getElementById('addBtn').onclick = () => openRecordModal(section, null);
+  if (section.bulkImport) {
+    await renderBulkImportPanel(section);
+  } else {
+    document.getElementById('addBtn').onclick = () => openRecordModal(section, null);
+  }
   document.getElementById('modalCancel').onclick = closeRecordModal;
 
   await loadAndRenderTable(section);
+}
+
+/* ---------------- BULK QUESTION IMPORT (Excel) ---------------- */
+// Builds the "download template / pick paper / upload file" panel that
+// replaces the one-by-one Add form for question sections (a full mock can
+// be 60-70 questions — filling those in one at a time was the actual pain
+// point being solved here).
+const BULK_TEMPLATE_HEADERS = ['Passage', 'Question', 'Option A', 'Option B', 'Option C', 'Option D', 'Correct Answer', 'Solution'];
+const BULK_TEMPLATE_SAMPLE = [
+  '', 'What is 15% of 200?', '20', '30', '25', '35', 'B', '15% of 200 = 0.15 × 200 = 30'
+];
+
+function downloadBulkTemplate() {
+  // A plain CSV opens fine in Excel/Google Sheets and needs no extra library
+  // to generate client-side — the backend accepts .csv or .xlsx either way.
+  const escape = v => `"${String(v).replace(/"/g, '""')}"`;
+  const csv = [BULK_TEMPLATE_HEADERS, BULK_TEMPLATE_SAMPLE].map(row => row.map(escape).join(',')).join('\r\n');
+  const blob = new Blob([csv], { type: 'text/csv' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = 'question-import-template.csv';
+  document.body.appendChild(a); a.click(); a.remove();
+  URL.revokeObjectURL(url);
+}
+
+async function renderBulkImportPanel(section) {
+  const panel = document.getElementById('bulkImportPanel');
+  const cfg = section.bulkImport;
+  let mockOptions = [];
+  try {
+    const rows = await api('/admin/' + cfg.mockCollection);
+    mockOptions = (cfg.mockFilter ? rows.filter(cfg.mockFilter) : rows);
+  } catch (e) { /* dropdown just stays empty if this fails */ }
+
+  const optionsHtml = mockOptions.length
+    ? mockOptions.map(r => `<option value="${r[cfg.mockValue]}">${(cfg.mockLabel ? cfg.mockLabel(r) : r[cfg.mockValue])}</option>`).join('')
+    : '';
+
+  panel.innerHTML = `
+    <div style="background:var(--surface2,#f6f7fb);border:1.5px solid var(--line);border-radius:12px;padding:18px 20px;margin-bottom:16px">
+      <div style="font-weight:700;font-size:14px;margin-bottom:6px">Bulk import questions from Excel</div>
+      <div style="font-size:12.5px;color:var(--ink2,#5a6070);margin-bottom:14px;line-height:1.6">
+        The uploaded file's <b>first row must be column headers</b>, in exactly this order —
+        <code>${BULK_TEMPLATE_HEADERS.join(' | ')}</code> — one row per question below that.
+        <b>Passage</b> can be left blank for standalone questions. <b>Correct Answer</b> must be exactly
+        A, B, C or D. If a row is missing something or has an invalid Correct Answer, that one row is
+        skipped (with a reason shown after upload) and the rest still get added — so it's safe to fix and
+        re-upload just the fixed rows. Download the template below to get the exact format the paper needs.
+      </div>
+      <div style="display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-bottom:12px">
+        <button type="button" class="btn btn-ghost" style="width:auto" id="bulkTemplateBtn"><i class="ti ti-download"></i> Download template</button>
+      </div>
+      <div style="display:flex;flex-wrap:wrap;gap:10px;align-items:center">
+        <select id="bulkMockSelect" style="flex:1;min-width:220px;max-width:360px;padding:9px 12px;border:1.5px solid var(--line);border-radius:10px;font-size:13.5px">
+          <option value="">${cfg.pickerLabel || 'Which paper are these questions for?'}</option>
+          ${optionsHtml}
+        </select>
+        <input type="file" id="bulkFileInput" accept=".xlsx,.xls,.csv" style="font-size:13px"/>
+        <button type="button" class="btn btn-primary" style="width:auto" id="bulkUploadBtn"><i class="ti ti-upload"></i> Upload &amp; add questions</button>
+      </div>
+      ${!mockOptions.length ? `<div style="font-size:12.5px;color:#c0392b;margin-top:10px">${cfg.mockFilter ? 'No papers with a Linked Mock ID yet — set one in "PYQ Papers" first.' : 'No papers found yet — create one first.'}</div>` : ''}
+      <div id="bulkResultMsg" style="font-size:13px;margin-top:12px"></div>
+    </div>`;
+
+  document.getElementById('bulkTemplateBtn').onclick = downloadBulkTemplate;
+
+  document.getElementById('bulkUploadBtn').onclick = async () => {
+    const mockId = document.getElementById('bulkMockSelect').value;
+    const fileInput = document.getElementById('bulkFileInput');
+    const resultEl = document.getElementById('bulkResultMsg');
+    resultEl.innerHTML = '';
+    if (!mockId) { resultEl.innerHTML = '<span style="color:#c0392b">Pick which paper these questions belong to first.</span>'; return; }
+    if (!fileInput.files.length) { resultEl.innerHTML = '<span style="color:#c0392b">Choose a file to upload.</span>'; return; }
+
+    const fd = new FormData();
+    fd.append('file', fileInput.files[0]);
+    fd.append('mockId', mockId);
+    const btn = document.getElementById('bulkUploadBtn');
+    btn.disabled = true; btn.textContent = 'Uploading…';
+    try {
+      const token = getToken();
+      const res = await fetch('/api/admin/bulk-import/' + section.key, {
+        method: 'POST',
+        headers: token ? { Authorization: 'Bearer ' + token } : {},
+        body: fd
+      });
+      const body = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(body.error || 'Upload failed');
+
+      let msg = `<span style="color:var(--green,#1a7f4b);font-weight:700">${body.added} question${body.added === 1 ? '' : 's'} added.</span>`;
+      if (body.skipped && body.skipped.length) {
+        msg += `<div style="margin-top:8px;color:#c0392b">${body.skipped.length} row${body.skipped.length === 1 ? '' : 's'} skipped:<ul style="margin:6px 0 0 18px;padding:0">` +
+          body.skipped.map(s => `<li>Row ${s.row}: ${s.reason}</li>`).join('') + '</ul></div>';
+      }
+      resultEl.innerHTML = msg;
+      fileInput.value = '';
+      if (body.added) await loadAndRenderTable(section);
+      toast(`${body.added} question${body.added === 1 ? '' : 's'} added`);
+    } catch (e) {
+      resultEl.innerHTML = `<span style="color:#c0392b">${e.message}</span>`;
+    } finally {
+      btn.disabled = false; btn.innerHTML = '<i class="ti ti-upload"></i> Upload &amp; add questions';
+    }
+  };
 }
 
 async function loadAndRenderTable(section) {
