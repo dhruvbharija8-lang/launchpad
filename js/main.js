@@ -518,6 +518,16 @@ function renderRelated(c) {
 }
 function renderDetail(id) {
   const c = byId(id); if (!c) { goHome(); return; }
+
+  // Wire the Enroll Now / Add to Cart buttons FIRST, before any of the
+  // richer content below renders — that way, if something further down ever
+  // throws, the buttons are still guaranteed to work instead of silently
+  // staying dead from a stale handler bound to a previously-viewed course.
+  const dCartBtn = document.getElementById('dCart');
+  if (dCartBtn) dCartBtn.onclick = () => addToCart(c);
+  const dEnrollBtn = document.getElementById('dEnroll');
+  if (dEnrollBtn) dEnrollBtn.onclick = () => { if (addToCart(c)) goToCheckout(); };
+
   detailState = { courseId: c.id, selected: {} };
   (c.optionGroups || []).forEach(g => { if (g.type === 'single') { const d = g.options.find(o => o.default); if (d) detailState.selected[g.id] = d.key; } });
   document.getElementById('bcTitle').textContent = c.title;
@@ -537,8 +547,6 @@ function renderDetail(id) {
   document.getElementById('dDesc').textContent = c.desc;
   document.getElementById('dCurriculum').innerHTML = (c.curriculum && c.curriculum.length) ? c.curriculum.map((m, i) => `<div class="curr-item"><div class="curr-num">${i + 1}</div><div><div class="curr-t">${m.t}</div><div class="curr-s">${m.s}</div></div></div>`).join('') : `<div class="skeleton">Detailed curriculum will be added once official content is provided.</div>`;
   renderMentors(); renderFaq(); renderVariantUI(c);
-  document.getElementById('dCart').onclick = () => addToCart(c);
-  document.getElementById('dEnroll').onclick = () => { if (addToCart(c)) goToCheckout(); };
   renderRelated(c); window.scrollTo(0, 0); observeReveals(document.getElementById('view-detail'));
 }
 

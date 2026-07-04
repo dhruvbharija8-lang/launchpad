@@ -749,6 +749,22 @@ function renderLiveProjectDomainCoverage(c) {
 
 function renderDetail(id) {
   const c = byId(id); if (!c) { location.hash = '#/'; return; }
+
+  // Wire the Enroll Now / Add to Cart buttons FIRST, before any of the
+  // richer content below renders — that way, if something further down
+  // (mentors, FAQ, combo-savings callout, etc.) ever throws, the buttons are
+  // still guaranteed to work instead of silently staying dead from a stale
+  // handler bound to whatever course was viewed previously.
+  const fromEnrollPage = new URLSearchParams(location.search).get('from') === 'enroll';
+  const dEnrollBtn = document.getElementById('dEnroll');
+  if (dEnrollBtn) {
+    dEnrollBtn.onclick = fromEnrollPage
+      ? () => { window.location.href = 'enroll.html?course=' + encodeURIComponent(c.id); }
+      : () => { if (addToCart(c)) location.hash = '#/checkout'; };
+  }
+  const dCartBtn = document.getElementById('dCart');
+  if (dCartBtn) dCartBtn.onclick = () => addToCart(c);
+
   detailState = { courseId: c.id, selected: {} };
   (c.optionGroups || []).forEach(g => { if (g.type === 'single') { const d = g.options.find(o => o.default); if (d) detailState.selected[g.id] = d.key; } });
   document.getElementById('bcTitle').textContent = c.title;
@@ -802,16 +818,7 @@ function renderDetail(id) {
   })();
   document.getElementById('dCurriculum').innerHTML = (c.curriculum && c.curriculum.length) ? c.curriculum.map((m, i) => `<div class="curr-item"><div class="curr-num">${i + 1}</div><div><div class="curr-t">${m.t}</div><div class="curr-s">${m.s}</div></div></div>`).join('') : `<div class="skeleton">Detailed curriculum will be added once official content is provided.</div>`;
   renderMentors(); renderFaq(); renderVariantUI(c);
-  document.getElementById('dCart').onclick = () => addToCart(c);
-  // If this detail view was reached via the Enroll & Refer page's own
-  // "Details" link (courses.html?from=enroll#/course/...), send "Enroll
-  // Now" back to that page's own enroll flow for this exact course,
-  // instead of the standard add-to-cart + checkout path.
-  const fromEnrollPage = new URLSearchParams(location.search).get('from') === 'enroll';
-  document.getElementById('dEnroll').onclick = fromEnrollPage
-    ? () => { window.location.href = 'enroll.html?course=' + encodeURIComponent(c.id); }
-    : () => { if (addToCart(c)) location.hash = '#/checkout'; };
-  
+
   // Call to render Live Project domain details
   renderLiveProjectDomainCoverage(c);
   
