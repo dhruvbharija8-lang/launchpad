@@ -166,6 +166,12 @@ const HOF = [
 
 const TICKERS=['9.6/10 Avg. Rating','5,000+ Students Mentored','98.7% Placed in Desired Domain','IIM · XLRI · FMS Mentor Schools','Live Projects Across Domains','AIR 1 Case Competition Mentor','30+ Winning Case PPTs','Real Placements. Real Stories.'];
 
+// Which list the testimonial grid/lightbox is currently showing — the
+// hardcoded MBA TESTIMONIALS array, or (for CAT persona) the admin-managed
+// GDPI quotes. cardHtml()/openLB() read from this instead of the raw
+// TESTIMONIALS constant so the same card/lightbox code works for both.
+let ACTIVE_LIST=TESTIMONIALS;
+
 /* Which toggle (MBA Partner / CAT-OMETs) was last selected on the homepage —
    read here so the Testimonials page shows matching content. Defaults to
    'mba' if nothing was ever picked (e.g. a direct visit to this page). */
@@ -251,19 +257,40 @@ const MOBILE_BREAKPOINT=768;
 const TGRID_MOBILE_LIMIT=4;
 let tgridExpanded=false;
 let tgridFullList=[];
-function renderGrid(filter){
+async function renderGrid(filter){
   const grid=document.getElementById('tgrid');
   const empty=document.getElementById('emptyState');
   const moreBtn=document.getElementById('tgridLoadMore');
-  // This hardcoded testimonial set is MBA-track content only — CAT/OMETs
-  // testimonials come from the admin-managed Placements Wall / Video
-  // Testimonials sections below instead (tagged with Track='cat' there).
+  // CAT/OMETs persona shows the admin-managed GDPI quotes here (the same
+  // "Students We've Mentored for GDPI" set used on index.html) instead of
+  // the hardcoded MBA-track testimonials.
   if(getPersona()==='cat'){
-    tgridFullList=[]; tgridExpanded=false;
-    grid.innerHTML=''; if(empty){empty.style.display='block'; empty.innerHTML='<p>CAT/OMETs testimonials coming soon — check the Placements Wall below.</p>';}
-    if(moreBtn) moreBtn.style.display='none';
+    const data=await loadSiteData();
+    const gdpiRows=(data && data.gdpi) || [];
+    ACTIVE_LIST=gdpiRows.map(g=>({
+      name:g.Name||'Student', school:g.College||'', outcome:'GDPI Flagship',
+      quote:g.Quote||'', tags:['gdpi'], dark:false, img:g.Img||null
+    }));
+    if(!ACTIVE_LIST.length){
+      tgridFullList=[]; tgridExpanded=false;
+      grid.innerHTML=''; if(empty){empty.style.display='block'; empty.innerHTML='<p>CAT/OMETs testimonials coming soon — check the Placements Wall below.</p>';}
+      if(moreBtn) moreBtn.style.display='none';
+      return;
+    }
+    const list=ACTIVE_LIST.map((t,i)=>({t,i}));
+    tgridFullList=list;
+    tgridExpanded=false;
+    empty.style.display='none';
+    const isMobile=window.innerWidth<=MOBILE_BREAKPOINT;
+    const shown=isMobile?list.slice(0,TGRID_MOBILE_LIMIT):list;
+    grid.innerHTML=shown.map(({t,i})=>cardHtml(t,i)).join('');
+    if(moreBtn){
+      if(isMobile && list.length>TGRID_MOBILE_LIMIT){moreBtn.style.display='inline-flex';moreBtn.innerHTML='Show More <i class="ti ti-chevron-down"></i>';}
+      else moreBtn.style.display='none';
+    }
     return;
   }
+  ACTIVE_LIST=TESTIMONIALS;
   const list=filter==='all'?TESTIMONIALS.map((t,i)=>({t,i})):TESTIMONIALS.map((t,i)=>({t,i})).filter(({t})=>t.tags.includes(filter));
   tgridFullList=list;
   tgridExpanded=false;
@@ -444,7 +471,7 @@ function closeVidLb(){
 
 /* LIGHTBOX */
 function openLB(i){
-  const t=TESTIMONIALS[i];
+  const t=ACTIVE_LIST[i];
   const avEl=document.getElementById('lbAv');
   avEl.innerHTML=avHtml(t);
   document.getElementById('lbQ').textContent=t.quote;

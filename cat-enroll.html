@@ -21,6 +21,13 @@
   type="text/javascript"
 ></script>
 <script>
+  // This is a CAT/OMETs-only page — make sure the shared persona flag
+  // (read by courses.html, testimonials.html, js/search.js, js/navbar.js
+  // etc.) is set to 'cat' so the Courses/Testimonials nav links above show
+  // CAT content, even if the visitor never toggled the switch on index.html.
+  try { localStorage.setItem('mbaPersona', 'cat'); } catch (e) { }
+</script>
+<script>
   // Lets the enrollment form pre-fill the name/email if the visitor is
   // already signed in (via Clerk, from login.html) — resolves to the Clerk
   // instance once its async script has actually finished loading, or to
@@ -279,8 +286,8 @@ button{cursor:pointer;font-family:inherit}
     </a>
     <div class="nav-links">
       <a class="nav-a" href="index.html">Home</a>
-      <a class="nav-a" href="cat-portal.html">CAT Prep Portal</a>
-      <a class="nav-a" href="cat-predictor.html">College Predictor</a>
+      <a class="nav-a" href="courses.html">Courses</a>
+      <a class="nav-a" href="testimonials.html">Testimonials</a>
       <div class="nav-free-res">
         <button class="nav-free-btn"><i class="ti ti-notebook" style="font-size:14px;margin-right:4px"></i>Brochure<i class="ti ti-chevron-down nav-free-chev"></i></button>
         <div class="nav-free-menu">
@@ -297,8 +304,8 @@ button{cursor:pointer;font-family:inherit}
   </div>
   <div class="mobile-nav" id="mobileNav">
     <a class="mobile-nav-a" href="index.html">Home</a>
-    <a class="mobile-nav-a" href="cat-portal.html">CAT Prep Portal</a>
-    <a class="mobile-nav-a" href="cat-predictor.html">College Predictor</a>
+    <a class="mobile-nav-a" href="courses.html">Courses</a>
+    <a class="mobile-nav-a" href="testimonials.html">Testimonials</a>
     <button class="mobile-nav-a mobile-free-btn" id="mobileFreeResBtn"><i class="ti ti-notebook"></i> Brochure <i class="ti ti-chevron-down" id="mobileFreeIcon" style="font-size:12px;transition:.2s;margin-left:auto"></i></button>
     <div class="mobile-free-sub" id="mobileFreeMenu">
       <a class="mobile-nav-a" href="https://documents1.netlify.app/" target="_blank" style="padding-left:28px"><i class="ti ti-briefcase"></i> Live Project</a>
