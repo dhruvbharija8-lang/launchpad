@@ -2328,78 +2328,9 @@
         <p style="font-size:15px;color:var(--ink2);font-family:'Inter',sans-serif;margin-top:10px">Voices from our
           active partner campuses</p>
       </div>
-      <div class="testi-cards">
-        <div class="tc reveal">
-          <div class="tc-stars"><i class="ti ti-star-filled"></i><i class="ti ti-star-filled"></i><i
-              class="ti ti-star-filled"></i><i class="ti ti-star-filled"></i><i class="ti ti-star-filled"></i></div>
-          <div class="tc-q">"The live consulting project gave me something none of my batchmates had — a real
-            deliverable I could walk an interviewer through. It turned my PI at a top consulting firm into a 15-minute
-            case discussion on my own work."</div>
-          <div class="tc-bot">
-            <div class="tc-av">S</div>
-            <div>
-              <div class="tc-name">Siddharth R.</div>
-              <div class="tc-role">IIM Raipur · Placed in Consulting</div>
-            </div>
-          </div>
-        </div>
-        <div class="tc reveal" style="transition-delay:.1s">
-          <div class="tc-stars"><i class="ti ti-star-filled"></i><i class="ti ti-star-filled"></i><i
-              class="ti ti-star-filled"></i><i class="ti ti-star-filled"></i><i class="ti ti-star-filled"></i></div>
-          <div class="tc-q">"As placement coordinator, bringing MBA Partner to IIM Kashipur was a strategic call. The
-            mock PI quality and domain-specific prep was miles ahead of what we'd arranged in previous years — results
-            spoke for themselves."</div>
-          <div class="tc-bot">
-            <div class="tc-av">N</div>
-            <div>
-              <div class="tc-name">Nisha A.</div>
-              <div class="tc-role">Placement Coordinator · IIM Kashipur</div>
-            </div>
-          </div>
-        </div>
-        <div class="tc reveal" style="transition-delay:.2s">
-          <div class="tc-stars"><i class="ti ti-star-filled"></i><i class="ti ti-star-filled"></i><i
-              class="ti ti-star-filled"></i><i class="ti ti-star-filled"></i><i class="ti ti-star-filled"></i></div>
-          <div class="tc-q">"The case competition prep from an AIR 1 mentor changed how I structured my thinking. We
-            reached the finals of a national competition — that would not have happened without the frameworks and mock
-            rounds MBA Partner put us through."</div>
-          <div class="tc-bot">
-            <div class="tc-av">T</div>
-            <div>
-              <div class="tc-name">Tanvi M.</div>
-              <div class="tc-role">IIM Udaipur · Strategy &amp; Consulting Track</div>
-            </div>
-          </div>
-        </div>
-        <div class="tc reveal" style="transition-delay:.3s">
-          <div class="tc-stars"><i class="ti ti-star-filled"></i><i class="ti ti-star-filled"></i><i
-              class="ti ti-star-filled"></i><i class="ti ti-star-filled"></i><i class="ti ti-star-filled"></i></div>
-          <div class="tc-q">"JBIMS students are sharp, but placement prep has always been self-driven. MBA Partner
-            filled that gap — structured GD practice, ATS-optimised CV help, and mentors who actually came from top
-            firms. Very different from what's usually available."</div>
-          <div class="tc-bot">
-            <div class="tc-av">K</div>
-            <div>
-              <div class="tc-name">Karan P.</div>
-              <div class="tc-role">JBIMS Mumbai · Finance &amp; Banking Track</div>
-            </div>
-          </div>
-        </div>
-        <div class="tc reveal" style="transition-delay:.4s">
-          <div class="tc-stars"><i class="ti ti-star-filled"></i><i class="ti ti-star-filled"></i><i
-              class="ti ti-star-filled"></i><i class="ti ti-star-filled"></i><i class="ti ti-star-filled"></i></div>
-          <div class="tc-q">"At DSE the competition for finance and consulting roles is intense. The CV audit alone made
-            a visible difference — my profile went from generic to shortlist-worthy. The mock PIs gave me the confidence
-            to walk into any room."</div>
-          <div class="tc-bot">
-            <div class="tc-av">A</div>
-            <div>
-              <div class="tc-name">Aisha V.</div>
-              <div class="tc-role">Delhi School of Economics · Placed in Finance</div>
-            </div>
-          </div>
-        </div>
-      </div>
+      <!-- Populated dynamically from /api/public/collabTestimonials —
+           admin can add/edit/delete these from the admin dashboard. -->
+      <div class="testi-cards" id="testiCardsRow"></div>
     </div>
   </section>
 
@@ -2748,6 +2679,50 @@
         btn.style.background = '';
       }, 4000);
     }
+  </script>
+  <script>
+    // Render "Hear from Students & Campus Coordinators" from the admin API,
+    // so the admin dashboard can add/edit/delete these testimonials.
+    (function () {
+      function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c])); }
+      function stars(n) {
+        n = Math.max(0, Math.min(5, parseInt(n, 10) || 5));
+        return '<i class="ti ti-star-filled"></i>'.repeat(n);
+      }
+      function cardHtml(t, i) {
+        const avatar = t.Avatar || (t.Name || '?').charAt(0).toUpperCase();
+        // Note: no "reveal" class here — the page's scroll-reveal
+        // IntersectionObserver only observes elements present at initial
+        // parse time, so late-injected cards would stay invisible forever
+        // if given that class. Render visible immediately instead.
+        return `<div class="tc">
+          <div class="tc-stars">${stars(t.Rating)}</div>
+          <div class="tc-q">"${esc(t.Quote)}"</div>
+          <div class="tc-bot">
+            <div class="tc-av">${esc(avatar)}</div>
+            <div>
+              <div class="tc-name">${esc(t.Name)}</div>
+              <div class="tc-role">${esc(t.Role)}</div>
+            </div>
+          </div>
+        </div>`;
+      }
+      async function loadTestimonials() {
+        const row = document.getElementById('testiCardsRow');
+        if (!row) return;
+        try {
+          const base = (typeof MBA_API_BASE !== 'undefined') ? MBA_API_BASE : '';
+          const res = await fetch(base + '/api/public/collabTestimonials');
+          if (!res.ok) throw new Error('bad response');
+          const rows = await res.json();
+          if (!Array.isArray(rows) || !rows.length) return;
+          row.innerHTML = rows.map(cardHtml).join('');
+        } catch (e) {
+          console.error('Testimonials load failed:', e);
+        }
+      }
+      document.addEventListener('DOMContentLoaded', loadTestimonials);
+    })();
   </script>
   <script src="js/chatbot-widget.js"></script>
 </body>

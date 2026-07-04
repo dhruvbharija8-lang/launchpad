@@ -165,6 +165,17 @@ const ADMIN_SECTIONS = [
     ]
   },
   {
+    key: 'collabTestimonials', label: 'College Collab Testimonials', icon: 'ti-quote', group: 'Site content',
+    desc: '"Hear from Students & Campus Coordinators" cards on the College Collaboration page.',
+    fields: [
+      { name: 'Name', label: 'Name', type: 'text', required: true, col: true },
+      { name: 'Role', label: 'Role / College (e.g. "IIM Raipur · Placed in Consulting")', type: 'text', required: true, col: true },
+      { name: 'Quote', label: 'Testimonial quote', type: 'textarea', required: true },
+      { name: 'Rating', label: 'Star rating (1-5)', type: 'number', col: true },
+      { name: 'Avatar', label: 'Avatar letter (optional, defaults to first letter of name)', type: 'text' }
+    ]
+  },
+  {
     key: 'mentors', label: 'Mentors', icon: 'ti-users', group: 'Site content',
     desc: 'The "Meet Your Mentors" section on the home page.',
     fields: [

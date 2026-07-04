@@ -238,6 +238,19 @@ const MENTORS = [
   { Name: 'Vidhi Barolia', School: 'IIM Lucknow', Company: 'PwC US', Domain: 'Finance', LinkedIn: 'https://www.linkedin.com/in/vidhi-barolia-a555a9271/' }
 ];
 
+const COLLAB_TESTIMONIALS = [
+  { Name: 'Siddharth R.', Role: 'IIM Raipur · Placed in Consulting', Rating: 5, Avatar: 'S',
+    Quote: 'The live consulting project gave me something none of my batchmates had — a real deliverable I could walk an interviewer through. It turned my PI at a top consulting firm into a 15-minute case discussion on my own work.' },
+  { Name: 'Nisha A.', Role: 'Placement Coordinator · IIM Kashipur', Rating: 5, Avatar: 'N',
+    Quote: 'As placement coordinator, bringing MBA Partner to IIM Kashipur was a strategic call. The mock PI quality and domain-specific prep was miles ahead of what we\'d arranged in previous years — results spoke for themselves.' },
+  { Name: 'Tanvi M.', Role: 'IIM Udaipur · Strategy & Consulting Track', Rating: 5, Avatar: 'T',
+    Quote: 'The case competition prep from an AIR 1 mentor changed how I structured my thinking. We reached the finals of a national competition — that would not have happened without the frameworks and mock rounds MBA Partner put us through.' },
+  { Name: 'Karan P.', Role: 'JBIMS Mumbai · Finance & Banking Track', Rating: 5, Avatar: 'K',
+    Quote: 'JBIMS students are sharp, but placement prep has always been self-driven. MBA Partner filled that gap — structured GD practice, ATS-optimised CV help, and mentors who actually came from top firms. Very different from what\'s usually available.' },
+  { Name: 'Aisha V.', Role: 'Delhi School of Economics · Placed in Finance', Rating: 5, Avatar: 'A',
+    Quote: 'At DSE the competition for finance and consulting roles is intense. The CV audit alone made a visible difference — my profile went from generic to shortlist-worthy. The mock PIs gave me the confidence to walk into any room.' }
+];
+
 const COLLEGES = ['IIM Ahmedabad', 'IIM Bangalore', 'IIM Calcutta', 'IIM Lucknow', 'IIM Indore', 'IIM Kozhikode',
   'IIM Mumbai', 'XLRI Jamshedpur', 'FMS Delhi', 'MDI Gurgaon'].map(Name => ({ Name }));
 
@@ -414,6 +427,7 @@ function run(force) {
     materials: withIds(MATERIALS),
     students: withIds(STUDENTS),
     enrollments: withIds(ENROLLMENTS),
+    collabTestimonials: withIds(COLLAB_TESTIMONIALS),
     catMaterials: withIds(CAT_MATERIALS),
     catMocks: withIds(CAT_MOCKS),
     catQuestions: withIds(CAT_QUESTIONS),
@@ -445,6 +459,7 @@ function backfillMissingCollections() {
     catPyq: CAT_PYQ, catPyqQuestions: CAT_PYQ_QUESTIONS, catLeaderboard: CAT_LEADERBOARD,
     catGdpi: CAT_GDPI, catDomainQA: CAT_DOMAINQA, catMentors: CAT_MENTORS, catPricing: CAT_PRICING,
     hallOfFame: HALL_OF_FAME, freeSessions: FREE_SESSIONS,
+    collabTestimonials: COLLAB_TESTIMONIALS,
     // Visitor-submitted collections start empty — nothing to seed, they
     // just need to exist so the admin dashboard section doesn't error out
     // before anyone has submitted anything yet.
