@@ -327,11 +327,11 @@ const ADMIN_SECTIONS = [
   },
   {
     key: 'liveDomainLinks', label: 'Live Project — Domain Drive Links', icon: 'ti-folder', group: 'Student dashboard',
-    desc: 'The Google Drive folder for each Live Project domain. A student sees the link(s) for whichever domain(s) they picked at checkout (stored on their Enrollments row). Domain key must stay lowercase and match what the checkout picker uses (operations / marketing / hr / finance / consulting).',
+    desc: 'The Google Drive folder(s) for each Live Project domain, plus every possible 2-domain combination (for students who picked 2 domains) — already pre-created below so you can just open the matching row and paste your link(s) in. If a student picked 2 domains and a combo row for that exact pair has links, they see those; otherwise they see each individual domain\'s links.',
     fields: [
-      { name: 'DomainKey', label: 'Domain key (lowercase, no spaces)', type: 'text', required: true, col: true },
+      { name: 'DomainKey', label: 'Domain key (single: "marketing" — or a combo: "hr,marketing", comma-joined, alphabetical)', type: 'text', required: true, col: true },
       { name: 'DomainLabel', label: 'Domain label shown to students', type: 'text', col: true },
-      { name: 'DriveLink', label: 'Google Drive folder link', type: 'text', col: true }
+      { name: 'driveLinks', label: 'Drive links for this domain / combo', type: 'linklist', col: true }
     ]
   },
   {

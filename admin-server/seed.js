@@ -362,14 +362,41 @@ const ENROLLMENTS = [
 // on their Enrollments row's Domains field by autoProvisionFromSubmission in
 // admin-server/routes/resource.js, then resolved by js/dashboard-data.js's
 // buildStudentView).
-const LIVE_DOMAIN_LINKS = [
-  { DomainKey: 'operations', DomainLabel: 'Operations', DriveLink: 'https://drive.google.com/drive/folders/1ChQTI87hl20dSOadT_RmFsQe7nNjtx0O' },
-  { DomainKey: 'marketing', DomainLabel: 'Marketing', DriveLink: 'https://drive.google.com/drive/folders/1ZSXhDdOYVkhXGsOl1hR3XWjoQWws_0ZU' },
-  { DomainKey: 'hr', DomainLabel: 'HR', DriveLink: 'https://drive.google.com/drive/folders/1oSSC0q_KOmXEGh9Z1qq5OePWXko453aE' },
-  { DomainKey: 'finance', DomainLabel: 'Finance', DriveLink: 'https://drive.google.com/drive/folders/1itw4RUcbT7k27_IpResMeph_6znazuX7' },
-  { DomainKey: 'consulting', DomainLabel: 'Consulting', DriveLink: 'https://drive.google.com/drive/folders/120bl1GT-Rf9yG0CCu7lqn4bI6gfbIeyL' },
-  { DomainKey: 'product', DomainLabel: 'Product Management', DriveLink: 'https://drive.google.com/drive/folders/1V0VZLdnPcPZ5MA39pGfTrITBh4D7PSAJ' }
+const LIVE_DOMAINS_BASE = [
+  { key: 'operations', label: 'Operations', link: 'https://drive.google.com/drive/folders/1ChQTI87hl20dSOadT_RmFsQe7nNjtx0O' },
+  { key: 'marketing', label: 'Marketing', link: 'https://drive.google.com/drive/folders/1ZSXhDdOYVkhXGsOl1hR3XWjoQWws_0ZU' },
+  { key: 'hr', label: 'HR', link: 'https://drive.google.com/drive/folders/1oSSC0q_KOmXEGh9Z1qq5OePWXko453aE' },
+  { key: 'finance', label: 'Finance', link: 'https://drive.google.com/drive/folders/1itw4RUcbT7k27_IpResMeph_6znazuX7' },
+  { key: 'consulting', label: 'Consulting', link: 'https://drive.google.com/drive/folders/120bl1GT-Rf9yG0CCu7lqn4bI6gfbIeyL' },
+  { key: 'product', label: 'Product Management', link: 'https://drive.google.com/drive/folders/1V0VZLdnPcPZ5MA39pGfTrITBh4D7PSAJ' }
 ];
+
+// One row per single domain (for 1-domain Live Project courses) — driveLinks
+// is a list so more than one resource can be added per domain later from the
+// admin dashboard, not just the one folder link collected so far.
+const LIVE_DOMAIN_LINKS_SINGLE = LIVE_DOMAINS_BASE.map(d => ({
+  DomainKey: d.key, DomainLabel: d.label,
+  driveLinks: [{ Name: d.label + ' — Live Project Folder', Link: d.link }]
+}));
+
+// Every possible 2-domain combination (for 2-domain Live Project courses),
+// pre-created as blank rows so the admin can just open the matching pairing
+// and paste in its dedicated link(s), instead of needing to know the exact
+// "domainA,domainB" key format themselves. DomainKey is always the two domain
+// keys sorted + comma-joined, so lookup at runtime is order-independent.
+const LIVE_DOMAIN_LINKS_COMBOS = [];
+for (let i = 0; i < LIVE_DOMAINS_BASE.length; i++) {
+  for (let j = i + 1; j < LIVE_DOMAINS_BASE.length; j++) {
+    const a = LIVE_DOMAINS_BASE[i], b = LIVE_DOMAINS_BASE[j];
+    LIVE_DOMAIN_LINKS_COMBOS.push({
+      DomainKey: [a.key, b.key].sort().join(','),
+      DomainLabel: a.label + ' + ' + b.label,
+      driveLinks: []
+    });
+  }
+}
+
+const LIVE_DOMAIN_LINKS = LIVE_DOMAIN_LINKS_SINGLE.concat(LIVE_DOMAIN_LINKS_COMBOS);
 
 // Static (non-domain-specific) course-materials rows, keyed by the real
 // course id from js/search.js's catalog (matches the ProgramCode a student
@@ -626,6 +653,17 @@ function backfillMissingCollections() {
         existingDomainKeys.add(d.DomainKey);
         changed = true;
         console.log('Backfilled missing live domain link:', d.DomainKey);
+      }
+    });
+    // One-time upgrade: older rows stored a single 'DriveLink' string field.
+    // Convert those into the new 'driveLinks' list format (so the admin can
+    // add more than one resource per domain) without losing the existing
+    // link or touching any row that's already been converted/edited.
+    data.liveDomainLinks.forEach(d => {
+      if (!Array.isArray(d.driveLinks) && d.DriveLink) {
+        d.driveLinks = [{ Name: (d.DomainLabel || d.DomainKey) + ' — Live Project Folder', Link: d.DriveLink }];
+        changed = true;
+        console.log('Migrated old DriveLink field to driveLinks list for:', d.DomainKey);
       }
     });
   }

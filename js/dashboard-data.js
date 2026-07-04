@@ -258,19 +258,52 @@ function buildStudentView(data, email) {
   // deliberately does NOT add a new course/program card — just extra
   // material cards under the course they already see.
   const domainLinks = Array.isArray(data.liveDomainLinks) ? data.liveDomainLinks : [];
+  // A domain-links row's own drive links — supports the new multi-link
+  // 'driveLinks' list, and falls back to the older single 'DriveLink' string
+  // field for any row that hasn't been migrated/re-saved yet.
+  const linksOf = d => {
+    if (Array.isArray(d.driveLinks) && d.driveLinks.length) return d.driveLinks;
+    if (d.DriveLink) return [{ Name: d.DomainLabel || d.DomainKey, Link: d.DriveLink }];
+    return [];
+  };
+  const findDomainRow = key => domainLinks.find(dl => _lc(dl.DomainKey) === key);
+  // A combo row's key is the domains sorted + comma-joined (order-independent).
+  const findComboRow = keys => {
+    const wanted = keys.slice().sort().join(',');
+    return domainLinks.find(dl => _lc(dl.DomainKey).split(',').map(k => k.trim()).sort().join(',') === wanted);
+  };
   myEnroll.forEach(e => {
     const keys = String(e.Domains || '').split(',').map(k => _lc(k)).filter(Boolean);
     if (!keys.length) return;
     const p = data.programs.find(pr => pr.ProgramCode === e.ProgramCode) || {};
+
+    // If this student picked more than one domain and there's a dedicated
+    // combo row (e.g. "hr,marketing") with its own links set, prefer that —
+    // it's a resource pack specific to that exact domain pairing. Otherwise
+    // fall back to each individually-picked domain's own links.
+    const combo = keys.length > 1 ? findComboRow(keys) : null;
+    const comboLinks = combo ? linksOf(combo) : [];
+    if (comboLinks.length) {
+      comboLinks.forEach(link => {
+        if (!link || !link.Link) return;
+        materials.push({
+          category: 'Live Project', type: 'drive',
+          name: link.Name || ('Live Project — ' + (combo.DomainLabel || keys.join(' + '))),
+          meta: p.Title || e.ProgramCode, link: link.Link
+        });
+      });
+      return;
+    }
     keys.forEach(key => {
-      const d = domainLinks.find(dl => _lc(dl.DomainKey) === key);
-      if (!d || !d.DriveLink) return;
-      materials.push({
-        category: 'Live Project',
-        type: 'drive',
-        name: 'Live Project — ' + (d.DomainLabel || key),
-        meta: p.Title || e.ProgramCode,
-        link: d.DriveLink
+      const d = findDomainRow(key);
+      if (!d) return;
+      linksOf(d).forEach(link => {
+        if (!link || !link.Link) return;
+        materials.push({
+          category: 'Live Project', type: 'drive',
+          name: link.Name || ('Live Project — ' + (d.DomainLabel || key)),
+          meta: p.Title || e.ProgramCode, link: link.Link
+        });
       });
     });
   });
