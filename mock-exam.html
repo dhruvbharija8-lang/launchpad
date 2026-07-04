@@ -9,6 +9,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css"/>
 <link rel="stylesheet" href="css/fonts.css"/>
+<script src="js/api-config.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -532,9 +533,14 @@ document.getElementById('preQCount').textContent=QUESTIONS.length+' questions';
 let questionsLoading=true;
 (async function loadAdminAuthoredQuestions(){
   try{
+    // The frontend (Vercel) and backend API (Render) live on different
+    // domains — a bare relative fetch('/api/...') would hit the frontend's
+    // own domain and 404 silently, which is exactly why this never worked.
+    // MBA_API_BASE (from js/api-config.js) points at the real Render URL.
+    const base=(typeof MBA_API_BASE!=='undefined'&&MBA_API_BASE)||'';
     const [qs,pyqQs]=await Promise.all([
-      fetch('/api/public/catQuestions').then(r=>r.ok?r.json():[]),
-      fetch('/api/public/catPyqQuestions').then(r=>r.ok?r.json():[])
+      fetch(base+'/api/public/catQuestions').then(r=>r.ok?r.json():[]),
+      fetch(base+'/api/public/catPyqQuestions').then(r=>r.ok?r.json():[])
     ]);
     const rows=[...qs,...pyqQs].filter(r=>r.MockID===MOCK_ID);
     if(rows.length){
