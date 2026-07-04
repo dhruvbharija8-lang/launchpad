@@ -172,7 +172,7 @@ async function fetchSheetTab(tabName) {
 /* Preferred: the admin-server API (edited from the admin dashboard). */
 async function _fetchDashboardApi() {
   const base = (typeof MBA_API_BASE !== 'undefined') ? MBA_API_BASE : '';
-  const names = ['students', 'programs', 'enrollments', 'sessions', 'materials', 'liveDomainLinks'];
+  const names = ['students', 'programs', 'enrollments', 'sessions', 'materials', 'liveDomainLinks', 'courses'];
   const results = await Promise.all(names.map(n => fetch(base + '/api/public/' + n).then(r => r.ok ? r.json() : null).catch(() => null)));
   const out = {};
   // A single newer/secondary collection (e.g. liveDomainLinks) briefly failing
@@ -271,6 +271,29 @@ function buildStudentView(data, email) {
         name: 'Live Project — ' + (d.DomainLabel || key),
         meta: p.Title || e.ProgramCode,
         link: d.DriveLink
+      });
+    });
+  });
+
+  // Per-course Drive links: set directly on each Course's own edit form
+  // (admin → Courses & Pricing → "Study materials — Drive links"), not on a
+  // separate Materials-collection row. Any student enrolled in a course
+  // (their enrollment's ProgramCode matches that course's id) automatically
+  // sees every link added there — add as many as you like per course.
+  const allCourses = Array.isArray(data.courses) ? data.courses : [];
+  myEnroll.forEach(e => {
+    const course = allCourses.find(c => c.id === e.ProgramCode);
+    const links = course && Array.isArray(course.driveLinks) ? course.driveLinks : [];
+    if (!links.length) return;
+    const p = data.programs.find(pr => pr.ProgramCode === e.ProgramCode) || {};
+    links.forEach(link => {
+      if (!link || !link.Link) return;
+      materials.push({
+        category: 'Study Materials',
+        type: 'drive',
+        name: link.Name || (course.title || e.ProgramCode),
+        meta: p.Title || course.title || e.ProgramCode,
+        link: link.Link
       });
     });
   });

@@ -36,7 +36,8 @@ const ADMIN_SECTIONS = [
       { name: 'compLiveProject', label: 'Comparison table: Live project', type: 'text' },
       { name: 'compCasePrep', label: 'Comparison table: Case competition prep', type: 'text' },
       { name: 'compCanva', label: 'Comparison table: Canva Pro', type: 'text' },
-      { name: 'compCertificate', label: 'Comparison table: Completion certificate', type: 'text' }
+      { name: 'compCertificate', label: 'Comparison table: Completion certificate', type: 'text' },
+      { name: 'driveLinks', label: 'Study materials — Drive links (shown to any student enrolled in this course)', type: 'linklist', col: true }
     ]
   },
   {

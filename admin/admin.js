@@ -219,6 +219,7 @@ async function loadAndRenderTable(section) {
       if (f.type === 'checkbox') { v = v ? '<span class="badge badge-on">Active</span>' : '<span class="badge badge-off">Off</span>'; isHtml = true; }
       else if (f.type === 'ref' && v) v = resolveRefLabel(f, v);
       else if (f.type === 'multiref' && Array.isArray(v)) v = v.map(x => resolveRefLabel(f, x)).join(', ');
+      else if (f.type === 'linklist') v = Array.isArray(v) && v.length ? v.length + ' link' + (v.length > 1 ? 's' : '') + ' — ' + v.map(x => x.Name || x.Link).join(', ') : '—';
       else if (Array.isArray(v)) v = v.join(', ');
       html += `<td>${v == null ? '' : (isHtml ? v : escapeHtml(String(v)))}</td>`;
     });
@@ -269,6 +270,15 @@ function fieldHtml(f, value, refOptions) {
     const v = Array.isArray(value) ? value.join(', ') : (value || '');
     return `<div class="field"><label>${f.label}</label><input id="${id}" value="${escapeHtml(v)}"/></div>`;
   }
+  if (f.type === 'linklist') {
+    const items = Array.isArray(value) ? value : [];
+    const rows = items.map(linklistRowHtml).join('');
+    return `<div class="field">
+      <label>${f.label}</label>
+      <div id="${id}" data-linklist>${rows}</div>
+      <button type="button" class="btn btn-ghost btn-sm" style="width:auto" onclick="addLinklistRow('${id}')"><i class="ti ti-plus"></i> Add another link</button>
+    </div>`;
+  }
   if (f.type === 'file') {
     const cur = value
       ? `<div style="margin-top:4px;font-size:12.5px"><a href="${escapeHtml(value)}" target="_blank" rel="noopener">View current file</a></div>`
@@ -292,6 +302,12 @@ function readForm(form, fields) {
     else if (f.type === 'number') out[f.name] = el.value === '' ? null : Number(el.value);
     else if (f.type === 'csv') out[f.name] = el.value.split(',').map(s => s.trim()).filter(Boolean);
     else if (f.type === 'multiref') out[f.name] = Array.from(el.querySelectorAll('.multiref-opt:checked')).map(c => c.value);
+    else if (f.type === 'linklist') {
+      out[f.name] = Array.from(el.querySelectorAll('.linklist-row')).map(row => ({
+        Name: row.querySelector('.ll-name').value.trim(),
+        Link: row.querySelector('.ll-url').value.trim()
+      })).filter(item => item.Link); // drop empty rows (blank link = nothing to save)
+    }
     else out[f.name] = el.value;
   });
   return out;
@@ -299,6 +315,21 @@ function readForm(form, fields) {
 
 function escapeHtml(s) {
   return String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+}
+
+// Repeatable "Name + URL" row used by the 'linklist' field type (e.g. a
+// course's Study Materials drive links, added directly on its own edit form
+// instead of needing a separate Materials-collection entry per link).
+function linklistRowHtml(item) {
+  return `<div class="linklist-row" style="display:flex;gap:8px;margin-bottom:6px;align-items:center">
+    <input type="text" class="ll-name" placeholder="Link title (e.g. Case Study Pack)" value="${escapeHtml(item && item.Name || '')}" style="flex:1;min-width:0"/>
+    <input type="text" class="ll-url" placeholder="Drive/resource link URL" value="${escapeHtml(item && item.Link || '')}" style="flex:2;min-width:0"/>
+    <button type="button" class="btn btn-danger btn-sm" onclick="this.closest('.linklist-row').remove()" style="flex:0 0 auto"><i class="ti ti-trash"></i></button>
+  </div>`;
+}
+function addLinklistRow(id) {
+  const c = document.getElementById(id);
+  if (c) c.insertAdjacentHTML('beforeend', linklistRowHtml({}));
 }
 
 async function uploadFile(file) {
