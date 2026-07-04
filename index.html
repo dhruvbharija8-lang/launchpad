@@ -954,7 +954,11 @@
       const cEl = document.getElementById('collabColleges');
       if (cEl) cEl.innerHTML = (data.colleges || []).map(c => `<div class="collab-college"><i class="ti ti-building-bank"></i> ${c.Name}</div>`).join('');
       const gEl = document.getElementById('gdpiGrid');
-      if (gEl) gEl.innerHTML = (data.gdpi || []).map(g => `<div class="gdpi-tcard reveal"><div class="gdpi-tcard-stars">★★★★★</div><p class="gdpi-tcard-quote">&ldquo;${g.Quote || ''}&rdquo;</p><div class="gdpi-tcard-footer"><div><div class="gdpi-tcard-name">${g.Name}</div><div class="gdpi-tcard-college">${g.College}</div></div><span class="gdpi-tcard-badge">GDPI</span></div></div>`).join('');
+      // NOTE: no "reveal" class on these cards — that class starts at
+      // opacity:0 until a one-time scroll-animation scan (js/animations.js)
+      // registers it, and that scan already ran before this fetch finished,
+      // so any card carrying "reveal" here would stay invisible forever.
+      if (gEl) gEl.innerHTML = (data.gdpi || []).map(g => `<div class="gdpi-tcard"><div class="gdpi-tcard-stars">★★★★★</div><p class="gdpi-tcard-quote">&ldquo;${g.Quote || ''}&rdquo;</p><div class="gdpi-tcard-footer"><div><div class="gdpi-tcard-name">${g.Name}</div><div class="gdpi-tcard-college">${g.College}</div></div><span class="gdpi-tcard-badge">GDPI</span></div></div>`).join('');
     })();
   </script>
 
