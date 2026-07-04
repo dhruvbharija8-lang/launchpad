@@ -338,6 +338,7 @@ button{cursor:pointer;font-family:inherit}
         <button class="start-btn" id="startExamBtn" onclick="startExam()" disabled>
           <i class="ti ti-player-play-filled"></i> Start Exam
         </button>
+        <div id="qLoadNote" style="font-size:12px;color:var(--ink3,#8a90a8);margin-top:8px">Loading questions…</div>
       </div>
     </div>
   </div>
@@ -523,8 +524,12 @@ document.getElementById('preQCount').textContent=QUESTIONS.length+' questions';
 
 /* Mocks/PYQ papers created from the admin dashboard aren't in the embedded
    ALL_QUESTIONS set above — fetch their questions from the site's own API.
-   Swaps QUESTIONS in only if a match is found and the exam hasn't started
-   yet; otherwise the embedded set above stays as-is (offline-safe). */
+   The Start button stays disabled until this settles (success OR failure),
+   so a student can never click Start while this is still in flight — that
+   race is exactly what let the exam silently freeze on the 5 hardcoded demo
+   questions when the real admin-uploaded set (e.g. 25 questions) existed
+   but hadn't finished loading yet. */
+let questionsLoading=true;
 (async function loadAdminAuthoredQuestions(){
   try{
     const [qs,pyqQs]=await Promise.all([
@@ -532,17 +537,24 @@ document.getElementById('preQCount').textContent=QUESTIONS.length+' questions';
       fetch('/api/public/catPyqQuestions').then(r=>r.ok?r.json():[])
     ]);
     const rows=[...qs,...pyqQs].filter(r=>r.MockID===MOCK_ID);
-    if(!rows.length || state.startTime) return;
-    const letterIdx={A:0,B:1,C:2,D:3};
-    const mapped=rows.map((r,i)=>({
-      id:i+1, section:r.Section||'', passage:r.Passage||null, q:r.Q,
-      opts:[r.OptionA,r.OptionB,r.OptionC,r.OptionD],
-      correct:letterIdx[String(r.Correct||'A').toUpperCase()] ?? 0,
-      solution:r.Solution||'', wrongWhy:['','','','']
-    }));
-    QUESTIONS=mapped;
-    document.getElementById('preQCount').textContent=QUESTIONS.length+' questions';
-  }catch(e){ /* API unreachable — embedded questions already shown, nothing to do */ }
+    if(rows.length){
+      const letterIdx={A:0,B:1,C:2,D:3};
+      const mapped=rows.map((r,i)=>({
+        id:i+1, section:r.Section||'', passage:r.Passage||null, q:r.Q,
+        opts:[r.OptionA,r.OptionB,r.OptionC,r.OptionD],
+        correct:letterIdx[String(r.Correct||'A').toUpperCase()] ?? 0,
+        solution:r.Solution||'', wrongWhy:['','','','']
+      }));
+      QUESTIONS=mapped;
+      document.getElementById('preQCount').textContent=QUESTIONS.length+' questions';
+    }
+  }catch(e){ /* API unreachable — embedded demo questions stay as a safe fallback */ }
+  finally{
+    questionsLoading=false;
+    const note=document.getElementById('qLoadNote');
+    if(note) note.remove();
+    checkFormReady();
+  }
 })();
 
 /* ── ENABLE START BUTTON WHEN FORM FILLED ── */
@@ -550,7 +562,7 @@ function checkFormReady(){
   const n=document.getElementById('candName').value.trim();
   const e=document.getElementById('candEmail').value.trim();
   const agreed=document.getElementById('candAgree').checked;
-  document.getElementById('startExamBtn').disabled=!(n&&e&&agreed);
+  document.getElementById('startExamBtn').disabled=!(n&&e&&agreed&&!questionsLoading);
 }
 ['candName','candEmail','candCollege'].forEach(id=>document.getElementById(id).addEventListener('input',checkFormReady));
 document.getElementById('candAgree').addEventListener('change',checkFormReady);
