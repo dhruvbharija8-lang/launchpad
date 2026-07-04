@@ -238,6 +238,8 @@ button{cursor:pointer;font-family:inherit}
 .pl-college{font-size:11.5px;color:rgba(255,255,255,.5);font-family:'Inter',sans-serif;margin-top:4px;display:flex;align-items:center;gap:5px;flex-wrap:wrap}
 .pl-college i{font-size:13px;color:var(--orange)}
 .pl-dom{font-size:10px;font-weight:700;color:var(--orange);background:rgba(255,139,2,.14);border:1px solid rgba(255,139,2,.25);padding:1px 7px;border-radius:20px}
+.pl-head{display:flex;align-items:center;gap:10px}
+.pl-avatar{width:38px;height:38px;border-radius:50%;object-fit:cover;flex-shrink:0;border:1px solid rgba(255,255,255,.15)}
 @media(max-width:1024px){#hofGrid.pl-wall{grid-template-columns:1fr 1fr}}
 @media(max-width:560px){#hofGrid.pl-wall{grid-template-columns:1fr 1fr}}
 @media(max-width:400px){#hofGrid.pl-wall{grid-template-columns:1fr}}

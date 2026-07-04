@@ -318,11 +318,14 @@ async function renderPlacements(){
 function plCard(p){
   const dom = p.Domain ? `<span class="pl-dom">${p.Domain}</span>` : '';
   const co = p.Company ? `<div class="pl-co">${p.Company}</div>` : '';
-  return `<div class="pl-card">
-    ${co}
-    <div class="pl-name">${p.Name}</div>
-    <div class="pl-college"><i class="ti ti-building-bank"></i> ${p.College}${dom}</div>
-  </div>`;
+  const text = `${co}<div class="pl-name">${p.Name}</div><div class="pl-college"><i class="ti ti-building-bank"></i> ${p.College}${dom}</div>`;
+  // Round avatar is opt-in per record (admin's "Image" field on Placements
+  // Wall). No image set = card renders exactly as before, no placeholder
+  // icon or empty avatar slot shown.
+  if (p.Image) {
+    return `<div class="pl-card"><div class="pl-head"><img class="pl-avatar" src="${p.Image}" alt="" loading="lazy" onerror="this.style.display='none'"><div>${text}</div></div></div>`;
+  }
+  return `<div class="pl-card">${text}</div>`;
 }
 
 

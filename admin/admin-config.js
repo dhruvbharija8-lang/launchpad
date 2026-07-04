@@ -161,7 +161,8 @@ const ADMIN_SECTIONS = [
       { name: 'College', label: 'College', type: 'text', col: true },
       { name: 'Company', label: 'Company', type: 'text', col: true },
       { name: 'Batch', label: 'Batch', type: 'select', options: ['final', 'summer'], col: true },
-      { name: 'Domain', label: 'Domain (optional)', type: 'text' }
+      { name: 'Domain', label: 'Domain (optional)', type: 'text' },
+      { name: 'Image', label: 'Avatar image URL (optional — leave blank for now, card shows unchanged without it)', type: 'text' }
     ]
   },
   {
