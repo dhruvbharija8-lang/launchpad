@@ -607,10 +607,11 @@ function slugify(s){
 }
 
 async function loadCourses(){
+  let catPricingCourses = [];
   try {
     const res = await fetch(API_BASE + '/api/public/catPricing');
     const data = await res.json();
-    COURSES = (Array.isArray(data) ? data : [])
+    catPricingCourses = (Array.isArray(data) ? data : [])
       .filter(p => Number(p.Price) > 0) // the free plan is already available on cat-portal.html itself
       .map(p => ({
         id: slugify(p.Plan) || p._id,
@@ -621,8 +622,41 @@ async function loadCourses(){
         feats: String(p.Features || '').split('|').map(s => s.trim()).filter(Boolean)
       }));
   } catch (e) {
-    COURSES = [];
+    catPricingCourses = [];
   }
+
+  // Also pull in every real 'courses' collection row tagged Track:'cat'
+  // (e.g. the 4 standalone Live Project courses added on courses.html) so
+  // they're enrollable from this page too, not just the simple CAT Pricing
+  // Plans. Same source of truth as courses.html — add/edit a course in the
+  // admin's "Courses & Pricing" section with Track:cat and it shows up here.
+  let catRealCourses = [];
+  try {
+    const res2 = await fetch(API_BASE + '/api/public/courses');
+    const rows = await res2.json();
+    catRealCourses = (Array.isArray(rows) ? rows : [])
+      .filter(r => r.Track === 'cat')
+      .map(r => ({
+        id: r.id,
+        title: r.title,
+        price: Number(r.price) || 0,
+        period: '',
+        badge: r.badge || '',
+        feats: String(r.featsText || '').split('\n').map(s => s.trim()).filter(Boolean)
+      }));
+  } catch (e) {
+    catRealCourses = [];
+  }
+
+  // De-dupe by id (a pricing plan and a real course should never share an
+  // id, but guard against it anyway).
+  const seenIds = new Set();
+  COURSES = [...catPricingCourses, ...catRealCourses].filter(c => {
+    if (seenIds.has(c.id)) return false;
+    seenIds.add(c.id);
+    return true;
+  });
+
   renderGrid();
   // If we were sent here from a plan's "Enroll now" button on cat-portal.html
   // (cat-enroll.html?course=slug), open the enroll modal for it automatically.

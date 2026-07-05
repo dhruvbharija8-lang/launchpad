@@ -140,8 +140,13 @@ async function loadCatData(){
   }
 
   try{
+    // The frontend (Vercel) and backend API (Render) live on different
+    // domains — a bare relative fetch('/api/...') hits the frontend's own
+    // domain and 404s silently, which is exactly why newly admin-added
+    // papers never showed up here: this always fell back to CAT_SAMPLE.
+    const base=(typeof MBA_API_BASE!=='undefined'&&MBA_API_BASE)||'';
     const keys=Object.keys(CAT_API);
-    const results=await Promise.all(keys.map(k=>fetch('/api/public/'+CAT_API[k]).then(r=>{
+    const results=await Promise.all(keys.map(k=>fetch(base+'/api/public/'+CAT_API[k]).then(r=>{
       if(!r.ok) throw new Error('bad response for '+CAT_API[k]);
       return r.json();
     })));
@@ -235,7 +240,7 @@ function renderPyq(d){
     const openUrl=pdf?p.PdfUrl:p.Link;
     let action='';
     if(playable) action=`onclick="startMock('${p.MockID}')"`;
-    else if(has&&!expired) action=`onclick="window.open('${openUrl}','_blank')"`;
+    else if(has&&!expired) action=`onclick="openPyqPdf('${openUrl}')"`;
     let actLabel='<i class="ti ti-clock"></i> Coming soon';
     if(expired) actLabel='<i class="ti ti-lock"></i> Deadline passed';
     else if(playable) actLabel='<i class="ti ti-player-play"></i> Attempt now';
@@ -304,6 +309,21 @@ function renderPricing(d){
     </div>`;}).join('');
 }
 
+/* ---------------- LOGIN GATE ----------------
+   Nothing here — no mock, no PYQ (interactive or plain PDF) — should be
+   reachable without a logged-in session. Returns true and lets the caller
+   proceed if logged in; otherwise sends the visitor to login.html and
+   remembers where to send them back to afterwards. */
+function requireCatLogin(afterUrl){
+  let loggedIn=false;
+  try { loggedIn=(window.MBAauth && MBAauth.isLoggedIn()) || !!localStorage.getItem('mbaPartnerSession'); } catch(e){}
+  if(loggedIn) return true;
+  alert('Please log in first to access mock tests and PYQs.');
+  try { if(window.MBAauth) MBAauth.setReturn(afterUrl); } catch(e){}
+  window.location.href='login.html';
+  return false;
+}
+
 /* ---------------- MOCK PLAYER ----------------
    "Start mock" launches the full CAT-style exam engine (mock-exam.html)
    — sectional timer, question palette, and a detailed results/
@@ -319,7 +339,16 @@ function startMock(id){
   if(isCatExpired(entry)){ alert('The deadline for this test has passed.'); return; }
   const dur=Number(entry.Duration)||40;
   const name=encodeURIComponent(entry.Title||'CAT Mock');
-  window.location.href=`mock-exam.html?mock=${encodeURIComponent(id)}&name=${name}&dur=${dur}`;
+  const url=`mock-exam.html?mock=${encodeURIComponent(id)}&name=${name}&dur=${dur}`;
+  if(!requireCatLogin(url)) return;
+  window.location.href=url;
+}
+
+/* PYQ papers that are just a plain PDF (no MockID/interactive set) still
+   need the same login gate before opening. */
+function openPyqPdf(url){
+  if(!requireCatLogin(location.href)) return;
+  window.open(url,'_blank');
 }
 
 /* ---------------- INIT ---------------- */

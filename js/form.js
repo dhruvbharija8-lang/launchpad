@@ -271,6 +271,7 @@ function initDashboard() {
   renderSessions('overviewSessions', u.sessions.slice(0, 2));
   renderSessions('allSessions', u.sessions);
   renderMaterials(u.materials);
+  renderMaterialsNotification(u);
   renderProgress(u);
   renderOverviewStats(u);
 
@@ -381,13 +382,42 @@ function renderSessions(containerId, sessions) {
     </div>`).join('');
 }
 
+/* Drive folders are private — the admin shares each one manually with the
+   student's email, then flips "Drive access granted" on that Enrollments
+   row. The student isn't watching the admin dashboard, so the first time
+   they log back in after that happens, show a one-time banner pointing
+   them at Materials. Tracked per student+course in localStorage so it only
+   shows once (dismissing it, or just visiting once, marks it seen). */
+function renderMaterialsNotification(u) {
+  const box = document.getElementById('materialsNotifBanner');
+  if (!box) return;
+  const seenKey = code => `mbaMatNotifSeen_${u.email}_${code}`;
+  const newlyGranted = (u.courses || []).filter(c => c.materialsGranted && !localStorage.getItem(seenKey(c.code)));
+
+  if (!newlyGranted.length) { box.innerHTML = ''; return; }
+
+  const names = newlyGranted.map(c => c.title).join(', ');
+  box.innerHTML = `
+    <div class="welcome-banner" style="background:linear-gradient(120deg,#1a7f4b,#22a35e);margin-bottom:16px">
+      <div class="welcome-text">
+        <h3 style="margin:0">🎉 Your materials are ready!</h3>
+        <p style="margin:4px 0 0">Access has been granted for: <b>${names}</b>. Head to the Materials tab to view your Drive links.</p>
+      </div>
+      <button class="welcome-cta" id="matNotifDismiss">Got it</button>
+    </div>`;
+  document.getElementById('matNotifDismiss').onclick = () => {
+    newlyGranted.forEach(c => localStorage.setItem(seenKey(c.code), '1'));
+    box.innerHTML = '';
+  };
+}
+
 /* Materials shown DIRECTLY on the site, grouped by category, with filter chips. */
 function renderMaterials(materials) {
   const grid = document.getElementById('materialsGrid');
   if (!grid) return;
 
   if (!materials.length) {
-    grid.innerHTML = emptyState('ti-folder-open', 'No materials yet', 'Study material for your programs will appear here.');
+    grid.innerHTML = emptyState('ti-folder-open', 'Materials on the way', 'You will get access within 24 hours. Our team adds the Drive folder/links for your course shortly after enrollment.');
     const fc = document.getElementById('materialFilters'); if (fc) fc.innerHTML = '';
     const count = document.getElementById('materialCount'); if (count) count.textContent = '';
     return;

@@ -233,7 +233,12 @@ function buildStudentView(data, email) {
       // Which overview stat-cards are relevant for this specific program
       // (admin-set on the Dashboard Programs entry) — drives the
       // course-aware "Overview" stat row instead of one fixed set for everyone.
-      statType: p.StatType || 'bootcamp'
+      statType: p.StatType || 'bootcamp',
+      // Drive folders are private — the admin has to individually share them
+      // with the student's email before the link is actually usable. This
+      // flag (set on the Enrollments row) gates whether this course's
+      // materials appear at all, and drives the "materials ready" notification.
+      materialsGranted: _yes(e.AccessGranted)
     };
   });
 
@@ -255,6 +260,14 @@ function buildStudentView(data, email) {
   const materials = [];
   data.materials
     .filter(x => myCodes.includes(x.ProgramCode))
+    // Drive folders are private — only show this course's materials once the
+    // admin has actually shared the folder with the student and flipped
+    // "Drive access granted" to Yes on their Enrollments row. Otherwise the
+    // student would see a link that just errors out for them.
+    .filter(x => {
+      const enrollment = myEnroll.find(e => e.ProgramCode === x.ProgramCode);
+      return _yes(enrollment && enrollment.AccessGranted);
+    })
     .filter(x => {
       if (!x.Domain) return true;
       const enrollment = myEnroll.find(e => e.ProgramCode === x.ProgramCode);
@@ -303,6 +316,7 @@ function buildStudentView(data, email) {
     return domainLinks.find(dl => _lc(dl.DomainKey).split(',').map(k => k.trim()).sort().join(',') === wanted);
   };
   myEnroll.forEach(e => {
+    if (!_yes(e.AccessGranted)) return; // same private-Drive gate as above
     const keys = String(e.Domains || '').split(',').map(k => _lc(k)).filter(Boolean);
     if (!keys.length) return;
     const p = data.programs.find(pr => pr.ProgramCode === e.ProgramCode) || {};

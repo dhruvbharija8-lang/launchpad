@@ -162,7 +162,8 @@ const ADMIN_SECTIONS = [
   },
   {
     key: 'placements', label: 'Placements Wall', icon: 'ti-trophy', group: 'Site content',
-    desc: 'The placements wall on the Testimonials page.',
+    desc: 'The placements wall on the Testimonials page. Add rows one at a time, or bulk-import many at once from Excel below.',
+    bulkImport: { itemLabel: 'placement', keepAddButton: true },
     fields: [
       { name: 'Track', label: 'Show on which toggle?', type: 'select', options: ['mba', 'cat'], col: true },
       { name: 'Name', label: 'Student name', type: 'text', required: true, col: true },
@@ -195,7 +196,8 @@ const ADMIN_SECTIONS = [
   },
   {
     key: 'mentors', label: 'Mentors', icon: 'ti-users', group: 'Site content',
-    desc: 'The "Meet Your Mentors" section on the home page.',
+    desc: 'The "Meet Your Mentors" section on the home page. Add rows one at a time, or bulk-import many at once from Excel below.',
+    bulkImport: { itemLabel: 'mentor', keepAddButton: true },
     fields: [
       { name: 'Name', label: 'Mentor name', type: 'text', required: true, col: true },
       { name: 'School', label: 'B-school', type: 'text', col: true },
@@ -224,7 +226,8 @@ const ADMIN_SECTIONS = [
   },
   {
     key: 'gdpi', label: 'GDPI Quotes', icon: 'ti-message-star', group: 'Site content',
-    desc: 'Student quotes on the CAT/OMETs GDPI section.',
+    desc: 'Student quotes on the CAT/OMETs GDPI section (also shown as testimonials for the CAT toggle). Add rows one at a time, or bulk-import many at once from Excel below.',
+    bulkImport: { itemLabel: 'quote', keepAddButton: true },
     fields: [
       { name: 'Name', label: 'Student name', type: 'text', required: true, col: true },
       { name: 'College', label: 'College', type: 'text', col: true },
@@ -233,7 +236,8 @@ const ADMIN_SECTIONS = [
   },
   {
     key: 'hallOfFame', label: 'Hall of Fame Spotlight', icon: 'ti-award', group: 'Site content',
-    desc: 'The 3 photo+quote spotlight stories at the top of the homepage\'s Hall of Fame section (the highlight reel — separate from the bulk Placements Wall).',
+    desc: 'The 3 photo+quote spotlight stories at the top of the homepage\'s Hall of Fame section (the highlight reel — separate from the bulk Placements Wall). Add rows one at a time, or bulk-import from Excel below.',
+    bulkImport: { itemLabel: 'story', keepAddButton: true },
     fields: [
       { name: 'Name', label: 'Student name', type: 'text', required: true, col: true },
       { name: 'School', label: 'B-school', type: 'text', col: true },
@@ -279,7 +283,8 @@ const ADMIN_SECTIONS = [
   },
   {
     key: 'materials', label: 'Study Materials', icon: 'ti-files', group: 'Student dashboard',
-    desc: 'One row per course/combo (already pre-created for every course below — just open a course\'s row and add its link(s)). Any Live-Project-containing course (standalone or combo) instead gets one row PER DOMAIN — e.g. "Bootcamp + Live Project — Finance" — since access depends on which domain the student picked at checkout. A student only sees the row(s) matching what they actually chose.',
+    desc: 'One row per course/combo (already pre-created for every course below — just open a course\'s row and add its link(s)). Any Live-Project-containing course (standalone or combo) instead gets one row PER DOMAIN — e.g. "Bootcamp + Live Project — Finance" — since access depends on which domain the student picked at checkout. A student only sees the row(s) matching what they actually chose. Add rows one at a time, or bulk-import many at once from Excel below (ProgramCode must exactly match a course id from "Courses & Pricing"; separate multiple drive links in one row with a | character).',
+    bulkImport: { itemLabel: 'materials row', keepAddButton: true },
     fields: [
       { name: 'ProgramCode', label: 'Course', type: 'ref', refCollection: 'courses', refValue: 'id', refLabel: r => `${r.title} — ${r.id}`, required: true, col: true },
       { name: 'Domain', label: 'Domain (leave blank unless this row is for a specific Live Project domain)', type: 'select', options: ['', 'operations', 'marketing', 'hr', 'finance', 'consulting', 'product'], col: true },
@@ -311,7 +316,7 @@ const ADMIN_SECTIONS = [
   },
   {
     key: 'enrollments', label: 'Enrollments', icon: 'ti-clipboard-check', group: 'Student dashboard',
-    desc: 'Which student is enrolled in which program, and their progress. One row per student per program.',
+    desc: 'Which student is enrolled in which program, and their progress. One row per student per program. Materials/Drive links for a course only show up on the student\'s dashboard once you flip "Drive access granted" to Yes here — since Drive folders are private and you have to individually share them with the student\'s email first. The student gets a notification banner on their dashboard the next time they log in after you do this.',
     admin: true,
     fields: [
       { name: 'Email', label: 'Student email (must match a Students row)', type: 'text', required: true, col: true },
@@ -319,7 +324,8 @@ const ADMIN_SECTIONS = [
       { name: 'Progress', label: 'Progress % (0-100)', type: 'number', col: true },
       { name: 'NextSession', label: 'Next session name', type: 'text' },
       { name: 'NextDate', label: 'Next date', type: 'text' },
-      { name: 'Domains', label: 'Live Project domain(s) chosen at checkout (comma-separated key, e.g. "marketing" or "marketing,hr") — auto-filled by Razorpay checkout', type: 'text' }
+      { name: 'Domains', label: 'Live Project domain(s) chosen at checkout (comma-separated key, e.g. "marketing" or "marketing,hr") — auto-filled by Razorpay checkout', type: 'text' },
+      { name: 'AccessGranted', label: 'Drive access granted to student? (share the Drive folder with their email first, then set this to Yes)', type: 'select', options: ['no', 'yes'], col: true }
     ]
   },
   {
@@ -451,7 +457,8 @@ const ADMIN_SECTIONS = [
   },
   {
     key: 'catDomainQA', label: 'CAT Domain Q&A', icon: 'ti-bulb', group: 'CAT / OMETs Portal',
-    desc: 'Domain-wise interview question banks (Finance, Marketing, Consulting, etc).',
+    desc: 'Domain-wise interview question banks (Finance, Marketing, Consulting, etc). Add rows one at a time, or bulk-import many at once from Excel below.',
+    bulkImport: { itemLabel: 'entry', keepAddButton: true },
     fields: [
       { name: 'Domain', label: 'Domain', type: 'text', required: true, col: true },
       { name: 'Title', label: 'Title', type: 'text', required: true, col: true },
