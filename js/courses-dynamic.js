@@ -158,53 +158,11 @@ async function hydrateCoursesFromApi() {
   }
 }
 
-/* CAT/OMETs Enroll & Refer plans (the "CAT Pricing Plans" admin section,
-   also used by cat-enroll.html and cat-portal.js) aren't real rows in the
-   'courses' collection — they're a separate, simpler pricing-plan shape.
-   Mirror each priced plan into the COURSES array (Track:'cat') so it also
-   shows up as a card on courses.html under the CAT persona toggle, without
-   the admin having to enter the same course twice in two different
-   sections. The free plan is skipped since it's already shown for free on
-   cat-portal.html. Ids are prefixed so they can never collide with a real
-   'courses' row id, and this always re-derives from catPricing (add/edit/
-   remove a plan in the admin dashboard and it's reflected here too). */
-async function hydrateCatPricingIntoCourses() {
-  if (typeof COURSES === 'undefined') return false;
-  try {
-    const res = await fetch(_apiBase() + '/api/public/catPricing');
-    if (!res.ok) return false;
-    const rows = await res.json();
-    if (!Array.isArray(rows)) return false;
-    const slugify = s => String(s || '').toLowerCase().trim().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
-    let changed = false;
-    // Drop any previously-mirrored plan cards, then re-add from scratch —
-    // simplest way to stay in sync if a plan is renamed/removed/re-priced.
-    const before = COURSES.length;
-    for (let i = COURSES.length - 1; i >= 0; i--) {
-      if (COURSES[i]._fromCatPricing) { COURSES.splice(i, 1); }
-    }
-    if (COURSES.length !== before) changed = true;
-    rows.filter(p => Number(p.Price) > 0).forEach(p => {
-      const feats = String(p.Features || '').split('|').map(s => s.trim()).filter(Boolean);
-      // Same id scheme cat-enroll.html itself uses (slugify(Plan) || _id) —
-      // keeping these identical is what makes "Enroll Now" on a mirrored
-      // card here deep-link to the matching plan on cat-enroll.html.
-      COURSES.push({
-        id: slugify(p.Plan) || p._id, Track: 'cat',
-        cat: /gdpi/i.test(p.Plan) ? 'gdpi' : 'bootcamp', type: 'CAT/OMETs Plan',
-        img: 'images/placement-bootcamp.png', badge: p.Badge || null,
-        rating: 4.8, students: 0, level: 'All levels', hours: '', instr: 'MBA Partner mentors',
-        title: p.Plan, sub: feats.slice(0, 2).join(' · '), tagline: p.Badge || '',
-        desc: feats.join('. '), price: Number(p.Price) || 0, mrp: null, off: null,
-        feats, curriculum: [], compInfo: {}, _fromCatPricing: true
-      });
-      changed = true;
-    });
-    return changed;
-  } catch (e) {
-    return false;
-  }
-}
+/* NOTE: the "CAT Pricing Plans" mirroring that used to live here has been
+   removed — those 3 plans (Free Material, Mock Test Series, GDPI Flagship)
+   are now ordinary rows in the 'courses' collection (Track:'cat'), so
+   hydrateCoursesFromApi() above already picks them up like any other
+   admin-added course. One less thing to keep in sync. */
 
 /* Merge admin-server combo definitions (COMBO_INCLUDES) so the admin
    can add/edit combos without touching code. */
@@ -255,10 +213,9 @@ async function hydrateCoursesFromSheet() {
 /* Try the admin API first, then the Sheet, then just keep the built-in prices. */
 async function hydrateCourses() {
   const apiChanged = await hydrateCoursesFromApi();
-  const catPlansChanged = await hydrateCatPricingIntoCourses();
   await hydrateCombosFromApi();
   const sheetChanged = await hydrateCoursesFromSheet();
-  return apiChanged || catPlansChanged || sheetChanged;
+  return apiChanged || sheetChanged;
 }
 
 /* Fetch from the live source(s) (if configured/reachable) and re-render if anything changed. */

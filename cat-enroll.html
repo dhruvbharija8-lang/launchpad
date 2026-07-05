@@ -607,40 +607,24 @@ function slugify(s){
 }
 
 async function loadCourses(){
-  let catPricingCourses = [];
-  try {
-    const res = await fetch(API_BASE + '/api/public/catPricing');
-    const data = await res.json();
-    catPricingCourses = (Array.isArray(data) ? data : [])
-      .filter(p => Number(p.Price) > 0) // the free plan is already available on cat-portal.html itself
-      .map(p => ({
-        id: slugify(p.Plan) || p._id,
-        title: p.Plan,
-        price: Number(p.Price) || 0,
-        period: p.Period || '',
-        badge: p.Badge || '',
-        feats: String(p.Features || '').split('|').map(s => s.trim()).filter(Boolean)
-      }));
-  } catch (e) {
-    catPricingCourses = [];
-  }
-
-  // Also pull in every real 'courses' collection row tagged Track:'cat'
-  // (e.g. the 4 standalone Live Project courses added on courses.html) so
-  // they're enrollable from this page too, not just the simple CAT Pricing
-  // Plans. Same source of truth as courses.html — add/edit a course in the
-  // admin's "Courses & Pricing" section with Track:cat and it shows up here.
+  // Every CAT/OMETs course/plan — including the 3 that used to live in a
+  // separate "CAT Pricing Plans" section (Free Material, Mock Test Series,
+  // GDPI Flagship) — is now just a row in the same 'courses' collection
+  // (Track:'cat') that powers courses.html and the "Courses & Pricing" admin
+  // section. Single fetch, single source of truth: add/edit a CAT course's
+  // price anywhere and it shows up here, on courses.html, and on the
+  // cat-portal.html pricing cards, all at once.
   let catRealCourses = [];
   try {
     const res2 = await fetch(API_BASE + '/api/public/courses');
     const rows = await res2.json();
     catRealCourses = (Array.isArray(rows) ? rows : [])
-      .filter(r => r.Track === 'cat')
+      .filter(r => r.Track === 'cat' && Number(r.price) > 0) // the free plan is already available on cat-portal.html itself
       .map(r => ({
         id: r.id,
         title: r.title,
         price: Number(r.price) || 0,
-        period: '',
+        period: r.type || '',
         badge: r.badge || '',
         feats: String(r.featsText || '').split('\n').map(s => s.trim()).filter(Boolean)
       }));
@@ -648,14 +632,7 @@ async function loadCourses(){
     catRealCourses = [];
   }
 
-  // De-dupe by id (a pricing plan and a real course should never share an
-  // id, but guard against it anyway).
-  const seenIds = new Set();
-  COURSES = [...catPricingCourses, ...catRealCourses].filter(c => {
-    if (seenIds.has(c.id)) return false;
-    seenIds.add(c.id);
-    return true;
-  });
+  COURSES = catRealCourses;
 
   renderGrid();
   // If we were sent here from a plan's "Enroll now" button on cat-portal.html

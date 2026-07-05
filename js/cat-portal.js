@@ -121,7 +121,7 @@ async function _catTab(tab){
 const CAT_API = {
   materials:'catMaterials', mocks:'catMocks', pyq:'catPyq',
   leaderboard:'catLeaderboard', gdpi:'catGdpi', domainqa:'catDomainQA',
-  mentors:'catMentors', pricing:'catPricing'
+  mentors:'catMentors'
 };
 let _catCache=null;
 async function loadCatData(){
@@ -151,6 +151,23 @@ async function loadCatData(){
       return r.json();
     })));
     const data={}; keys.forEach((k,i)=>data[k]=results[i]);
+
+    // Pricing cards used to come from their own separate 'catPricing'
+    // collection/admin-section — that's now merged into 'courses' (Track:cat,
+    // ids free-material/mock-test-series/gdpi-flagship), same single source
+    // the rest of the site (courses.html, cat-enroll.html) already reads
+    // from. Any course tagged Track:cat + category bootcamp/gdpi shows up
+    // here automatically, no separate section to keep in sync.
+    const coursesRes=await fetch(base+'/api/public/courses');
+    if(!coursesRes.ok) throw new Error('bad response for courses');
+    const allCourses=await coursesRes.json();
+    data.pricing=(Array.isArray(allCourses)?allCourses:[])
+      .filter(c=>c.Track==='cat' && (c.cat==='bootcamp'||c.cat==='gdpi'))
+      .map(c=>({
+        _id:c.id, Plan:c.title, Price:c.price, Period:c.type||'', Badge:c.badge||'',
+        Features:String(c.featsText||'').split('\n').map(s=>s.trim()).filter(Boolean).join('|')
+      }));
+
     data.exams=CAT_SAMPLE.exams;
     _catCache=data;
   }catch(e){

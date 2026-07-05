@@ -179,7 +179,7 @@ const COLLECTIONS = [
   // CAT / OMETs prep portal (kept separate from the collections above so
   // names don't clash — e.g. catMentors vs the homepage's mentors).
   'catMaterials', 'catMocks', 'catQuestions', 'catPyq', 'catPyqQuestions',
-  'catLeaderboard', 'catGdpi', 'catDomainQA', 'catMentors', 'catPricing'
+  'catLeaderboard', 'catGdpi', 'catDomainQA', 'catMentors'
 ];
 
 module.exports = { makePublicRouter, makePublicWriteRouter, makeAdminRouter, COLLECTIONS, ADMIN_ONLY, PUBLIC_WRITE_ONLY, autoProvisionFromSubmission };

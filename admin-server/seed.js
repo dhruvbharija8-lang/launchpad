@@ -541,10 +541,35 @@ const CAT_MENTORS = [
   { Name: 'Rohan M.', School: 'XLRI Jamshedpur', Converted: 'XAT 99.4%ile', Domain: 'Finance', LinkedIn: '#' }
 ];
 
-const CAT_PRICING = [
-  { Plan: 'Free Material', Price: '0', Period: 'free', Features: 'Aristotle RC tricks|50 free sectionals|Quant formula booklet', Badge: '' },
-  { Plan: 'Mock Test Series', Price: '1999', Period: 'one-time', Features: 'VARC + QA + LRDI mocks|Detailed solutions|Leaderboard access', Badge: '' },
-  { Plan: 'GDPI Flagship', Price: '4999', Period: 'one-time', Features: '10 mock PIs|10 mock GDs|100+ past transcripts|Domain Q&A prep', Badge: 'Bestseller' }
+// These used to live in a separate 'catPricing' collection with its own
+// admin section — merged into the 'courses' collection (Track:'cat') so
+// there's a single place to edit any CAT/OMETs price, instead of two
+// (a course's price living in "Courses & Pricing" while these 3 plans lived
+// in a totally separate "CAT Pricing Plans" section was a real source of
+// confusion). cat-portal.js's pricing cards, cat-enroll.html's course grid,
+// and courses.html all now read these from the same 'courses' collection.
+const CAT_PRICING_COURSES = [
+  {
+    id: 'free-material', Track: 'cat', cat: 'bootcamp', type: 'Free resource',
+    title: 'Free Material', price: 0, mrp: null, off: null, badge: '',
+    sub: 'Aristotle RC tricks · 50 free sectionals', tagline: '',
+    desc: 'Free CAT/OMETs prep material — no purchase needed.',
+    featsText: 'Aristotle RC tricks\n50 free sectionals\nQuant formula booklet', curriculumText: ''
+  },
+  {
+    id: 'mock-test-series', Track: 'cat', cat: 'bootcamp', type: 'one-time',
+    title: 'Mock Test Series', price: 1999, mrp: null, off: null, badge: '',
+    sub: 'VARC + QA + LRDI mocks', tagline: '',
+    desc: 'Full-length CAT/OMETs mock test series with detailed solutions and leaderboard access.',
+    featsText: 'VARC + QA + LRDI mocks\nDetailed solutions\nLeaderboard access', curriculumText: ''
+  },
+  {
+    id: 'gdpi-flagship', Track: 'cat', cat: 'gdpi', type: 'one-time',
+    title: 'GDPI Flagship', price: 4999, mrp: null, off: null, badge: 'Bestseller',
+    sub: '10 mock PIs · 10 mock GDs', tagline: 'Bestseller',
+    desc: 'Flagship GDPI prep program with mock PIs, mock GDs, past transcripts and domain Q&A prep.',
+    featsText: '10 mock PIs\n10 mock GDs\n100+ past transcripts\nDomain Q&A prep', curriculumText: ''
+  }
 ];
 
 function run(force) {
@@ -556,7 +581,7 @@ function run(force) {
   }
   const data = {
     settings: SETTINGS,
-    courses: withIds(COURSES.concat(CAT_LIVE_PROJECTS)),
+    courses: withIds(COURSES.concat(CAT_LIVE_PROJECTS).concat(CAT_PRICING_COURSES)),
     combos: withIds(COMBOS),
     coupons: withIds(COUPONS),
     // Every placements row is MBA-track content unless explicitly marked
@@ -586,7 +611,6 @@ function run(force) {
     catGdpi: withIds(CAT_GDPI),
     catDomainQA: withIds(CAT_DOMAINQA),
     catMentors: withIds(CAT_MENTORS),
-    catPricing: withIds(CAT_PRICING),
     leads: [], mentorApplications: [], collegeCollabLeads: [], orders: [], enrollmentRequests: [],
     adminUsers: existing.adminUsers || []
   };
@@ -606,7 +630,7 @@ function backfillMissingCollections() {
   const DEFAULTS = {
     catMaterials: CAT_MATERIALS, catMocks: CAT_MOCKS, catQuestions: CAT_QUESTIONS,
     catPyq: CAT_PYQ, catPyqQuestions: CAT_PYQ_QUESTIONS, catLeaderboard: CAT_LEADERBOARD,
-    catGdpi: CAT_GDPI, catDomainQA: CAT_DOMAINQA, catMentors: CAT_MENTORS, catPricing: CAT_PRICING,
+    catGdpi: CAT_GDPI, catDomainQA: CAT_DOMAINQA, catMentors: CAT_MENTORS,
     hallOfFame: HALL_OF_FAME, freeSessions: FREE_SESSIONS,
     collabTestimonials: COLLAB_TESTIMONIALS,
     collabColleges: COLLAB_COLLEGES,
@@ -830,6 +854,28 @@ function backfillMissingCollections() {
         console.log('Refreshed CAT/OMETs Live Project course copy to match MBA wording:', row.id);
       }
     });
+    // One-time migration: the 3 "CAT Pricing Plans" (Free Material, Mock Test
+    // Series, GDPI Flagship) used to live in their own separate 'catPricing'
+    // collection/admin-section — now they're just normal rows in 'courses'
+    // (Track:'cat'), same as every other course, so there's one single place
+    // to edit any CAT price instead of two. Add whichever of the 3 are
+    // missing (never overwrites if the admin already has a row with that id).
+    CAT_PRICING_COURSES.forEach(c => {
+      if (!existingIds.has(c.id)) {
+        data.courses.push({ _id: db.nextId(data.courses), ...c });
+        existingIds.add(c.id);
+        changed = true;
+        console.log('Migrated CAT Pricing plan into Courses collection:', c.id);
+      }
+    });
+  }
+  // The old 'catPricing' collection is no longer read anywhere — drop it so
+  // it doesn't show up as orphaned/confusing data (its 3 plans now live in
+  // 'courses', migrated above).
+  if (Array.isArray(data.catPricing) && data.catPricing.length) {
+    delete data.catPricing;
+    changed = true;
+    console.log('Removed legacy catPricing collection (migrated into courses)');
   }
   if (changed) db.writeAll(data);
 }

@@ -477,16 +477,12 @@ const ADMIN_SECTIONS = [
       { name: 'Domain', label: 'Domain', type: 'text' },
       { name: 'LinkedIn', label: 'LinkedIn URL', type: 'text' }
     ]
-  },
-  {
-    key: 'catPricing', label: 'CAT Pricing Plans', icon: 'ti-tag', group: 'CAT / OMETs Portal',
-    desc: 'Pricing plans shown on the CAT/OMETs prep portal.',
-    fields: [
-      { name: 'Plan', label: 'Plan name', type: 'text', required: true, col: true },
-      { name: 'Price', label: 'Price (₹, 0 = free)', type: 'text', required: true, col: true },
-      { name: 'Period', label: 'Period label (e.g. "one-time", "free")', type: 'text' },
-      { name: 'Features', label: 'Features (separate each with a | character)', type: 'textarea' },
-      { name: 'Badge', label: 'Badge (e.g. "Bestseller", optional)', type: 'text' }
-    ]
   }
+  // NOTE: the old "CAT Pricing Plans" section (Free Material / Mock Test
+  // Series / GDPI Flagship) has been removed — those 3 plans now live as
+  // ordinary rows in "Courses & Pricing" above (Track: cat, ids:
+  // free-material / mock-test-series / gdpi-flagship). Edit their
+  // price/copy there; the CAT/OMETs portal pricing cards and cat-enroll.html
+  // both read from that same 'courses' collection, so there's only one
+  // place to touch a CAT price now instead of two.
 ];
