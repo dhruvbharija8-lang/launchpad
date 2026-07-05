@@ -244,7 +244,7 @@ function renderMocks(d){
     if(attempted){
       actionsHtml=`<div style="display:flex;gap:8px">
         <button class="cp-mock-btn" onclick="analyzeTest('${m.MockID}')"><i class="ti ti-chart-bar"></i> Analyze Test</button>
-        ${expired?`<button class="cp-mock-btn ghost" onclick="viewMockLeaderboard('${m.MockID}')"><i class="ti ti-medal"></i> Leaderboard</button>`:''}
+        ${expired?`<button class="cp-mock-btn" onclick="viewMockLeaderboard('${m.MockID}')"><i class="ti ti-medal"></i> Leaderboard</button>`:''}
       </div>`;
     } else if(usable){
       actionsHtml=`<button class="cp-mock-btn" onclick="startMock('${m.MockID}')"><i class="ti ti-player-play"></i> Start mock</button>`;
