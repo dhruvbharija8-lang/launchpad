@@ -801,7 +801,7 @@ function finalSubmit(){
 }
 
 /* ── RESULTS ── */
-function showResults(){
+async function showResults(){
   document.getElementById('screenExam').classList.add('hidden');
   document.getElementById('screenResult').classList.remove('hidden');
 
@@ -841,10 +841,11 @@ function showResults(){
   renderBar();
 
   // Leaderboard
-  renderLeaderboard(state.candName,score,percentile);
+  await renderLeaderboard(state.candName,score,percentile);
 
   // Q Review
   renderQReview();
+  maybeScrollToLeaderboard();
 
   // Record the attempt so this paper can't be started again from this
   // account, and so the CAT portal can swap "Start mock" for "Analyze Test"
@@ -870,7 +871,7 @@ function showResults(){
    instead of letting the student take the paper again. Reuses the same
    chart/leaderboard/review renderers as a fresh submission — they only read
    from `state` and `QUESTIONS`, both of which we populate here first. */
-function renderStoredResult(attempt){
+async function renderStoredResult(attempt){
   document.getElementById('screenPre').classList.add('hidden');
   document.getElementById('screenExam').classList.add('hidden');
   document.getElementById('screenResult').classList.remove('hidden');
@@ -902,8 +903,9 @@ function renderStoredResult(attempt){
 
   renderDonut(correct,wrong,skipped);
   renderBar();
-  renderLeaderboard(state.candName,score,percentile);
+  await renderLeaderboard(state.candName,score,percentile);
   renderQReview();
+  maybeScrollToLeaderboard();
 
   const heroEl=document.querySelector('.result-hero');
   if(heroEl&&heroEl.parentNode&&!document.getElementById('alreadySubmittedNote')){
@@ -936,27 +938,32 @@ function renderBar(){
   });
 }
 
-function renderLeaderboard(myName,myScore,myPct){
-  // Simulated leaderboard including user
-  const lb=[
-    {name:'Aarav S.',college:'IIM Lucknow',score:QUESTIONS.length*3,pct:99.4},
-    {name:'Diya M.',college:'NMIMS Mumbai',score:QUESTIONS.length*3-1,pct:98.1},
-    {name:'Kabir N.',college:'FMS Delhi',score:QUESTIONS.length*3-3,pct:95.7},
-    {name:'Isha R.',college:'IIM Indore',score:QUESTIONS.length*3-3,pct:94.2},
-  ];
-  // Insert user at correct position
-  const me={name:myName||'You',college:'—',score:myScore,pct:myPct,isMe:true};
+/* Real leaderboard for this exact paper — pulled from every student who's
+   actually submitted it (catAttempts), not demo/placeholder names. Safe to
+   call regardless of whether this student's own just-submitted attempt has
+   finished saving yet: the server excludes their own email from the list,
+   and their row is always added back in locally with the score already
+   computed here, so there's no race to worry about. */
+async function renderLeaderboard(myName,myScore,myPct){
+  let lb=[];
+  try{
+    const base=(typeof MBA_API_BASE!=='undefined'&&MBA_API_BASE)||'';
+    const res=await fetch(base+'/api/public/catAttempts/leaderboard?mockId='+encodeURIComponent(MOCK_ID)+'&excludeEmail='+encodeURIComponent(STUDENT_EMAIL||''));
+    const rows=res.ok?await res.json():[];
+    if(Array.isArray(rows)) lb=rows.map(r=>({name:r.Name||'Student',score:r.Score||0,pct:r.Percentile||0}));
+  }catch(e){ /* API unreachable — leaderboard just shows this student alone */ }
+
+  const me={name:myName||'You',score:myScore,pct:myPct,isMe:true};
   lb.push(me);
   lb.sort((a,b)=>b.score-a.score||b.pct-a.pct);
   const myRank=lb.findIndex(r=>r.isMe)+1;
 
   const rankBadge=i=>{const cls=i<=3?'r'+i:'rn';return`<div class="rank-badge ${cls}">${i===1?'🥇':i===2?'🥈':i===3?'🥉':i}</div>`;};
   document.getElementById('lbTable').innerHTML=`
-    <thead><tr><th>Rank</th><th>Student</th><th>College</th><th>Score</th><th>Percentile</th></tr></thead>
+    <thead><tr><th>Rank</th><th>Student</th><th>Score</th><th>Percentile</th></tr></thead>
     <tbody>${lb.map((r,i)=>`<tr class="${r.isMe?'lb-you':''}">
       <td>${rankBadge(i+1)}</td>
       <td><strong>${r.name}</strong>${r.isMe?' <span style="font-size:10px;background:rgba(255,139,2,.2);color:var(--orange);padding:1px 7px;border-radius:10px;font-weight:700">YOU</span>':''}</td>
-      <td>${r.college}</td>
       <td style="font-weight:700">${r.score}/${QUESTIONS.length*3}</td>
       <td style="font-weight:700;color:${r.isMe?'var(--orange)':'inherit'}">${r.pct}%ile</td>
     </tr>`).join('')}</tbody>`;
@@ -968,6 +975,15 @@ function renderLeaderboard(myName,myScore,myPct){
     rankEl.innerHTML=`<div class="rstat-n" style="color:var(--orange)">#${myRank}</div><div class="rstat-l">Your Rank</div>`;
     document.querySelector('.result-stats').insertBefore(rankEl,document.querySelector('.result-stats').firstChild);
   }
+}
+
+/* Reached via the CAT portal's "Leaderboard" button (?scroll=leaderboard in
+   the URL) — jumps straight to this paper's own real leaderboard section
+   instead of leaving the student to find it themselves. */
+function maybeScrollToLeaderboard(){
+  if(params.get('scroll')!=='leaderboard') return;
+  const el=document.querySelector('.leaderboard-sec');
+  if(el) setTimeout(()=>el.scrollIntoView({behavior:'smooth',block:'start'}),50);
 }
 
 function renderQReview(){

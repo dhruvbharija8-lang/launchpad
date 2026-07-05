@@ -40,4 +40,24 @@ router.get('/mine', (req, res) => {
   res.json(mine);
 });
 
+// Real, live leaderboard for one specific paper — replaces the old demo/fake
+// names shown on the results screen now that the site has real students.
+// Deliberately strips Email/Phone/answers before responding (only Name,
+// Score, MaxScore, Percentile go out) so this stays safe as a public,
+// no-token route. excludeEmail lets the caller leave their own row out of
+// the response and splice their own just-computed result back in locally,
+// instead of racing the fire-and-forget POST that just saved it.
+router.get('/leaderboard', (req, res) => {
+  const mockId = req.query.mockId;
+  if (!mockId) return res.json([]);
+  const exclude = String(req.query.excludeEmail || '').trim().toLowerCase();
+  const rows = db.getCollection('catAttempts').filter(r => r.MockID === mockId);
+  const board = rows
+    .filter(r => !exclude || (r.Email || '').toLowerCase() !== exclude)
+    .map(r => ({ Name: r.Name || 'Student', Score: r.Score || 0, MaxScore: r.MaxScore || 0, Percentile: r.Percentile || 0 }))
+    .sort((a, b) => b.Score - a.Score || b.Percentile - a.Percentile)
+    .slice(0, 20);
+  res.json(board);
+});
+
 module.exports = router;

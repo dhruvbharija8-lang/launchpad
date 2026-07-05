@@ -244,7 +244,7 @@ function renderMocks(d){
     if(attempted){
       actionsHtml=`<div style="display:flex;gap:8px">
         <button class="cp-mock-btn" onclick="analyzeTest('${m.MockID}')"><i class="ti ti-chart-bar"></i> Analyze Test</button>
-        ${expired?`<button class="cp-mock-btn ghost" onclick="viewMockLeaderboard()"><i class="ti ti-medal"></i> Leaderboard</button>`:''}
+        ${expired?`<button class="cp-mock-btn ghost" onclick="viewMockLeaderboard('${m.MockID}')"><i class="ti ti-medal"></i> Leaderboard</button>`:''}
       </div>`;
     } else if(usable){
       actionsHtml=`<button class="cp-mock-btn" onclick="startMock('${m.MockID}')"><i class="ti ti-player-play"></i> Start mock</button>`;
@@ -296,7 +296,7 @@ function renderPyq(d){
     else if(has&&!expired) action=`onclick="openPyqPdf('${openUrl}')"`;
     let actLabel='<i class="ti ti-clock"></i> Coming soon';
     if(attempted) actLabel=expired
-      ? `<i class="ti ti-chart-bar"></i> Analyze Test &nbsp;·&nbsp; <a href="javascript:void(0)" onclick="event.stopPropagation();viewMockLeaderboard()" style="text-decoration:underline"><i class="ti ti-medal"></i> Leaderboard</a>`
+      ? `<i class="ti ti-chart-bar"></i> Analyze Test &nbsp;·&nbsp; <a href="javascript:void(0)" onclick="event.stopPropagation();viewMockLeaderboard('${p.MockID}')" style="text-decoration:underline"><i class="ti ti-medal"></i> Leaderboard</a>`
       : '<i class="ti ti-chart-bar"></i> Analyze Test';
     else if(expired) actLabel='<i class="ti ti-lock"></i> Deadline passed';
     else if(playable) actLabel='<i class="ti ti-player-play"></i> Attempt now';
@@ -415,11 +415,21 @@ function analyzeTest(id){
   window.location.href=url;
 }
 
-/* Once a mock's deadline has passed, its Leaderboard button just jumps to
-   the (single, site-wide) leaderboard section further down this same page. */
-function viewMockLeaderboard(){
-  const el=document.getElementById('catLeaderboard');
-  if(el) el.scrollIntoView({behavior:'smooth',block:'start'});
+/* Once a mock's deadline has passed, its Leaderboard button opens that exact
+   paper's own real leaderboard (built from actual student attempts — see
+   mock-exam.html's renderLeaderboard) — NOT the generic site-wide
+   "catLeaderboard" section further down this page, which is unrelated
+   admin-entered sample data and was never specific to any one paper. */
+function viewMockLeaderboard(id){
+  const mock=(CAT_DATA.mocks||[]).find(m=>m.MockID===id);
+  const pyq=(CAT_DATA.pyq||[]).find(p=>p.MockID===id);
+  const entry=mock||pyq;
+  if(!entry) return;
+  const dur=Number(entry.Duration)||40;
+  const name=encodeURIComponent(entry.Title||'CAT Mock');
+  const url=`mock-exam.html?mock=${encodeURIComponent(id)}&name=${name}&dur=${dur}&scroll=leaderboard`;
+  if(!requireCatLogin(url)) return;
+  window.location.href=url;
 }
 
 /* PYQ papers that are just a plain PDF (no MockID/interactive set) still
