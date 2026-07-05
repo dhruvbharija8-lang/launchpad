@@ -2433,7 +2433,7 @@
           <button class="coll-submit" id="collSubmitBtn" onclick="submitCollabForm()">
             <i class="ti ti-send"></i> Send
           </button>
-          <div class="coll-submit-note" id="collSubmitNote">We'll respond within 24 hours — also check WhatsApp.</div>
+          <div class="coll-submit-note" id="collSubmitNote">We'll respond within 24 hours.</div>
         </div>
 
       </div>
@@ -2631,7 +2631,8 @@
       if (mfBtn && mfMenu) { mfBtn.onclick = function () { const open = mfMenu.classList.toggle('open'); if (mfIcon) mfIcon.style.transform = open ? 'rotate(180deg)' : ''; }; }
     })();
 
-    // College Collab Form — Email + WhatsApp submission
+    // College Collab Form — saves to admin dashboard + sends an email; no
+    // longer opens WhatsApp (submissions should only reach the dashboard/email).
     async function submitCollabForm() {
       const college = (document.getElementById('cc_college') || {}).value || '';
       const name = (document.getElementById('cc_name') || {}).value || '';
@@ -2685,25 +2686,13 @@
           headers: { 'Accept': 'application/json' },
           body: fd
         });
-      } catch (e) { /* silent — still send WhatsApp */ }
+      } catch (e) { /* silent — the admin-dashboard save above is still the primary record */ }
 
-      // 2. Also open WhatsApp
-      const lines = [
-        '🏫 *College Collaboration Enquiry*', '',
-        `*College:* ${college}`,
-        `*Contact:* ${name}${desig ? ' (' + desig + ')' : ''}`,
-        email ? `*Email:* ${email}` : '',
-        `*Phone:* ${phone}`,
-        (city || state) ? `*City/State:* ${[city, state].filter(Boolean).join(', ')}` : '',
-        batch ? `*Batch size:* ${batch}` : '',
-        need ? `*Looking for:* ${need}` : '',
-      ].filter(Boolean);
-      window.open('https://wa.me/917042732092?text=' + encodeURIComponent(lines.join('\n')), '_blank');
-
-      // 3. Show success state
+      // 2. Show success state (no WhatsApp redirect — submissions only go to
+      // the admin dashboard's College Collab Requests + the email above)
       btn.innerHTML = '<i class="ti ti-circle-check"></i> Sent!';
       btn.style.background = '#22c55e';
-      if (note) note.innerHTML = '✅ Enquiry sent to our team — we\'ll reach out within 24 hours.';
+      if (note) note.innerHTML = '✅ Enquiry received by our team — we\'ll reach out within 24 hours.';
       setTimeout(() => {
         btn.disabled = false;
         btn.innerHTML = '<i class="ti ti-send"></i> Send';
