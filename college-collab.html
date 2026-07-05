@@ -2573,13 +2573,22 @@
     })();
 
     // Pricing data (rawPrice in ₹ for 40% collab discount calc)
+    // Kept in sync with the real course catalog (js/main.js COURSES) — this
+    // list previously had stale prices (Flagship Bundle, Bootcamp Master/Mini
+    // were off) and was still showing "Bootcamp + Live Project" and
+    // "Bootcamp + Case Combo" as single rows even though those were later
+    // split into separate Mini/Master courses everywhere else on the site;
+    // also missing the "Case Competitions + Live Project" combo entirely.
     const pricing = [
-      { name: "Flagship Bundle", badge: "Best Value", rawPrice: 15999, icon: "ti ti-package", desc: "Everything in one — Bootcamp Master, Live Projects (2 domains), Case Competition prep, CV Audit, and full network access. Complete placement readiness.", featured: true },
-      { name: "Bootcamp + Live Project", badge: "Popular", rawPrice: 13499, icon: "ti ti-bolt", desc: "Placement Bootcamp Master paired with a live consulting project — strong CV bullet plus end-to-end interview prep in one go.", featured: false },
-      { name: "Bootcamp + Case Combo", badge: "", rawPrice: 11499, icon: "ti ti-layout-board", desc: "Bootcamp combined with Case Competition prep. Ideal for consulting aspirants targeting both PI rounds and national competitions.", featured: false },
-      { name: "Placement Bootcamp Master", badge: "", rawPrice: 9499, icon: "ti ti-rocket", desc: "Full-length mock PIs, GDs, ATS-optimised CV building, and domain-specific prep. Built for Day-1 readiness, tailored to your target role.", featured: false },
+      { name: "Flagship Bundle", badge: "Best Value", rawPrice: 13999, icon: "ti ti-package", desc: "Everything in one — Bootcamp Master, a 2-month Live Project, Case Competition prep, CV Audit, and full network access. Complete placement readiness.", featured: true },
+      { name: "Bootcamp + Live Project — Master", badge: "Popular", rawPrice: 13499, icon: "ti ti-bolt", desc: "Master-tier placement training paired with a 2-month live consulting project — strong CV bullet plus end-to-end interview prep in one go.", featured: false },
+      { name: "Bootcamp + Live Project — Mini", badge: "", rawPrice: 11499, icon: "ti ti-bolt", desc: "Core placement prep paired with a real 2-month live consulting project — a lighter, faster-track version of the combo.", featured: false },
+      { name: "Bootcamp + Case Competitions — Master", badge: "", rawPrice: 11499, icon: "ti ti-layout-board", desc: "Master-tier placement training combined with case-competition mastery from an AIR 1 mentor. Ideal for consulting aspirants.", featured: false },
+      { name: "Bootcamp + Case Competitions — Mini", badge: "", rawPrice: 9499, icon: "ti ti-layout-board", desc: "Core placement prep combined with case-competition training from an AIR 1 mentor — a faster, focused track.", featured: false },
+      { name: "Case Competitions + Live Project", badge: "", rawPrice: 8499, icon: "ti ti-trophy", desc: "Win case competitions with an AIR 1 mentor's frameworks while building a real 2-month live project — double CV impact.", featured: false },
+      { name: "Placement Bootcamp — Master", badge: "", rawPrice: 7499, icon: "ti ti-rocket", desc: "Full-length mock PIs, GDs, ATS-optimised CV building, and domain-specific prep. Built for Day-1 readiness, tailored to your target role.", featured: false },
       { name: "Live Project — 2 Domains", badge: "", rawPrice: 7500, icon: "ti ti-briefcase", desc: "Real consulting deliverables across two domains over 4–8 weeks. Two strong, verifiable CV bullets from actual client work.", featured: false },
-      { name: "Placement Bootcamp Mini", badge: "", rawPrice: 7499, icon: "ti ti-users", desc: "Core placement prep — mock PIs, GD practice, and a CV review pass. For students who need focused, fast-track readiness.", featured: false },
+      { name: "Placement Bootcamp — Mini", badge: "", rawPrice: 5499, icon: "ti ti-users", desc: "Core placement prep — mock PIs, GD practice, and a CV review pass. For students who need focused, fast-track readiness.", featured: false },
       { name: "Live Project — 1 Domain", badge: "", rawPrice: 4000, icon: "ti ti-briefcase", desc: "One focused consulting project with Prodmark Consultants. A high-impact CV entry that interviewers actually ask about.", featured: false },
       { name: "Case Competitions Prep", badge: "", rawPrice: 3499, icon: "ti ti-trophy", desc: "Frameworks from AIR 1, 30+ winning decks, live mock rounds, and presentation coaching for students targeting national competitions.", featured: false },
       { name: "Power BI Certification", badge: "", rawPrice: 1499, icon: "ti ti-chart-bar", desc: "Hands-on Power BI certification for Analytics, Consulting, and Marketing aspirants. Build dashboards and walk into interviews with proof of skill.", featured: false },
