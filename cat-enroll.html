@@ -784,44 +784,74 @@ function closeEnrollModal(){
 }
 document.getElementById('enrollModal').addEventListener('click', e => { if (e.target === document.getElementById('enrollModal')) closeEnrollModal(); });
 
-function applyCoupon(){
+async function applyCoupon(){
   if (!currentCourse) return;
   const code = (document.getElementById('emCoupon').value || '').trim().toUpperCase();
+  const email = (document.getElementById('emEmail').value || '').trim();
   const msg = document.getElementById('emCouponMsg');
-  // CAT referrals are tracked separately from the MBA site's own referral
-  // network (different localStorage key) so the two programs' stats never mix.
-  let refs = {};
-  try { refs = JSON.parse(localStorage.getItem('catReferrals') || '{}'); } catch (e) {}
 
-  if (code === 'GROUP20') {
-    couponDiscount = Math.round(currentCourse.price * 0.20);
-    appliedCode = code;
-    msg.className = 'coupon-msg ok';
-    msg.textContent = 'Group offer applied — 20% off! Enroll together to avail.';
-    document.getElementById('emTotal').textContent = fmt(currentCourse.price - couponDiscount);
-    return;
+  function applyLocalFallback(){
+    // CAT referrals are tracked separately from the MBA site's own referral
+    // network (different localStorage key) so the two programs' stats never mix.
+    let refs = {};
+    try { refs = JSON.parse(localStorage.getItem('catReferrals') || '{}'); } catch (e) {}
+
+    if (code === 'GROUP20') {
+      couponDiscount = Math.round(currentCourse.price * 0.20);
+      appliedCode = code;
+      msg.className = 'coupon-msg ok';
+      msg.textContent = 'Group offer applied — 20% off! Enroll together to avail.';
+      document.getElementById('emTotal').textContent = fmt(currentCourse.price - couponDiscount);
+      return;
+    }
+    if (code === 'CAT10') {
+      couponDiscount = Math.round(currentCourse.price * 0.10);
+      appliedCode = code;
+      msg.className = 'coupon-msg ok';
+      msg.textContent = 'Coupon applied — 10% off!';
+      document.getElementById('emTotal').textContent = fmt(currentCourse.price - couponDiscount);
+      return;
+    }
+    const isRef = Object.values(refs).some(r => r.code === code);
+    if (isRef) {
+      couponDiscount = Math.round(currentCourse.price * 0.10);
+      appliedCode = code;
+      msg.className = 'coupon-msg ok';
+      msg.textContent = 'Referral code valid — 10% off applied!';
+      document.getElementById('emTotal').textContent = fmt(currentCourse.price - couponDiscount);
+      return;
+    }
+    couponDiscount = 0; appliedCode = '';
+    msg.className = 'coupon-msg err';
+    msg.textContent = 'Invalid code. Try GROUP20 for 20% off with a friend.';
+    document.getElementById('emTotal').textContent = fmt(currentCourse.price);
   }
-  if (code === 'CAT10') {
-    couponDiscount = Math.round(currentCourse.price * 0.10);
-    appliedCode = code;
-    msg.className = 'coupon-msg ok';
-    msg.textContent = 'Coupon applied — 10% off!';
-    document.getElementById('emTotal').textContent = fmt(currentCourse.price - couponDiscount);
-    return;
+
+  try{
+    const res = await fetch(API_BASE + '/api/public/coupons/validate', {
+      method: 'POST', headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({ code, subtotal: currentCourse.price, courseIds:[currentCourse.id], email })
+    });
+    const data = await res.json();
+    if (data.valid) {
+      couponDiscount = Number(data.discount) || 0;
+      appliedCode = data.code || code;
+      msg.className = 'coupon-msg ok';
+      msg.textContent = data.message || 'Coupon applied!';
+      document.getElementById('emTotal').textContent = fmt(Math.max(0, currentCourse.price - couponDiscount));
+      return;
+    }
+    if (data.message && !/invalid coupon code/i.test(data.message)) {
+      couponDiscount = 0; appliedCode = '';
+      msg.className = 'coupon-msg err';
+      msg.textContent = data.message;
+      document.getElementById('emTotal').textContent = fmt(currentCourse.price);
+      return;
+    }
+    applyLocalFallback();
+  }catch(e){
+    applyLocalFallback();
   }
-  const isRef = Object.values(refs).some(r => r.code === code);
-  if (isRef) {
-    couponDiscount = Math.round(currentCourse.price * 0.10);
-    appliedCode = code;
-    msg.className = 'coupon-msg ok';
-    msg.textContent = 'Referral code valid — 10% off applied!';
-    document.getElementById('emTotal').textContent = fmt(currentCourse.price - couponDiscount);
-    return;
-  }
-  couponDiscount = 0; appliedCode = '';
-  msg.className = 'coupon-msg err';
-  msg.textContent = 'Invalid code. Try GROUP20 for 20% off with a friend.';
-  document.getElementById('emTotal').textContent = fmt(currentCourse.price);
 }
 
 async function submitEnrollment(btn){
@@ -850,10 +880,21 @@ async function submitEnrollment(btn){
       Total: finalAmount, Coupon: appliedCode || '',
       Portal: 'CAT'
     };
-    const orderData = await createRazorpayOrder(finalAmount, `catenroll_${Date.now()}`, {
-      email, name, courseIds: currentCourse.id, coupon: appliedCode || ''
-    });
-    await startRazorpayCheckout(orderData, checkoutPayload);
+
+    if (finalAmount <= 0) {
+      // Same ₹0-coupon bypass as enroll.html — Razorpay rejects amount<=0,
+      // so skip straight to granting access via the public orders endpoint.
+      const freeRes = await fetch(API_BASE + '/api/public/orders', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ...checkoutPayload, PaymentMethod: 'Free (Coupon)' })
+      });
+      if (!freeRes.ok) throw new Error('Could not complete free enrollment — please try again.');
+    } else {
+      const orderData = await createRazorpayOrder(finalAmount, `catenroll_${Date.now()}`, {
+        email, name, courseIds: currentCourse.id, coupon: appliedCode || ''
+      });
+      await startRazorpayCheckout(orderData, checkoutPayload);
+    }
 
     try {
       fetch(API_BASE + '/api/public/enrollmentRequests', {

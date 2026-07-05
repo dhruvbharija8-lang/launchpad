@@ -1108,46 +1108,81 @@ function closeEnrollModal(){
 }
 document.getElementById('enrollModal').addEventListener('click',e=>{if(e.target===document.getElementById('enrollModal'))closeEnrollModal();});
 
-function applyCoupon(){
+async function applyCoupon(){
   if(!currentCourse) return;
   const code=(document.getElementById('emCoupon').value||'').trim().toUpperCase();
+  const email=(document.getElementById('emEmail').value||'').trim();
   const msg=document.getElementById('emCouponMsg');
-  // Check referral codes in localStorage
-  let refs={};
-  try{ refs=JSON.parse(localStorage.getItem('mbaReferrals')||'{}'); }catch(e){}
-  
-  // Check group discount
-  if(code==='GROUP20'){
-    couponDiscount=Math.round(currentCourse.price*0.20);
-    appliedCode=code;
-    msg.className='coupon-msg ok';
-    msg.textContent='Group offer applied — 20% off! Enroll together to avail.';
-    document.getElementById('emTotal').textContent=fmt(currentCourse.price-couponDiscount);
-    return;
+
+  function applyLocalFallback(){
+    // Check referral codes in localStorage
+    let refs={};
+    try{ refs=JSON.parse(localStorage.getItem('mbaReferrals')||'{}'); }catch(e){}
+
+    if(code==='GROUP20'){
+      couponDiscount=Math.round(currentCourse.price*0.20);
+      appliedCode=code;
+      msg.className='coupon-msg ok';
+      msg.textContent='Group offer applied — 20% off! Enroll together to avail.';
+      document.getElementById('emTotal').textContent=fmt(currentCourse.price-couponDiscount);
+      return;
+    }
+    if(code==='MBA10'){
+      couponDiscount=Math.round(currentCourse.price*0.10);
+      appliedCode=code;
+      msg.className='coupon-msg ok';
+      msg.textContent='Coupon applied — 10% off!';
+      document.getElementById('emTotal').textContent=fmt(currentCourse.price-couponDiscount);
+      return;
+    }
+    const isRef=Object.values(refs).some(r=>r.code===code);
+    if(isRef){
+      couponDiscount=Math.round(currentCourse.price*0.10);
+      appliedCode=code;
+      msg.className='coupon-msg ok';
+      msg.textContent='Referral code valid — 10% off applied!';
+      document.getElementById('emTotal').textContent=fmt(currentCourse.price-couponDiscount);
+      return;
+    }
+    couponDiscount=0; appliedCode='';
+    msg.className='coupon-msg err';
+    msg.textContent='Invalid code. Try GROUP20 for 20% off with a friend.';
+    document.getElementById('emTotal').textContent=fmt(currentCourse.price);
   }
-  // MBA10 code
-  if(code==='MBA10'){
-    couponDiscount=Math.round(currentCourse.price*0.10);
-    appliedCode=code;
-    msg.className='coupon-msg ok';
-    msg.textContent='Coupon applied — 10% off!';
-    document.getElementById('emTotal').textContent=fmt(currentCourse.price-couponDiscount);
-    return;
+
+  // Admin-created coupons (including offline-payment, email-locked ones)
+  // live in the backend 'coupons' collection — check there first so those
+  // work here, not just the hardcoded GROUP20/MBA10/referral codes.
+  try{
+    const base=(typeof MBA_API_BASE!=='undefined')?MBA_API_BASE:'';
+    const res=await fetch(base+'/api/public/coupons/validate',{
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({ code, subtotal: currentCourse.price, courseIds:[currentCourse.id], email })
+    });
+    const data=await res.json();
+    if(data.valid){
+      couponDiscount=Number(data.discount)||0;
+      appliedCode=data.code||code;
+      msg.className='coupon-msg ok';
+      msg.textContent=data.message||'Coupon applied!';
+      document.getElementById('emTotal').textContent=fmt(Math.max(0,currentCourse.price-couponDiscount));
+      return;
+    }
+    // A real, specific rejection reason (e.g. wrong email, expired, limit
+    // reached) should be shown as-is rather than silently trying the local
+    // fallback codes — only fall back when the code simply wasn't found
+    // there either, so GROUP20/MBA10/referral still work as before.
+    if(data.message && !/invalid coupon code/i.test(data.message)){
+      couponDiscount=0; appliedCode='';
+      msg.className='coupon-msg err';
+      msg.textContent=data.message;
+      document.getElementById('emTotal').textContent=fmt(currentCourse.price);
+      return;
+    }
+    applyLocalFallback();
+  }catch(e){
+    applyLocalFallback();
   }
-  // Check if it's a valid referral code from storage
-  const isRef=Object.values(refs).some(r=>r.code===code);
-  if(isRef){
-    couponDiscount=Math.round(currentCourse.price*0.10);
-    appliedCode=code;
-    msg.className='coupon-msg ok';
-    msg.textContent='Referral code valid — 10% off applied!';
-    document.getElementById('emTotal').textContent=fmt(currentCourse.price-couponDiscount);
-    return;
-  }
-  couponDiscount=0; appliedCode='';
-  msg.className='coupon-msg err';
-  msg.textContent='Invalid code. Try GROUP20 for 20% off with a friend.';
-  document.getElementById('emTotal').textContent=fmt(currentCourse.price);
 }
 
 async function submitEnrollment(btn){
@@ -1175,9 +1210,6 @@ async function submitEnrollment(btn){
   if (btn) btn.disabled = true;
 
   try {
-    // Real payment — creates a server-side Razorpay order, opens Checkout,
-    // and only resolves once the server has verified the signature. Nothing
-    // below this line runs unless the payment actually went through.
     const checkoutPayload = {
       Name: name, Email: email, Phone: phone,
       College: (document.getElementById('emCollege') || {}).value || '',
@@ -1185,10 +1217,28 @@ async function submitEnrollment(btn){
       Total: finalAmount, Coupon: appliedCode || '',
       Domains: domainNeed ? JSON.stringify([{ id: currentCourse.id, domains: selectedDomains }]) : ''
     };
-    const orderData = await createRazorpayOrder(finalAmount, `enroll_${Date.now()}`, {
-      email, name, courseIds: currentCourse.id, coupon: appliedCode || ''
-    });
-    await startRazorpayCheckout(orderData, checkoutPayload);
+
+    if (finalAmount <= 0) {
+      // A 100%-off (or email-locked offline-payment) coupon brought this to
+      // ₹0 — Razorpay's own API rejects orders with amount <= 0, so there's
+      // nothing to check out. Skip straight to granting access: POST to the
+      // same public 'orders' endpoint the verified-payment path uses, which
+      // auto-provisions the student login + enrollment on the backend.
+      const base = (typeof MBA_API_BASE !== 'undefined') ? MBA_API_BASE : '';
+      const freeRes = await fetch(base + '/api/public/orders', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ...checkoutPayload, PaymentMethod: 'Free (Coupon)' })
+      });
+      if (!freeRes.ok) throw new Error('Could not complete free enrollment — please try again.');
+    } else {
+      // Real payment — creates a server-side Razorpay order, opens Checkout,
+      // and only resolves once the server has verified the signature. Nothing
+      // below this line runs unless the payment actually went through.
+      const orderData = await createRazorpayOrder(finalAmount, `enroll_${Date.now()}`, {
+        email, name, courseIds: currentCourse.id, coupon: appliedCode || ''
+      });
+      await startRazorpayCheckout(orderData, checkoutPayload);
+    }
 
     // Save to the admin dashboard ("Enroll Page Signups") — fire-and-forget,
     // doesn't block or change any of the referral-code logic below.
