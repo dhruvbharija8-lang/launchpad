@@ -210,6 +210,33 @@ const _lc = v => String(v || '').trim().toLowerCase();
 const _num = v => { const n = Number(v); return isNaN(n) ? 0 : n; };
 const _yes = v => ['yes', 'true', '1', 'y'].includes(_lc(v));
 
+// Fallback icon per program, used only when the admin hasn't set an
+// explicit Emoji on the Dashboard Programs entry — without this, any
+// program left blank (which was most of them) all showed the same
+// generic book icon on the student dashboard's course cards. Uses the
+// same Tabler icon font already used site-wide (not emoji) so it looks
+// like a proper icon, not a cartoon.
+const ICON_KEYWORDS = [
+  [/live\s*project/i, 'ti-briefcase'],
+  [/bundle/i, 'ti-rocket'],
+  [/bootcamp/i, 'ti-target-arrow'],
+  [/gdpi|group discussion|personal interview|\bpi\b/i, 'ti-microphone-2'],
+  [/mock test|\bcat\b|omet/i, 'ti-clipboard-text'],
+  [/case/i, 'ti-trophy'],
+  [/certificat/i, 'ti-certificate'],
+  [/consulting/i, 'ti-building'],
+  [/marketing/i, 'ti-speakerphone'],
+  [/finance/i, 'ti-cash'],
+  [/operations/i, 'ti-settings'],
+  [/human resource|\bhr\b/i, 'ti-users'],
+  [/product/i, 'ti-package']
+];
+function guessIcon(title, type) {
+  const text = (title || '') + ' ' + (type || '');
+  for (const [re, ico] of ICON_KEYWORDS) if (re.test(text)) return ico;
+  return 'ti-book-2';
+}
+
 /* Check login credentials against the Students tab. */
 function checkCredentials(data, email, password) {
   const s = data.students.find(x => _lc(x.Email) === _lc(email));
@@ -228,7 +255,10 @@ function buildStudentView(data, email) {
     const p = data.programs.find(pr => pr.ProgramCode === e.ProgramCode) || {};
     return {
       code: e.ProgramCode, type: p.Type || 'Program', title: p.Title || e.ProgramCode,
-      emoji: p.Emoji || '📘', progress: _num(e.Progress),
+      // emoji is only set if the admin explicitly typed one in on the
+      // Dashboard Programs entry; otherwise icon (a Tabler icon class,
+      // auto-picked from the program's title/type) is used instead.
+      emoji: p.Emoji || '', icon: guessIcon(p.Title || e.ProgramCode, p.Type), progress: _num(e.Progress),
       nextSession: e.NextSession || 'TBA', nextDate: e.NextDate || '',
       // Which overview stat-cards are relevant for this specific program
       // (admin-set on the Dashboard Programs entry) — drives the

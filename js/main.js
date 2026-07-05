@@ -180,6 +180,42 @@ function switchPersona(p) {
     el.setAttribute('onclick', onclickAttr.replace(/'(cat-)?enroll\.html'/, "'" + enrollTarget + "'"));
   });
 
+  // The top nav's "Free Resources" dropdown becomes "Brochure" (with Live
+  // Project / GDPI links) while the CAT/OMETs persona is active — same swap
+  // js/site-nav.js does on the shared pages (testimonials.html,
+  // college-collab.html), and matching what cat-enroll.html's own nav
+  // already shows, so the nav stays consistent everywhere.
+  const freeBtn = document.querySelector('.nav-free-btn');
+  const freeMenu = document.querySelector('.nav-free-menu');
+  const mFreeBtn = document.getElementById('mobileFreeResBtn');
+  const mFreeMenu = document.getElementById('mobileFreeMenu');
+  if (freeBtn && freeMenu) {
+    if (p === 'cat') {
+      freeBtn.innerHTML = '<i class="ti ti-notebook" style="font-size:14px;margin-right:4px"></i>Brochure<i class="ti ti-chevron-down nav-free-chev"></i>';
+      freeMenu.innerHTML = '<a class="nav-free-item" href="cat-enroll.html"><i class="ti ti-briefcase"></i><span>Live Project</span></a>'
+        + '<a class="nav-free-item" href="cat-enroll.html"><i class="ti ti-message-2"></i><span>GDPI</span></a>';
+    } else {
+      freeBtn.innerHTML = '<i class="ti ti-book-download" style="font-size:14px;margin-right:4px"></i>Free Resources<i class="ti ti-chevron-down nav-free-chev"></i>';
+      freeMenu.innerHTML = '<a class="nav-free-item" href="https://documents1.netlify.app/" target="_blank"><i class="ti ti-notebook"></i><span>Brochures</span></a>'
+        + '<a class="nav-free-item" href="https://documents1.netlify.app/" target="_blank"><i class="ti ti-book-2"></i><span>Compendium</span></a>'
+        + '<a class="nav-free-item" href="#free-sessions"><i class="ti ti-player-play-filled"></i><span>Free Session</span></a>'
+        + '<a class="nav-free-item" href="https://documents1.netlify.app/" target="_blank"><i class="ti ti-file-cv"></i><span>Sample CV</span></a>';
+    }
+  }
+  if (mFreeBtn && mFreeMenu) {
+    if (p === 'cat') {
+      mFreeBtn.innerHTML = '<i class="ti ti-notebook"></i> Brochure <i class="ti ti-chevron-down" id="mobileFreeIcon" style="font-size:12px;transition:.2s;margin-left:auto"></i>';
+      mFreeMenu.innerHTML = '<a class="mobile-nav-a" href="cat-enroll.html" style="padding-left:28px"><i class="ti ti-briefcase"></i> Live Project</a>'
+        + '<a class="mobile-nav-a" href="cat-enroll.html" style="padding-left:28px"><i class="ti ti-message-2"></i> GDPI</a>';
+    } else {
+      mFreeBtn.innerHTML = '<i class="ti ti-book-download"></i> Free Resources <i class="ti ti-chevron-down" id="mobileFreeIcon" style="font-size:12px;transition:.2s;margin-left:auto"></i>';
+      mFreeMenu.innerHTML = '<a class="mobile-nav-a" href="https://documents1.netlify.app/" target="_blank" style="padding-left:28px"><i class="ti ti-notebook"></i> Brochures</a>'
+        + '<a class="mobile-nav-a" href="https://documents1.netlify.app/" target="_blank" style="padding-left:28px"><i class="ti ti-book-2"></i> Compendium</a>'
+        + '<a class="mobile-nav-a" href="#free-sessions" style="padding-left:28px"><i class="ti ti-player-play-filled"></i> Free Session</a>'
+        + '<a class="mobile-nav-a" href="https://documents1.netlify.app/" target="_blank" style="padding-left:28px"><i class="ti ti-file-cv"></i> Sample CV</a>';
+    }
+  }
+
   // Re-observe animations on new content
   observeReveals(target);
   window.scrollTo({ top: 0, behavior: 'smooth' });

@@ -52,6 +52,10 @@
       { hrefs: ['https://documents1.netlify.app/?open=linkedin'], value: s.linkedinUrl },
       { hrefs: ['https://documents1.netlify.app/?open=youtube'], value: s.youtubeUrl },
       { hrefs: ['https://documents1.netlify.app/'], value: s.freeResourcesHub },
+      // CAT-only pages (e.g. cat-enroll.html's floating rail) hardcode the
+      // CAT community link directly, not the generic one — match it here so
+      // an admin edit to "CAT/OMETs WhatsApp Community URL" still updates it.
+      { hrefs: ['https://chat.whatsapp.com/DnSsAPGR7FzJsvguk0LeX2?s=cl&p=a&ilr=2'], value: catWa },
       { hrefs: ['https://chat.whatsapp.com/EdyvGJbQoV9Jj6eC0slSx9'], value: s.whatsappCommunity },
       { hrefs: ['https://t.me/+IrnzgXdUKqsyOTZl'], value: s.telegramCommunity },
       { hrefs: ['https://www.mbapartner.in/testimonials'], value: s.testimonialsExternalUrl },
@@ -68,6 +72,15 @@
       if (isWa && catWa) a.setAttribute('href', catWa);
       if (isTg && catTg) a.setAttribute('href', catTg);
     });
+    // login.html's "Enrolled Students Group" sidebar button — used to have
+    // its URL hardcoded in the page's onclick attribute with no admin
+    // control at all. Overriding .onclick here (rather than trying to
+    // rewrite the inline attribute string) is cleaner and avoids any
+    // quoting issues with the URL.
+    const waClosedBtn = document.getElementById('waClosedGroupBtn');
+    if (waClosedBtn && s.enrolledWhatsappGroup) {
+      waClosedBtn.onclick = () => window.open(s.enrolledWhatsappGroup, '_blank');
+    }
     if (!rules.some(r => r.value)) return;
     document.querySelectorAll('a[href]').forEach(a => {
       const href = a.getAttribute('href');

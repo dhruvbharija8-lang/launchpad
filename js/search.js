@@ -242,6 +242,11 @@ function closeCpicker() { document.getElementById('cpickerModal').classList.remo
 document.getElementById('cpickerClose').onclick = closeCpicker;
 document.getElementById('cpickerModal').addEventListener('click', e => { if (e.target === document.getElementById('cpickerModal')) closeCpicker(); });
 
+// "Clear all" on the Compare Courses section — was missing its click handler
+// entirely, so it did nothing when clicked; empties every slot and re-renders.
+const resetCompareBtn = document.getElementById('resetCompare');
+if (resetCompareBtn) resetCompareBtn.onclick = () => { compareSlots = compareSlots.map(() => null); renderComparator(); };
+
 function renderTabs() {
   // CAT/OMETs track is a single GDPI-focused list — no category sub-tabs,
   // just "All" + search (kept simple per how that catalogue is structured).

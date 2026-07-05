@@ -200,6 +200,38 @@ const SIMPLE_LIST_CONFIGS = {
         row.driveLinks = [];
       }
     }
+  },
+  coupons: {
+    fields: ['code', 'type', 'value', 'courseIds', 'restrictedEmail', 'active', 'usageLimit', 'note'],
+    required: ['code', 'value'],
+    aliases: {
+      code: 'code', couponcode: 'code',
+      type: 'type', discounttype: 'type',
+      value: 'value', discountvalue: 'value',
+      courseids: 'courseIds', courses: 'courseIds', restricttocourses: 'courseIds', restricttospecificcourses: 'courseIds',
+      restrictedemail: 'restrictedEmail', email: 'restrictedEmail', restricttostudentemail: 'restrictedEmail',
+      active: 'active',
+      usagelimit: 'usageLimit', limit: 'usageLimit',
+      note: 'note', internalnote: 'note'
+    },
+    validate: row => {
+      if (row.type && !['percent', 'flat'].includes(String(row.type).toLowerCase())) return 'Discount type must be "percent" or "flat"';
+      if (row.value !== undefined && row.value !== '' && isNaN(Number(row.value))) return 'Discount value must be a number';
+      if (row.usageLimit && isNaN(Number(row.usageLimit))) return 'Usage limit must be a number';
+      return null;
+    },
+    // Course row(s), if given, must actually exist as real course ids — this
+    // is checked in handleSimpleListImport (needs a DB lookup, so it's not a
+    // pure per-row validate() function), same pattern as 'materials' above.
+    normalize: row => {
+      row.type = row.type ? String(row.type).toLowerCase() : 'percent';
+      if (row.value !== undefined && row.value !== '') row.value = Number(row.value);
+      row.usageLimit = (row.usageLimit !== undefined && row.usageLimit !== '') ? Number(row.usageLimit) : '';
+      row.courseIds = row.courseIds ? String(row.courseIds).split('|').map(s => s.trim()).filter(Boolean) : [];
+      row.active = row.active === '' || row.active === undefined
+        ? true
+        : ['true', 'yes', 'y', '1', 'active'].includes(String(row.active).toLowerCase());
+    }
   }
 };
 
@@ -234,8 +266,9 @@ function handleSimpleListImport(req, res, collection, cfg) {
   });
 
   // For 'materials', ProgramCode must match a real course id.
+  // For 'coupons', every id in courseIds (if any) must match a real course id.
   let validCourseIds = null;
-  if (collection === 'materials') {
+  if (collection === 'materials' || collection === 'coupons') {
     validCourseIds = new Set(db.getCollection('courses').map(c => c.id));
   }
 
@@ -261,6 +294,13 @@ function handleSimpleListImport(req, res, collection, cfg) {
     if (validCourseIds && r.ProgramCode && !validCourseIds.has(r.ProgramCode)) {
       skipped.push({ row: rowNum, reason: `No course with id "${r.ProgramCode}" — check the Courses & Pricing section for the exact id.` });
       return;
+    }
+    if (validCourseIds && collection === 'coupons' && Array.isArray(r.courseIds) && r.courseIds.length) {
+      const bad = r.courseIds.filter(id => !validCourseIds.has(id));
+      if (bad.length) {
+        skipped.push({ row: rowNum, reason: `No course with id "${bad.join(', ')}" — check the Courses & Pricing section for the exact id(s), or leave Course IDs blank to allow any course.` });
+        return;
+      }
     }
 
     const rec = { _id: db.nextId(existing.concat(added)) };

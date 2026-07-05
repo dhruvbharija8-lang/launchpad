@@ -238,6 +238,17 @@ button{cursor:pointer;font-family:inherit}
 .toast.show{opacity:1;transform:translateY(0)}
 .toast i{color:#5BD08A;font-size:17px}
 
+/* Float social */
+.float-social{position:fixed;right:0;top:50%;transform:translateY(-50%);z-index:90;display:flex;flex-direction:column}
+.float-social-btn{display:flex;align-items:center;gap:0;padding:13px 12px;color:#fff;font-size:20px;text-decoration:none;overflow:hidden;transition:padding .25s,gap .25s;white-space:nowrap}
+.float-social-label{font-size:12px;font-weight:700;max-width:0;overflow:hidden;transition:max-width .3s,opacity .3s;opacity:0;font-family:'Inter',sans-serif}
+.float-social-btn:hover .float-social-label{max-width:100px;opacity:1}
+.float-social-btn:hover{padding-right:18px;gap:8px}
+.float-social-btn.whatsapp{background:#25D366;border-radius:12px 0 0 12px;margin-bottom:2px}
+.float-social-btn.telegram{background:#2AABEE;border-radius:12px 0 0 12px;margin-bottom:2px}
+.float-social-btn.instagram{background:linear-gradient(135deg,#f09433,#e6683c 25%,#dc2743 50%,#cc2366 75%,#bc1888);border-radius:12px 0 0 12px}
+@media(max-width:600px){.float-social{top:auto;bottom:80px;transform:none}}
+
 /* FOOTER */
 .footer{background:var(--navy);padding:40px 0 24px}
 .footer-bottom{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;border-top:1px solid rgba(255,255,255,.1);padding-top:20px}
@@ -578,6 +589,12 @@ button{cursor:pointer;font-family:inherit}
     </div>
   </div>
 </footer>
+
+<div class="float-social">
+  <a class="float-social-btn whatsapp" href="https://chat.whatsapp.com/DnSsAPGR7FzJsvguk0LeX2?s=cl&amp;p=a&amp;ilr=2" target="_blank"><i class="ti ti-brand-whatsapp"></i><span class="float-social-label">WhatsApp</span></a>
+  <a class="float-social-btn telegram" href="https://t.me/+IrnzgXdUKqsyOTZl" target="_blank"><i class="ti ti-brand-telegram"></i><span class="float-social-label">Telegram</span></a>
+  <a class="float-social-btn instagram" href="https://documents1.netlify.app/?open=instagram" target="_blank"><i class="ti ti-brand-instagram"></i><span class="float-social-label">Instagram</span></a>
+</div>
 
 <script>
 /* ── MOBILE NAV ── */

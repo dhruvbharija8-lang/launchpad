@@ -224,7 +224,11 @@ const SIMPLE_BULK_TEMPLATES = {
   hallOfFame: { headers: ['Name', 'School', 'Company', 'Quote', 'Photo', 'LinkedIn'], sample: ['Ananya Sharma', 'IIM Bangalore', 'Accenture Strategy', 'Mentors helped me craft my story for GDPI.', '', ''] },
   mentors: { headers: ['Name', 'School', 'Company', 'Domain', 'LinkedIn'], sample: ['Priya Nair', 'IIM Calcutta', 'BCG', 'Consulting', ''] },
   catDomainQA: { headers: ['Domain', 'Title', 'Meta', 'Link'], sample: ['Finance', 'Top 10 Finance Interview Questions', 'PDF guide', ''] },
-  materials: { headers: ['ProgramCode', 'Domain', 'Category', 'driveLinks'], sample: ['placement-bootcamp', '', 'CV Templates', 'https://drive.google.com/...|https://drive.google.com/...'] }
+  materials: { headers: ['ProgramCode', 'Domain', 'Category', 'driveLinks'], sample: ['placement-bootcamp', '', 'CV Templates', 'https://drive.google.com/...|https://drive.google.com/...'] },
+  coupons: {
+    headers: ['Code', 'Type', 'Value', 'Course IDs', 'Restricted Email', 'Active', 'Usage Limit', 'Note'],
+    sample: ['GROUP20', 'percent', '20', 'placement-bootcamp|gdpi-flagship', '', 'yes', '', 'Referral discount']
+  }
 };
 
 function downloadBulkTemplate(section) {

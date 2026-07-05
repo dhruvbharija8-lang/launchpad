@@ -70,7 +70,11 @@ const SETTINGS = {
   phone: '+91 70427 32092',
   email: 'bharat.kapoor@prodmarkconsulting.in',
   catWhatsappCommunity: 'https://chat.whatsapp.com/DnSsAPGR7FzJsvguk0LeX2?s=cl&p=a&ilr=2',
-  catTelegramCommunity: ''
+  catTelegramCommunity: '',
+  // Closed group shown only to students who've purchased at least one
+  // course (login.html sidebar's "Enrolled Students Group" button) — was
+  // hardcoded in the page and not editable from the dashboard until now.
+  enrolledWhatsappGroup: 'https://chat.whatsapp.com/E80ok40QEWDHWGhytqUjIO?s=cl&p=a&ilr=2'
 };
 
 const PLACEMENTS = [

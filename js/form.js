@@ -151,7 +151,7 @@ function buildLocalView(a) {
   return {
     name: a.name || 'Student', email: a.email, role: 'Student',
     avatar: ((a.name || a.email || '?')[0] || '?').toUpperCase(),
-    courses: (a.courses || []).map(c => ({ type: c.type || 'Course', title: c.title, emoji: c.emoji || '📘', progress: 0, nextSession: 'Onboarding', nextDate: 'Soon', statType: c.statType || 'bootcamp' })),
+    courses: (a.courses || []).map(c => ({ type: c.type || 'Course', title: c.title, emoji: c.emoji || '', icon: c.icon || (typeof guessIcon === 'function' ? guessIcon(c.title, c.type) : 'ti-book-2'), progress: 0, nextSession: 'Onboarding', nextDate: 'Soon', statType: c.statType || 'bootcamp' })),
     sessions: [], materials: [],
     cvDone: 0, cvTotal: 5, piDone: 0, piTotal: 7, gdDone: 0, gdTotal: 7, liveProgress: 0,
     caseDone: 0, caseTotal: 3, certProgress: 0
@@ -273,7 +273,9 @@ function initDashboard() {
   renderMaterials(u.materials);
   renderMaterialsNotification(u);
   renderProgress(u);
-  renderOverviewStats(u);
+  // renderOverviewStats(u); -- Overview stat cards (CV/PI/GD counts) removed
+  // from the dashboard per request; renderOverviewStats() kept below unused
+  // in case it's wanted back later.
 
   // Closed/enrolled-students WhatsApp group — only shown once the student
   // has actually purchased at least one course (open community group above
@@ -345,16 +347,10 @@ function renderCourseCards(containerId, courses) {
   if (!courses.length) { el.innerHTML = emptyState('ti-book', 'No programs yet', 'Enrolled programs will appear here.'); return; }
   el.innerHTML = courses.map(c => `
     <div class="course-card">
-      <div class="course-card-img">${c.emoji}</div>
+      <div class="course-card-img">${c.emoji ? `<span style="font-size:36px">${c.emoji}</span>` : `<i class="ti ${c.icon || 'ti-book-2'}"></i>`}</div>
       <div class="course-card-body">
         <div class="course-card-type">${c.type}</div>
         <div class="course-card-title">${c.title}</div>
-        <div class="progress-bar-wrap">
-          <div class="progress-label">
-            <span>Progress</span><span style="font-weight:700;color:var(--navy)">${c.progress}%</span>
-          </div>
-          <div class="progress-bar"><div class="progress-fill" style="width:${c.progress}%"></div></div>
-        </div>
       </div>
       <div class="course-card-foot">
         <div class="course-next">Next: <strong>${c.nextSession}</strong>${c.nextDate ? ' · ' + c.nextDate : ''}</div>

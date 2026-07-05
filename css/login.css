@@ -283,7 +283,9 @@ button{cursor:pointer;font-family:inherit}
   height:110px;overflow:hidden;
   background:linear-gradient(135deg,var(--navy),var(--navy-light));
   display:flex;align-items:center;justify-content:center;font-size:36px;
+  color:#fff;
 }
+.course-card-img i{font-size:34px;color:#fff}
 .course-card-body{padding:16px}
 .course-card-type{font-size:10px;font-weight:700;color:var(--orange);text-transform:uppercase;letter-spacing:.06em;margin-bottom:5px}
 .course-card-title{font-size:14px;font-weight:700;color:var(--navy);line-height:1.3;margin-bottom:12px}

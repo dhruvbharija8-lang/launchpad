@@ -125,7 +125,8 @@ const ADMIN_SECTIONS = [
   },
   {
     key: 'coupons', label: 'Coupons', icon: 'ti-discount-2', group: 'Commerce',
-    desc: 'Discount codes students can enter at checkout. Turn a code off instead of deleting it to keep its history. For an offline/manual payment: set Discount to 100% (or a flat amount equal to the price), set "Restrict to student email" to their email, and give them the code — checkout auto-detects ₹0 and skips Razorpay entirely, granting access immediately, no manual dashboard updates needed.',
+    desc: 'Discount codes students can enter at checkout. Turn a code off instead of deleting it to keep its history. For an offline/manual payment: set Discount to 100% (or a flat amount equal to the price), set "Restrict to student email" to their email, and give them the code — checkout auto-detects ₹0 and skips Razorpay entirely, granting access immediately, no manual dashboard updates needed. Add codes one at a time, or bulk-import many at once from Excel below (e.g. one-off codes for a batch of offline-payment students).',
+    bulkImport: { itemLabel: 'coupon', keepAddButton: true },
     fields: [
       { name: 'code', label: 'Coupon code', type: 'text', required: true, col: true },
       { name: 'type', label: 'Discount type', type: 'select', options: ['percent', 'flat'], col: true },
@@ -152,6 +153,7 @@ const ADMIN_SECTIONS = [
       { name: 'telegramCommunity', label: 'Telegram Channel URL (used across the whole site)', type: 'text' },
       { name: 'catWhatsappCommunity', label: 'CAT/OMETs WhatsApp Community URL (leave blank to reuse the main one)', type: 'text' },
       { name: 'catTelegramCommunity', label: 'CAT/OMETs Telegram Community URL (leave blank to reuse the main one)', type: 'text' },
+      { name: 'enrolledWhatsappGroup', label: 'Enrolled Students WhatsApp Group URL (shown in dashboard only to students who\'ve purchased a course)', type: 'text' },
       { name: 'freeResourcesHub', label: 'Free Resources / Compendium / Sample CV hub URL', type: 'text' },
       { name: 'instagramUrl', label: 'Instagram URL', type: 'text' },
       { name: 'linkedinUrl', label: 'LinkedIn URL', type: 'text' },
@@ -264,7 +266,7 @@ const ADMIN_SECTIONS = [
       { name: 'ProgramCode', label: 'Program code (unique, no spaces)', type: 'text', required: true, col: true },
       { name: 'Type', label: 'Category label', type: 'text', col: true },
       { name: 'Title', label: 'Program title', type: 'text', col: true },
-      { name: 'Emoji', label: 'Emoji icon', type: 'text' },
+      { name: 'Emoji', label: 'Custom icon override (optional — leave blank; a matching icon is picked automatically from the title/category)', type: 'text' },
       { name: 'StatType', label: 'Overview stats to show for this program', type: 'select', options: ['bootcamp', 'live', 'case', 'cert', 'gdpi', 'combo'], col: true }
     ]
   },

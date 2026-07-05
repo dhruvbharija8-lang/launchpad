@@ -59,6 +59,35 @@
   if (page === '') page = 'index.html';
   function act(file) { return page === file ? ' active' : ''; }
 
+  // Whichever persona (MBA / CAT-OMETs) the visitor last toggled to on the
+  // homepage — read directly from localStorage (not via navbar.js/search.js,
+  // which may not have loaded yet at this point) so this shared navbar can
+  // swap its "Free Resources" dropdown to match, the same way cat-enroll.html
+  // already does with its own hardcoded "Brochure" nav.
+  function navPersona() { try { return localStorage.getItem('mbaPersona') || 'mba'; } catch (e) { return 'mba'; } }
+  var isCat = navPersona() === 'cat';
+
+  var freeResBtnLabel = isCat
+    ? '<i class="ti ti-notebook" style="font-size:14px;margin-right:4px"></i>Brochure'
+    : '<i class="ti ti-book-download" style="font-size:14px;margin-right:4px"></i>Free Resources';
+  var freeResMenuItems = isCat
+    ? '<a class="nav-free-item" href="cat-enroll.html"><i class="ti ti-briefcase"></i><span>Live Project</span></a>'
+    + '<a class="nav-free-item" href="cat-enroll.html"><i class="ti ti-message-2"></i><span>GDPI</span></a>'
+    : '<a class="nav-free-item" href="https://documents1.netlify.app/" target="_blank"><i class="ti ti-notebook"></i><span>Brochures</span></a>'
+    + '<a class="nav-free-item" href="https://documents1.netlify.app/" target="_blank"><i class="ti ti-book-2"></i><span>Compendium</span></a>'
+    + '<a class="nav-free-item" href="index.html#free-sessions"><i class="ti ti-player-play-filled"></i><span>Free Session</span></a>'
+    + '<a class="nav-free-item" href="https://documents1.netlify.app/" target="_blank"><i class="ti ti-file-cv"></i><span>Sample CV</span></a>';
+  var mobileFreeResBtnLabel = isCat
+    ? '<i class="ti ti-notebook"></i> Brochure'
+    : '<i class="ti ti-book-download"></i> Free Resources';
+  var mobileFreeMenuItems = isCat
+    ? '<a class="mobile-nav-a" href="cat-enroll.html" style="padding-left:28px"><i class="ti ti-briefcase"></i> Live Project</a>'
+    + '<a class="mobile-nav-a" href="cat-enroll.html" style="padding-left:28px"><i class="ti ti-message-2"></i> GDPI</a>'
+    : '<a class="mobile-nav-a" href="https://documents1.netlify.app/" target="_blank" style="padding-left:28px"><i class="ti ti-notebook"></i> Brochures</a>'
+    + '<a class="mobile-nav-a" href="https://documents1.netlify.app/" target="_blank" style="padding-left:28px"><i class="ti ti-book-2"></i> Compendium</a>'
+    + '<a class="mobile-nav-a" href="index.html#free-sessions" style="padding-left:28px"><i class="ti ti-player-play-filled"></i> Free Session</a>'
+    + '<a class="mobile-nav-a" href="https://documents1.netlify.app/" target="_blank" style="padding-left:28px"><i class="ti ti-file-cv"></i> Sample CV</a>';
+
   var NAV = ''
   + '<nav class="nav" id="siteNav">'
   +   '<div class="wrap nav-in">'
@@ -71,13 +100,8 @@
   +       '<a class="nav-a' + act('courses.html') + '" href="courses.html">Courses</a>'
   +       '<a class="nav-a' + act('testimonials.html') + '" href="testimonials.html">Testimonials</a>'
   +       '<div class="nav-free-res">'
-  +         '<button class="nav-a nav-free-btn"><i class="ti ti-book-download" style="font-size:14px;margin-right:4px"></i>Free Resources<i class="ti ti-chevron-down nav-free-chev"></i></button>'
-  +         '<div class="nav-free-menu">'
-  +           '<a class="nav-free-item" href="https://documents1.netlify.app/" target="_blank"><i class="ti ti-notebook"></i><span>Brochures</span></a>'
-  +           '<a class="nav-free-item" href="https://documents1.netlify.app/" target="_blank"><i class="ti ti-book-2"></i><span>Compendium</span></a>'
-  +           '<a class="nav-free-item" href="index.html#free-sessions"><i class="ti ti-player-play-filled"></i><span>Free Session</span></a>'
-  +           '<a class="nav-free-item" href="https://documents1.netlify.app/" target="_blank"><i class="ti ti-file-cv"></i><span>Sample CV</span></a>'
-  +         '</div>'
+  +         '<button class="nav-a nav-free-btn">' + freeResBtnLabel + '<i class="ti ti-chevron-down nav-free-chev"></i></button>'
+  +         '<div class="nav-free-menu">' + freeResMenuItems + '</div>'
   +       '</div>'
   +       '<a class="nav-a' + act('college-collab.html') + '" href="college-collab.html">College Collab</a>'
   +       '<a class="nav-a' + act('enroll.html') + '" href="enroll.html">Enroll &amp; Refer</a>'
@@ -91,13 +115,8 @@
   +     '<a class="mobile-nav-a" href="index.html">Home</a>'
   +     '<a class="mobile-nav-a" href="courses.html">Courses</a>'
   +     '<a class="mobile-nav-a" href="testimonials.html">Testimonials</a>'
-  +     '<button class="mobile-nav-a mobile-free-btn" id="mobileFreeResBtn"><i class="ti ti-book-download"></i> Free Resources <i class="ti ti-chevron-down" id="mobileFreeIcon" style="font-size:12px;transition:.2s;margin-left:auto"></i></button>'
-  +     '<div class="mobile-free-sub" id="mobileFreeMenu">'
-  +       '<a class="mobile-nav-a" href="https://documents1.netlify.app/" target="_blank" style="padding-left:28px"><i class="ti ti-notebook"></i> Brochures</a>'
-  +       '<a class="mobile-nav-a" href="https://documents1.netlify.app/" target="_blank" style="padding-left:28px"><i class="ti ti-book-2"></i> Compendium</a>'
-  +       '<a class="mobile-nav-a" href="index.html#free-sessions" style="padding-left:28px"><i class="ti ti-player-play-filled"></i> Free Session</a>'
-  +       '<a class="mobile-nav-a" href="https://documents1.netlify.app/" target="_blank" style="padding-left:28px"><i class="ti ti-file-cv"></i> Sample CV</a>'
-  +     '</div>'
+  +     '<button class="mobile-nav-a mobile-free-btn" id="mobileFreeResBtn">' + mobileFreeResBtnLabel + ' <i class="ti ti-chevron-down" id="mobileFreeIcon" style="font-size:12px;transition:.2s;margin-left:auto"></i></button>'
+  +     '<div class="mobile-free-sub" id="mobileFreeMenu">' + mobileFreeMenuItems + '</div>'
   +     '<a class="mobile-nav-a" href="college-collab.html">College Collab</a>'
   +     '<a class="mobile-nav-a" href="enroll.html">Enroll &amp; Refer</a>'
   +     '<div class="mobile-nav-btns">'
