@@ -196,10 +196,10 @@ function switchPersona(p) {
         + '<a class="nav-free-item" href="cat-enroll.html"><i class="ti ti-message-2"></i><span>GDPI</span></a>';
     } else {
       freeBtn.innerHTML = '<i class="ti ti-book-download" style="font-size:14px;margin-right:4px"></i>Free Resources<i class="ti ti-chevron-down nav-free-chev"></i>';
-      freeMenu.innerHTML = '<a class="nav-free-item" href="https://documents1.netlify.app/" target="_blank"><i class="ti ti-notebook"></i><span>Brochures</span></a>'
-        + '<a class="nav-free-item" href="https://documents1.netlify.app/" target="_blank"><i class="ti ti-book-2"></i><span>Compendium</span></a>'
+      freeMenu.innerHTML = '<a class="nav-free-item" href="https://drive.google.com/drive/folders/1H9U8vzaxNepauDrvcodt9e4HLFU02X4K" target="_blank"><i class="ti ti-notebook"></i><span>Brochures</span></a>'
+        + '<a class="nav-free-item" href="https://drive.google.com/drive/folders/1Ir9BWGjYgYsLJwneq9WoTI6dbDezXS_H" target="_blank"><i class="ti ti-book-2"></i><span>Compendium</span></a>'
         + '<a class="nav-free-item" href="#free-sessions"><i class="ti ti-player-play-filled"></i><span>Free Session</span></a>'
-        + '<a class="nav-free-item" href="https://documents1.netlify.app/" target="_blank"><i class="ti ti-file-cv"></i><span>Sample CV</span></a>';
+        + '<a class="nav-free-item" href="https://drive.google.com/drive/folders/18bj7C4I4Ro1DcOBfzF6xrEhNI7SmEZe2" target="_blank"><i class="ti ti-file-cv"></i><span>Sample CV</span></a>';
     }
   }
   if (mFreeBtn && mFreeMenu) {
@@ -209,10 +209,10 @@ function switchPersona(p) {
         + '<a class="mobile-nav-a" href="cat-enroll.html" style="padding-left:28px"><i class="ti ti-message-2"></i> GDPI</a>';
     } else {
       mFreeBtn.innerHTML = '<i class="ti ti-book-download"></i> Free Resources <i class="ti ti-chevron-down" id="mobileFreeIcon" style="font-size:12px;transition:.2s;margin-left:auto"></i>';
-      mFreeMenu.innerHTML = '<a class="mobile-nav-a" href="https://documents1.netlify.app/" target="_blank" style="padding-left:28px"><i class="ti ti-notebook"></i> Brochures</a>'
-        + '<a class="mobile-nav-a" href="https://documents1.netlify.app/" target="_blank" style="padding-left:28px"><i class="ti ti-book-2"></i> Compendium</a>'
+      mFreeMenu.innerHTML = '<a class="mobile-nav-a" href="https://drive.google.com/drive/folders/1H9U8vzaxNepauDrvcodt9e4HLFU02X4K" target="_blank" style="padding-left:28px"><i class="ti ti-notebook"></i> Brochures</a>'
+        + '<a class="mobile-nav-a" href="https://drive.google.com/drive/folders/1Ir9BWGjYgYsLJwneq9WoTI6dbDezXS_H" target="_blank" style="padding-left:28px"><i class="ti ti-book-2"></i> Compendium</a>'
         + '<a class="mobile-nav-a" href="#free-sessions" style="padding-left:28px"><i class="ti ti-player-play-filled"></i> Free Session</a>'
-        + '<a class="mobile-nav-a" href="https://documents1.netlify.app/" target="_blank" style="padding-left:28px"><i class="ti ti-file-cv"></i> Sample CV</a>';
+        + '<a class="mobile-nav-a" href="https://drive.google.com/drive/folders/18bj7C4I4Ro1DcOBfzF6xrEhNI7SmEZe2" target="_blank" style="padding-left:28px"><i class="ti ti-file-cv"></i> Sample CV</a>';
     }
   }
 

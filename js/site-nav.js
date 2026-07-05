@@ -73,20 +73,20 @@
   var freeResMenuItems = isCat
     ? '<a class="nav-free-item" href="cat-enroll.html"><i class="ti ti-briefcase"></i><span>Live Project</span></a>'
     + '<a class="nav-free-item" href="cat-enroll.html"><i class="ti ti-message-2"></i><span>GDPI</span></a>'
-    : '<a class="nav-free-item" href="https://documents1.netlify.app/" target="_blank"><i class="ti ti-notebook"></i><span>Brochures</span></a>'
-    + '<a class="nav-free-item" href="https://documents1.netlify.app/" target="_blank"><i class="ti ti-book-2"></i><span>Compendium</span></a>'
+    : '<a class="nav-free-item" href="https://drive.google.com/drive/folders/1H9U8vzaxNepauDrvcodt9e4HLFU02X4K" target="_blank"><i class="ti ti-notebook"></i><span>Brochures</span></a>'
+    + '<a class="nav-free-item" href="https://drive.google.com/drive/folders/1Ir9BWGjYgYsLJwneq9WoTI6dbDezXS_H" target="_blank"><i class="ti ti-book-2"></i><span>Compendium</span></a>'
     + '<a class="nav-free-item" href="index.html#free-sessions"><i class="ti ti-player-play-filled"></i><span>Free Session</span></a>'
-    + '<a class="nav-free-item" href="https://documents1.netlify.app/" target="_blank"><i class="ti ti-file-cv"></i><span>Sample CV</span></a>';
+    + '<a class="nav-free-item" href="https://drive.google.com/drive/folders/18bj7C4I4Ro1DcOBfzF6xrEhNI7SmEZe2" target="_blank"><i class="ti ti-file-cv"></i><span>Sample CV</span></a>';
   var mobileFreeResBtnLabel = isCat
     ? '<i class="ti ti-notebook"></i> Brochure'
     : '<i class="ti ti-book-download"></i> Free Resources';
   var mobileFreeMenuItems = isCat
     ? '<a class="mobile-nav-a" href="cat-enroll.html" style="padding-left:28px"><i class="ti ti-briefcase"></i> Live Project</a>'
     + '<a class="mobile-nav-a" href="cat-enroll.html" style="padding-left:28px"><i class="ti ti-message-2"></i> GDPI</a>'
-    : '<a class="mobile-nav-a" href="https://documents1.netlify.app/" target="_blank" style="padding-left:28px"><i class="ti ti-notebook"></i> Brochures</a>'
-    + '<a class="mobile-nav-a" href="https://documents1.netlify.app/" target="_blank" style="padding-left:28px"><i class="ti ti-book-2"></i> Compendium</a>'
+    : '<a class="mobile-nav-a" href="https://drive.google.com/drive/folders/1H9U8vzaxNepauDrvcodt9e4HLFU02X4K" target="_blank" style="padding-left:28px"><i class="ti ti-notebook"></i> Brochures</a>'
+    + '<a class="mobile-nav-a" href="https://drive.google.com/drive/folders/1Ir9BWGjYgYsLJwneq9WoTI6dbDezXS_H" target="_blank" style="padding-left:28px"><i class="ti ti-book-2"></i> Compendium</a>'
     + '<a class="mobile-nav-a" href="index.html#free-sessions" style="padding-left:28px"><i class="ti ti-player-play-filled"></i> Free Session</a>'
-    + '<a class="mobile-nav-a" href="https://documents1.netlify.app/" target="_blank" style="padding-left:28px"><i class="ti ti-file-cv"></i> Sample CV</a>';
+    + '<a class="mobile-nav-a" href="https://drive.google.com/drive/folders/18bj7C4I4Ro1DcOBfzF6xrEhNI7SmEZe2" target="_blank" style="padding-left:28px"><i class="ti ti-file-cv"></i> Sample CV</a>';
 
   var NAV = ''
   + '<nav class="nav" id="siteNav">'

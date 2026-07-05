@@ -52,6 +52,13 @@
       { hrefs: ['https://documents1.netlify.app/?open=linkedin'], value: s.linkedinUrl },
       { hrefs: ['https://documents1.netlify.app/?open=youtube'], value: s.youtubeUrl },
       { hrefs: ['https://documents1.netlify.app/'], value: s.freeResourcesHub },
+      // Free Resources nav dropdown — Brochures/Compendium/Sample CV each now
+      // link straight to their own real Drive folder instead of all three
+      // sharing the placeholder hub link above; match each one's current
+      // (default) URL so an admin edit to these still updates every page.
+      { hrefs: ['https://drive.google.com/drive/folders/1H9U8vzaxNepauDrvcodt9e4HLFU02X4K'], value: s.brochureUrl },
+      { hrefs: ['https://drive.google.com/drive/folders/1Ir9BWGjYgYsLJwneq9WoTI6dbDezXS_H'], value: s.compendiumUrl },
+      { hrefs: ['https://drive.google.com/drive/folders/18bj7C4I4Ro1DcOBfzF6xrEhNI7SmEZe2'], value: s.sampleCvUrl },
       // CAT-only pages (e.g. cat-enroll.html's floating rail) hardcode the
       // CAT community link directly, not the generic one — match it here so
       // an admin edit to "CAT/OMETs WhatsApp Community URL" still updates it.

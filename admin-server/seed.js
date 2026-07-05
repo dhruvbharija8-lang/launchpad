@@ -74,7 +74,13 @@ const SETTINGS = {
   // Closed group shown only to students who've purchased at least one
   // course (login.html sidebar's "Enrolled Students Group" button) — was
   // hardcoded in the page and not editable from the dashboard until now.
-  enrolledWhatsappGroup: 'https://chat.whatsapp.com/E80ok40QEWDHWGhytqUjIO?s=cl&p=a&ilr=2'
+  enrolledWhatsappGroup: 'https://chat.whatsapp.com/E80ok40QEWDHWGhytqUjIO?s=cl&p=a&ilr=2',
+  // The nav's "Free Resources" dropdown items (Brochures/Compendium/Sample
+  // CV) — used to all three point at the same generic placeholder hub link;
+  // now each has its own real Drive folder.
+  brochureUrl: 'https://drive.google.com/drive/folders/1H9U8vzaxNepauDrvcodt9e4HLFU02X4K',
+  compendiumUrl: 'https://drive.google.com/drive/folders/1Ir9BWGjYgYsLJwneq9WoTI6dbDezXS_H',
+  sampleCvUrl: 'https://drive.google.com/drive/folders/18bj7C4I4Ro1DcOBfzF6xrEhNI7SmEZe2'
 };
 
 const PLACEMENTS = [
