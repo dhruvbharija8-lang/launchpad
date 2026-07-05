@@ -572,6 +572,24 @@ const CAT_PRICING_COURSES = [
   }
 ];
 
+// Study Materials rows for the CAT/OMETs courses above (CAT_LIVE_PROJECTS +
+// CAT_PRICING_COURSES) — these were added to 'courses' after the original
+// REAL_MATERIALS_ALL_COURSES computation ran, so they never got a materials
+// row backfilled like the MBA courses did. Same shape/logic, just built
+// separately since these ids live outside the base COURSES array.
+const CAT_MATERIALS_BACKFILL = []
+  // The 4 CAT Live Project courses are standalone (no bootcamp/case
+  // component) — same as the MBA-side live-1/live-1-2mo/live-2/live-2-2mo,
+  // they only need per-domain rows, no separate generic row.
+  .concat(CAT_LIVE_PROJECTS.flatMap(c => LIVE_DOMAINS_BASE.map(d => ({
+    ProgramCode: c.id, Domain: d.key, Category: c.title + ' — ' + d.label,
+    driveLinks: [{ Name: d.label + ' — Live Project Folder', Link: d.link }]
+  }))))
+  // The 3 CAT Pricing courses (Free Material, Mock Test Series, GDPI
+  // Flagship) aren't Live Project — one plain blank row each, ready for the
+  // admin to fill in, same as any other non-Live course.
+  .concat(CAT_PRICING_COURSES.map(c => ({ ProgramCode: c.id, Category: c.title, driveLinks: [] })));
+
 function run(force) {
   const existing = db.readAll();
   if (existing && Object.keys(existing).length && !force) {
@@ -738,7 +756,7 @@ function backfillMissingCollections() {
     // since Live Project courses now get one row PER domain, not one row total.
     const rowKey = m => m.ProgramCode + '||' + (m.Domain || '');
     const existingKeys = new Set(data.materials.map(rowKey));
-    REAL_MATERIALS_ALL_COURSES.forEach(m => {
+    REAL_MATERIALS_ALL_COURSES.concat(CAT_MATERIALS_BACKFILL).forEach(m => {
       const k = rowKey(m);
       if (!existingKeys.has(k)) {
         data.materials.push({ _id: db.nextId(data.materials), ...m });

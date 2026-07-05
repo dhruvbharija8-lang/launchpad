@@ -145,6 +145,22 @@ function makeAdminRouter(name) {
     const record = { _id: db.nextId(rows), ...req.body };
     rows.push(record);
     db.setCollection(name, rows);
+    // A brand-new course should already have its Study Materials row waiting
+    // for it — one less manual step for the admin, and it can never be
+    // forgotten (which used to mean students saw "materials on the way"
+    // forever with no row for the admin to even go add a link to). Skipped
+    // for 'live' (Live Project) courses, which use the separate per-domain
+    // material rows instead of one plain row per course.
+    if (name === 'courses' && record.id && record.cat !== 'live') {
+      try {
+        const materials = db.getCollection('materials');
+        const already = materials.some(m => m.ProgramCode === record.id);
+        if (!already) {
+          materials.push({ _id: db.nextId(materials), ProgramCode: record.id, Domain: '', Category: '', driveLinks: [] });
+          db.setCollection('materials', materials);
+        }
+      } catch (e) { /* nice-to-have — never block the actual course save */ }
+    }
     res.status(201).json(record);
   });
 

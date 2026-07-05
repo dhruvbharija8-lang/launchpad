@@ -284,12 +284,12 @@ const ADMIN_SECTIONS = [
   },
   {
     key: 'materials', label: 'Study Materials', icon: 'ti-files', group: 'Student dashboard',
-    desc: 'One row per course/combo (already pre-created for every course below — just open a course\'s row and add its link(s)). Any Live-Project-containing course (standalone or combo) instead gets one row PER DOMAIN — e.g. "Bootcamp + Live Project — Finance" — since access depends on which domain the student picked at checkout. A student only sees the row(s) matching what they actually chose. Add rows one at a time, or bulk-import many at once from Excel below (ProgramCode must exactly match a course id from "Courses & Pricing"; separate multiple drive links in one row with a | character).',
+    desc: 'One row per course (already pre-created for every course — just click its row and drop in the Drive link(s), all in one place). A Live Project course instead shows as several rows, one per domain — e.g. "Live Project — 1 Domain, 1 Month — Marketing", "...— Finance" and so on — the Course column already tells you which domain each row is for, so just open the one you want to update. A student only ever sees the domain row matching what they picked at checkout. Add rows one at a time, or bulk-import many at once from Excel below (ProgramCode must exactly match a course id from "Courses & Pricing"; separate multiple drive links in one row with a | character).',
     bulkImport: { itemLabel: 'materials row', keepAddButton: true },
     fields: [
       { name: 'ProgramCode', label: 'Course', type: 'ref', refCollection: 'courses', refValue: 'id', refLabel: r => `${r.title} — ${r.id}`, required: true, col: true },
-      { name: 'Domain', label: 'Domain (leave blank unless this row is for a specific Live Project domain)', type: 'select', options: ['', 'operations', 'marketing', 'hr', 'finance', 'consulting', 'product'], col: true },
-      { name: 'Category', label: 'Category / section label shown to students', type: 'text', col: true },
+      { name: 'Domain', label: 'Domain (leave blank unless this row is for a specific Live Project domain)', type: 'select', options: ['', 'operations', 'marketing', 'hr', 'finance', 'consulting', 'product'] },
+      { name: 'Category', label: 'Internal label shown to students as the section name (optional — auto-filled for Live Project domain rows)', type: 'text' },
       { name: 'driveLinks', label: 'Drive links (add as many as you like for this course/domain)', type: 'linklist', col: true }
     ]
   },

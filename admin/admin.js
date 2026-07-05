@@ -8,6 +8,20 @@ const getToken = () => localStorage.getItem(TOKEN_KEY);
 const setToken = t => localStorage.setItem(TOKEN_KEY, t);
 const clearToken = () => localStorage.removeItem(TOKEN_KEY);
 
+// The 6 Live Project domains a student can pick at checkout (must match
+// LIVE_DOMAINS_BASE in admin-server/seed.js and enroll.html's LIVE_DOMAINS).
+// Used to show one Drive-links editor per domain, right on a Live Project
+// course's own edit form, instead of the admin having to go find the right
+// row(s) in the separate Study Materials section.
+const LIVE_DOMAIN_OPTIONS = [
+  { key: 'operations', label: 'Operations' },
+  { key: 'marketing', label: 'Marketing' },
+  { key: 'hr', label: 'HR' },
+  { key: 'finance', label: 'Finance' },
+  { key: 'consulting', label: 'Consulting' },
+  { key: 'product', label: 'Product Management' }
+];
+
 async function api(path, opts) {
   opts = opts || {};
   const headers = Object.assign({ 'Content-Type': 'application/json' }, opts.headers || {});
@@ -450,6 +464,19 @@ async function loadAndRenderTable(section) {
   const displayValue = (r, f) => {
     const v = r[f.name];
     if (f.type === 'checkbox') return v ? 'Active' : 'Off';
+    // Study Materials: a Live Project course's domain-specific rows all share
+    // the same course, so the Course column would otherwise show 6 identical
+    // entries — fold the domain right into that same cell (e.g. "Live
+    // Project — 1 Domain, 1 Month — Marketing") so each row reads as its own
+    // clearly distinct entry, without needing a separate Domain column at all.
+    if (section.key === 'materials' && f.name === 'ProgramCode' && v) {
+      const base = String(resolveRefLabel(f, v));
+      if (r.Domain) {
+        const domainOpt = LIVE_DOMAIN_OPTIONS.find(d => d.key === r.Domain);
+        return base + ' — ' + (domainOpt ? domainOpt.label : r.Domain);
+      }
+      return base;
+    }
     if (f.type === 'ref' && v) return String(resolveRefLabel(f, v));
     if (f.type === 'multiref' && Array.isArray(v)) return v.map(x => resolveRefLabel(f, x)).join(', ');
     if (f.type === 'linklist') return Array.isArray(v) && v.length ? v.length + ' link' + (v.length > 1 ? 's' : '') + ' — ' + v.map(x => x.Name || x.Link).join(', ') : '';
