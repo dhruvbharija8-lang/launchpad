@@ -189,4 +189,5 @@ server-side · connect the live Google Sheets.
 
 ---
 
-*Built for MBA Partner — Initiative by Alumni of Old IIMs ·
+*Built for MBA Partner — Initiative by Alumni of Old IIMs ·#   M b a P a r t n e r  
+ 
