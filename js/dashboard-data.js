@@ -255,10 +255,14 @@ function buildStudentView(data, email) {
     const p = data.programs.find(pr => pr.ProgramCode === e.ProgramCode) || {};
     return {
       code: e.ProgramCode, type: p.Type || 'Program', title: p.Title || e.ProgramCode,
-      // emoji is only set if the admin explicitly typed one in on the
-      // Dashboard Programs entry; otherwise icon (a Tabler icon class,
-      // auto-picked from the program's title/type) is used instead.
-      emoji: p.Emoji || '', icon: guessIcon(p.Title || e.ProgramCode, p.Type), progress: _num(e.Progress),
+      // The card icon is always auto-picked (Tabler icon, matched from the
+      // program's title/type) and no longer reads the admin's stored Emoji
+      // value at all. Every existing Dashboard Programs row already had
+      // Emoji saved as the old generic book placeholder, so trusting that
+      // field kept showing the same book on every course no matter what —
+      // dropping it entirely (instead of only special-casing one value) is
+      // what actually fixes it regardless of what's sitting in the DB.
+      emoji: '', icon: guessIcon(p.Title || e.ProgramCode, p.Type), progress: _num(e.Progress),
       nextSession: e.NextSession || 'TBA', nextDate: e.NextDate || '',
       // Which overview stat-cards are relevant for this specific program
       // (admin-set on the Dashboard Programs entry) — drives the

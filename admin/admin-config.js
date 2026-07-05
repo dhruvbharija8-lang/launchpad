@@ -266,7 +266,7 @@ const ADMIN_SECTIONS = [
       { name: 'ProgramCode', label: 'Program code (unique, no spaces)', type: 'text', required: true, col: true },
       { name: 'Type', label: 'Category label', type: 'text', col: true },
       { name: 'Title', label: 'Program title', type: 'text', col: true },
-      { name: 'Emoji', label: 'Custom icon override (optional — leave blank; a matching icon is picked automatically from the title/category)', type: 'text' },
+      { name: 'Emoji', label: 'Not used anymore — the dashboard now always auto-picks a matching icon from the title/category, ignore this field', type: 'text' },
       { name: 'StatType', label: 'Overview stats to show for this program', type: 'select', options: ['bootcamp', 'live', 'case', 'cert', 'gdpi', 'combo'], col: true }
     ]
   },

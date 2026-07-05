@@ -151,7 +151,7 @@ function buildLocalView(a) {
   return {
     name: a.name || 'Student', email: a.email, role: 'Student',
     avatar: ((a.name || a.email || '?')[0] || '?').toUpperCase(),
-    courses: (a.courses || []).map(c => ({ type: c.type || 'Course', title: c.title, emoji: c.emoji || '', icon: c.icon || (typeof guessIcon === 'function' ? guessIcon(c.title, c.type) : 'ti-book-2'), progress: 0, nextSession: 'Onboarding', nextDate: 'Soon', statType: c.statType || 'bootcamp' })),
+    courses: (a.courses || []).map(c => ({ type: c.type || 'Course', title: c.title, emoji: '', icon: (typeof guessIcon === 'function' ? guessIcon(c.title, c.type) : 'ti-book-2'), progress: 0, nextSession: 'Onboarding', nextDate: 'Soon', statType: c.statType || 'bootcamp' })),
     sessions: [], materials: [],
     cvDone: 0, cvTotal: 5, piDone: 0, piTotal: 7, gdDone: 0, gdTotal: 7, liveProgress: 0,
     caseDone: 0, caseTotal: 3, certProgress: 0
