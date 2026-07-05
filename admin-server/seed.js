@@ -686,6 +686,19 @@ function backfillMissingCollections() {
     changed = true;
     console.log('Upgraded gdpi collection from placeholder to full sample set');
   }
+  // One-time recovery: the "Shen Shaji" Hall of Fame spotlight entry was
+  // accidentally deleted from the live dashboard. Re-add it (once) if it's
+  // missing from an existing hallOfFame collection — this only ever adds it
+  // back if it's not there; it never touches/duplicates it if it already
+  // exists, so it's safe even after the admin re-adds it manually.
+  if (Array.isArray(data.hallOfFame) && !data.hallOfFame.some(h => h.Name === 'Shen Shaji')) {
+    const restored = HALL_OF_FAME.find(h => h.Name === 'Shen Shaji');
+    if (restored) {
+      data.hallOfFame.push(withIds([restored])[0]);
+      changed = true;
+      console.log('Restored accidentally-deleted Hall of Fame entry: Shen Shaji');
+    }
+  }
   // The 'settings' singleton already existed on older installs, but the new
   // site-wide link fields (whatsappCommunity, phone, email, etc.) were added
   // later — merge in any of those that are missing without touching values
