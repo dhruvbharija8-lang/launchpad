@@ -13,6 +13,7 @@ const couponsRouter = require('./routes/coupons');
 const authRouter = require('./routes/auth');
 const { router: uploadRouter, UPLOAD_DIR } = require('./routes/upload');
 const bulkQuestionsRouter = require('./routes/bulk-questions');
+const catAttemptsRouter = require('./routes/cat-attempts');
 
 async function start() {
   // Connect to MongoDB (or fall back to the local file) BEFORE seeding --
@@ -35,12 +36,14 @@ async function start() {
   // but only the logged-in admin can read the list back.
   COLLECTIONS.forEach(function (name) {
     if (ADMIN_ONLY.has(name)) return;
+    if (name === 'catAttempts') return; // custom router below (scoped reads + duplicate-attempt check)
     if (PUBLIC_WRITE_ONLY.has(name)) app.use('/api/public/' + name, makePublicWriteRouter(name));
     else app.use('/api/public/' + name, makePublicRouter(name));
   });
   app.use('/api/public/settings', settingsRouter); // GET is public; PUT inside requires auth
   app.use('/api/public/coupons', couponsRouter); // exposes POST /api/public/coupons/validate
   app.use('/api/public/razorpay', razorpayRouter);
+  app.use('/api/public/catAttempts', catAttemptsRouter); // POST (submit) + GET /mine (scoped to one email)
 
   // ---- Admin API (every route below requires a valid admin token) ----
   COLLECTIONS.forEach(function (name) {

@@ -332,7 +332,7 @@ button{cursor:pointer;font-family:inherit}
           <input class="cand-input" id="candName" placeholder="Full Name *" required/>
           <input class="cand-input" id="candEmail" placeholder="Email *" type="email" required/>
         </div>
-        <input class="cand-input" id="candCollege" placeholder="College / B-School" style="width:100%;margin-bottom:12px"/>
+        <input class="cand-input" id="candPhone" placeholder="Contact Number" type="tel" style="width:100%;margin-bottom:12px"/>
         <div class="check-row">
           <input type="checkbox" id="candAgree"/>
           <label for="candAgree">I have read the instructions and am ready to begin.</label>
@@ -491,6 +491,13 @@ const MOCK_ID=params.get('mock')||'varc-1';
 const EXAM_NAME=params.get('name')||'VARC Mock 1';
 const DURATION_MIN=Number(params.get('dur')||40);
 
+/* The logged-in student's own identity — used both to prefill (and lock)
+   the candidate form and, more importantly, as the account a submitted
+   attempt is recorded against. Locking it stops a student from typing a
+   different email to dodge the one-attempt-per-paper limit below. */
+const STUDENT_EMAIL=(function(){ try { return (window.MBAauth&&MBAauth.currentEmail())||localStorage.getItem('mbaPartnerSession')||''; } catch(e){ return ''; } })();
+const STUDENT_NAME=(function(){ try { return (window.MBAauth&&MBAauth.currentName&&MBAauth.currentName())||''; } catch(e){ return ''; } })();
+
 /* Embedded questions — extended demo set for professional feel */
 const ALL_QUESTIONS={
   'varc-1':[
@@ -529,7 +536,7 @@ let QUESTIONS=[];
 let state={
   currentQ:0, answers:{}, marked:{}, startTime:null, endTime:null,
   timeLeft:0, timerInterval:null,
-  candName:'', candEmail:'', candCollege:'',
+  candName:'', candEmail:'', candPhone:'',
   qTimes:{}, qTimeStart:null
 };
 
@@ -538,6 +545,19 @@ document.getElementById('preTitle').textContent=EXAM_NAME;
 document.getElementById('preDuration').textContent=DURATION_MIN+' minutes';
 QUESTIONS=ALL_QUESTIONS[MOCK_ID]||ALL_QUESTIONS['varc-1'];
 document.getElementById('preQCount').textContent=QUESTIONS.length+' questions';
+
+/* Prefill the candidate form from the logged-in session, and lock the email
+   field so a student can't type someone else's (or a fresh) address just to
+   dodge the one-attempt-per-paper limit below — every attempt is recorded
+   against the account that's actually logged in. */
+(function prefillCandidateFromSession(){
+  const emailEl=document.getElementById('candEmail');
+  if(STUDENT_EMAIL){ emailEl.value=STUDENT_EMAIL; emailEl.readOnly=true; emailEl.style.background='#F0F2F8'; }
+  if(STUDENT_NAME){
+    const nameEl=document.getElementById('candName');
+    nameEl.value=STUDENT_NAME; nameEl.readOnly=true; nameEl.style.background='#F0F2F8';
+  }
+})();
 
 /* Mocks/PYQ papers created from the admin dashboard aren't in the embedded
    ALL_QUESTIONS set above — fetch their questions from the site's own API.
@@ -576,24 +596,52 @@ let questionsLoading=true;
     const note=document.getElementById('qLoadNote');
     if(note) note.remove();
     checkFormReady();
+    maybeShowExistingAttempt();
   }
 })();
+
+/* Enforce one attempt per student per paper. Runs in parallel with the
+   question-loading fetch above (whichever finishes last is what actually
+   triggers the check, via maybeShowExistingAttempt — see there). */
+let existingAttempt=null;
+let attemptCheckLoading=true;
+(async function checkExistingAttempt(){
+  if(!STUDENT_EMAIL){ attemptCheckLoading=false; return; }
+  try{
+    const base=(typeof MBA_API_BASE!=='undefined'&&MBA_API_BASE)||'';
+    const res=await fetch(base+'/api/public/catAttempts/mine?email='+encodeURIComponent(STUDENT_EMAIL)+'&mockId='+encodeURIComponent(MOCK_ID));
+    const rows=res.ok?await res.json():[];
+    if(Array.isArray(rows)&&rows.length) existingAttempt=rows[0];
+  }catch(e){ /* API unreachable — fail open, exam proceeds as a first attempt */ }
+  finally{
+    attemptCheckLoading=false;
+    maybeShowExistingAttempt();
+  }
+})();
+
+/* Only once BOTH the questions and the attempt-check have settled do we know
+   for sure whether to show a fresh exam or this student's already-submitted
+   result for this exact paper. */
+function maybeShowExistingAttempt(){
+  if(questionsLoading||attemptCheckLoading) return;
+  if(existingAttempt) renderStoredResult(existingAttempt);
+}
 
 /* ── ENABLE START BUTTON WHEN FORM FILLED ── */
 function checkFormReady(){
   const n=document.getElementById('candName').value.trim();
   const e=document.getElementById('candEmail').value.trim();
   const agreed=document.getElementById('candAgree').checked;
-  document.getElementById('startExamBtn').disabled=!(n&&e&&agreed&&!questionsLoading);
+  document.getElementById('startExamBtn').disabled=!(n&&e&&agreed&&!questionsLoading&&!attemptCheckLoading);
 }
-['candName','candEmail','candCollege'].forEach(id=>document.getElementById(id).addEventListener('input',checkFormReady));
+['candName','candEmail','candPhone'].forEach(id=>document.getElementById(id).addEventListener('input',checkFormReady));
 document.getElementById('candAgree').addEventListener('change',checkFormReady);
 
 /* ── START EXAM ── */
 function startExam(){
   state.candName=document.getElementById('candName').value.trim();
   state.candEmail=document.getElementById('candEmail').value.trim();
-  state.candCollege=document.getElementById('candCollege').value.trim();
+  state.candPhone=document.getElementById('candPhone').value.trim();
   state.timeLeft=DURATION_MIN*60;
   state.startTime=Date.now();
   state.qTimeStart=Date.now();
@@ -608,6 +656,33 @@ function startExam(){
   buildPalette();
   renderQuestion(0);
   startTimer();
+  lockBackNavigation();
+}
+
+/* ── BACK-BUTTON / TAB-CLOSE GUARD ──
+   Once the exam has actually started, a student must submit through the
+   Submit button — not by hitting Back, closing the tab, or refreshing.
+   pushState seeds one extra history entry; if the student presses Back,
+   the browser fires 'popstate' (it does NOT actually leave the page since
+   there's nowhere "further back" within our own trick) and we immediately
+   push the same entry back on top, so they're stuck here until they submit. */
+function lockBackNavigation(){
+  history.pushState(null,'',location.href);
+  window.addEventListener('popstate',blockBackNav);
+  window.addEventListener('beforeunload',blockUnload);
+}
+function blockBackNav(){
+  if(state.startTime&&!state.endTime){
+    history.pushState(null,'',location.href);
+    alert('You can\'t leave the exam this way. Please use the Submit button when you\'re done — each paper can only be attempted once.');
+  }
+}
+function blockUnload(e){
+  if(state.startTime&&!state.endTime){
+    e.preventDefault();
+    e.returnValue='';
+    return '';
+  }
 }
 
 /* ── SECTION BAR ── */
@@ -749,7 +824,7 @@ function showResults(){
 
   // Hero
   document.getElementById('resultName').textContent=state.candName||'Student';
-  document.getElementById('resultExamLabel').textContent=EXAM_NAME+' · '+state.candCollege;
+  document.getElementById('resultExamLabel').textContent=EXAM_NAME;
   document.getElementById('resultScore').textContent=score+'/'+maxScore;
   document.getElementById('scoreCircle').style.setProperty('--pct',pct);
   document.getElementById('resPercentile').textContent=percentile+'%ile';
@@ -770,6 +845,74 @@ function showResults(){
 
   // Q Review
   renderQReview();
+
+  // Record the attempt so this paper can't be started again from this
+  // account, and so the CAT portal can swap "Start mock" for "Analyze Test"
+  // next time this student sees it. Fire-and-forget — a network hiccup here
+  // shouldn't trap the student on a stuck submit screen; the server-side
+  // duplicate check on the next visit is the real enforcement anyway.
+  try{
+    const base=(typeof MBA_API_BASE!=='undefined'&&MBA_API_BASE)||'';
+    fetch(base+'/api/public/catAttempts',{
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({
+        Email:STUDENT_EMAIL||state.candEmail, MockID:MOCK_ID,
+        Name:state.candName, Phone:state.candPhone,
+        Score:score, MaxScore:maxScore, Correct:correct, Wrong:wrong, Skipped:skipped,
+        Percentile:percentile, Accuracy:accuracy, TimeUsed:timeUsed,
+        answers:state.answers
+      })
+    }).catch(()=>{});
+  }catch(e){}
+}
+
+/* Reconstruct the results screen from a previously-submitted attempt,
+   instead of letting the student take the paper again. Reuses the same
+   chart/leaderboard/review renderers as a fresh submission — they only read
+   from `state` and `QUESTIONS`, both of which we populate here first. */
+function renderStoredResult(attempt){
+  document.getElementById('screenPre').classList.add('hidden');
+  document.getElementById('screenExam').classList.add('hidden');
+  document.getElementById('screenResult').classList.remove('hidden');
+
+  state.answers=attempt.answers||{};
+  state.candName=attempt.Name||STUDENT_NAME||'Student';
+  state.candPhone=attempt.Phone||'';
+  state.endTime=state.startTime=Date.now(); // marks the exam as "over" for the back-nav guard, harmless here
+
+  const correct=attempt.Correct||0, wrong=attempt.Wrong||0, skipped=attempt.Skipped||0;
+  const score=attempt.Score||0, maxScore=attempt.MaxScore||(QUESTIONS.length*3);
+  const pct=Math.max(0,Math.round(score/maxScore*100));
+  const percentile=attempt.Percentile!=null?attempt.Percentile:0;
+  const accuracy=attempt.Accuracy!=null?attempt.Accuracy:(correct+wrong>0?Math.round(correct/(correct+wrong)*100):0);
+  const timeUsed=attempt.TimeUsed||0;
+  const minsUsed=Math.floor(timeUsed/60),secsUsed=timeUsed%60;
+
+  document.getElementById('resultName').textContent=state.candName;
+  document.getElementById('resultExamLabel').textContent=EXAM_NAME;
+  document.getElementById('resultScore').textContent=score+'/'+maxScore;
+  document.getElementById('scoreCircle').style.setProperty('--pct',pct);
+  document.getElementById('resPercentile').textContent=percentile+'%ile';
+  document.getElementById('resAccuracy').textContent=accuracy+'%';
+  document.getElementById('resTime').textContent=minsUsed+'m '+secsUsed+'s';
+  document.getElementById('resCorrect').textContent=correct;
+  document.getElementById('resWrong').textContent=wrong;
+  document.getElementById('resSkipped').textContent=skipped;
+  document.getElementById('resAttempted').textContent=correct+wrong;
+
+  renderDonut(correct,wrong,skipped);
+  renderBar();
+  renderLeaderboard(state.candName,score,percentile);
+  renderQReview();
+
+  const heroEl=document.querySelector('.result-hero');
+  if(heroEl&&heroEl.parentNode&&!document.getElementById('alreadySubmittedNote')){
+    const note=document.createElement('div');
+    note.id='alreadySubmittedNote';
+    note.style.cssText='max-width:900px;margin:16px auto 0;padding:12px 18px;background:#FEF3C7;border:1px solid #F59E0B;border-radius:10px;font-family:Inter,sans-serif;font-size:13px;color:#92400E;text-align:center';
+    note.textContent="You've already submitted this paper — showing your saved result. Each paper can only be attempted once.";
+    heroEl.parentNode.insertBefore(note,heroEl);
+  }
 }
 
 function renderDonut(correct,wrong,skipped){
@@ -802,7 +945,7 @@ function renderLeaderboard(myName,myScore,myPct){
     {name:'Isha R.',college:'IIM Indore',score:QUESTIONS.length*3-3,pct:94.2},
   ];
   // Insert user at correct position
-  const me={name:myName||'You',college:state.candCollege||'—',score:myScore,pct:myPct,isMe:true};
+  const me={name:myName||'You',college:'—',score:myScore,pct:myPct,isMe:true};
   lb.push(me);
   lb.sort((a,b)=>b.score-a.score||b.pct-a.pct);
   const myRank=lb.findIndex(r=>r.isMe)+1;

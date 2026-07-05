@@ -195,7 +195,13 @@ const COLLECTIONS = [
   // CAT / OMETs prep portal (kept separate from the collections above so
   // names don't clash — e.g. catMentors vs the homepage's mentors).
   'catMaterials', 'catMocks', 'catQuestions', 'catPyq', 'catPyqQuestions',
-  'catLeaderboard', 'catGdpi', 'catDomainQA', 'catMentors'
+  'catLeaderboard', 'catGdpi', 'catDomainQA', 'catMentors',
+  // One row per (student, mock paper) submission — admin can view/delete
+  // (delete a row to let that student retake that specific paper), but the
+  // public side gets its own dedicated router (routes/cat-attempts.js)
+  // instead of the generic one below, since a student's attempt list must
+  // only ever be readable by that same student, never the full collection.
+  'catAttempts'
 ];
 
 module.exports = { makePublicRouter, makePublicWriteRouter, makeAdminRouter, COLLECTIONS, ADMIN_ONLY, PUBLIC_WRITE_ONLY, autoProvisionFromSubmission };

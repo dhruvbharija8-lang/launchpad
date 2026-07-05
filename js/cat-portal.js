@@ -177,6 +177,24 @@ async function loadCatData(){
   return _catCache;
 }
 
+/* One attempt per student per paper — this student's own past attempts,
+   keyed by MockID, fetched once and reused by both renderMocks and
+   renderPyq. The endpoint is scoped server-side to the given email only
+   (see admin-server/routes/cat-attempts.js), so it's safe to call without
+   an admin token. */
+let MY_MOCK_ATTEMPTS={};
+async function loadMyAttempts(){
+  let email='';
+  try{ email=(window.MBAauth&&MBAauth.currentEmail())||localStorage.getItem('mbaPartnerSession')||''; }catch(e){}
+  if(!email) return;
+  try{
+    const base=(typeof MBA_API_BASE!=='undefined'&&MBA_API_BASE)||'';
+    const res=await fetch(base+'/api/public/catAttempts/mine?email='+encodeURIComponent(email));
+    const rows=res.ok?await res.json():[];
+    if(Array.isArray(rows)) rows.forEach(r=>{ if(r.MockID) MY_MOCK_ATTEMPTS[r.MockID]=r; });
+  }catch(e){ /* API unreachable — treat as no attempts yet, "Start mock" still shows */ }
+}
+
 /* A mock/PYQ with a Deadline in the past is treated as no longer available. */
 function isCatExpired(entry){
   if(!entry || !entry.Deadline) return false;
@@ -214,14 +232,30 @@ function renderMocks(d){
   el.innerHTML=list.map(m=>{
     const live=String(m.Status).toLowerCase()==='live';
     const expired=isCatExpired(m);
-    const usable=live&&!expired;
-    const metaText=expired?'Deadline passed':(live?`${(m.Attempts||0).toLocaleString('en-IN')} attempts`:(m.Note||'Coming soon'));
+    const attempted=!!MY_MOCK_ATTEMPTS[m.MockID];
+    const usable=live&&!expired&&!attempted;
+    const metaText=attempted?'Already attempted':(expired?'Deadline passed':(live?`${(m.Attempts||0).toLocaleString('en-IN')} attempts`:(m.Note||'Coming soon')));
+    // Already attempted: swap "Start mock" for "Analyze Test" (reviews the
+    // student's own saved result — see mock-exam.html's attempt-check).
+    // Once the paper's deadline has also passed, add a Leaderboard button
+    // alongside it so the student can see where they ranked once everyone's
+    // window to attempt has closed.
+    let actionsHtml;
+    if(attempted){
+      actionsHtml=`<div style="display:flex;gap:8px">
+        <button class="cp-mock-btn" onclick="analyzeTest('${m.MockID}')"><i class="ti ti-chart-bar"></i> Analyze Test</button>
+        ${expired?`<button class="cp-mock-btn ghost" onclick="viewMockLeaderboard()"><i class="ti ti-medal"></i> Leaderboard</button>`:''}
+      </div>`;
+    } else if(usable){
+      actionsHtml=`<button class="cp-mock-btn" onclick="startMock('${m.MockID}')"><i class="ti ti-player-play"></i> Start mock</button>`;
+    } else {
+      actionsHtml=`<button class="cp-mock-btn ghost" disabled>${expired?'Deadline passed':(m.Note||'Coming soon')}</button>`;
+    }
     return `<div class="cp-mock${usable?'':' soon'}">
       <div class="cp-mock-top"><span class="cp-sec-tag">${m.Exam?m.Exam+' · ':''}${m.Section}</span><span class="cp-mock-dur"><i class="ti ti-clock"></i> ${m.Duration} min</span></div>
       <div class="cp-mock-title">${m.Title}</div>
       <div class="cp-mock-meta">${metaText}</div>
-      ${usable?`<button class="cp-mock-btn" onclick="startMock('${m.MockID}')"><i class="ti ti-player-play"></i> Start mock</button>`
-             :`<button class="cp-mock-btn ghost" disabled>${expired?'Deadline passed':(m.Note||'Coming soon')}</button>`}
+      ${actionsHtml}
     </div>`;}).join('') || '<p style="color:var(--ink3);font-family:Inter,sans-serif;font-size:13px">No mocks for this exam yet.</p>';
 }
 /* ---------------- PYQ (Previous Year Questions) ---------------- */
@@ -253,13 +287,18 @@ function renderPyq(d){
     // PdfUrl (admin upload) also counts as an openable paper, alongside the legacy Link field.
     const pdf=p.PdfUrl&&p.PdfUrl!=='';
     const has=(p.Link&&p.Link!=='#'&&p.Link!=='')||pdf;
-    const playable=!!p.MockID&&!expired;
+    const attempted=!!p.MockID&&!!MY_MOCK_ATTEMPTS[p.MockID];
+    const playable=!!p.MockID&&!expired&&!attempted;
     const openUrl=pdf?p.PdfUrl:p.Link;
     let action='';
-    if(playable) action=`onclick="startMock('${p.MockID}')"`;
+    if(attempted) action=`onclick="analyzeTest('${p.MockID}')"`;
+    else if(playable) action=`onclick="startMock('${p.MockID}')"`;
     else if(has&&!expired) action=`onclick="openPyqPdf('${openUrl}')"`;
     let actLabel='<i class="ti ti-clock"></i> Coming soon';
-    if(expired) actLabel='<i class="ti ti-lock"></i> Deadline passed';
+    if(attempted) actLabel=expired
+      ? `<i class="ti ti-chart-bar"></i> Analyze Test &nbsp;·&nbsp; <a href="javascript:void(0)" onclick="event.stopPropagation();viewMockLeaderboard()" style="text-decoration:underline"><i class="ti ti-medal"></i> Leaderboard</a>`
+      : '<i class="ti ti-chart-bar"></i> Analyze Test';
+    else if(expired) actLabel='<i class="ti ti-lock"></i> Deadline passed';
     else if(playable) actLabel='<i class="ti ti-player-play"></i> Attempt now';
     else if(has) actLabel='<i class="ti ti-external-link"></i> Open / Download';
     return `<div class="cp-card" ${action}>
@@ -361,6 +400,28 @@ function startMock(id){
   window.location.href=url;
 }
 
+/* Re-open a paper the student already submitted — mock-exam.html itself
+   detects the existing attempt (by email + MockID) and shows the saved
+   result screen straight away instead of a fresh exam. */
+function analyzeTest(id){
+  const mock=(CAT_DATA.mocks||[]).find(m=>m.MockID===id);
+  const pyq=(CAT_DATA.pyq||[]).find(p=>p.MockID===id);
+  const entry=mock||pyq;
+  if(!entry) return;
+  const dur=Number(entry.Duration)||40;
+  const name=encodeURIComponent(entry.Title||'CAT Mock');
+  const url=`mock-exam.html?mock=${encodeURIComponent(id)}&name=${name}&dur=${dur}`;
+  if(!requireCatLogin(url)) return;
+  window.location.href=url;
+}
+
+/* Once a mock's deadline has passed, its Leaderboard button just jumps to
+   the (single, site-wide) leaderboard section further down this same page. */
+function viewMockLeaderboard(){
+  const el=document.getElementById('catLeaderboard');
+  if(el) el.scrollIntoView({behavior:'smooth',block:'start'});
+}
+
 /* PYQ papers that are just a plain PDF (no MockID/interactive set) still
    need the same login gate before opening. */
 function openPyqPdf(url){
@@ -370,7 +431,11 @@ function openPyqPdf(url){
 
 /* ---------------- INIT ---------------- */
 (async function(){
-  CAT_DATA=await loadCatData();
+  // Load in parallel — loadMyAttempts() only affects renderMocks/renderPyq's
+  // button state (Start vs Analyze), it's fine either way if it settles a
+  // beat after the rest of the page has already painted.
+  const [data]=await Promise.all([loadCatData(), loadMyAttempts()]);
+  CAT_DATA=data;
   renderMaterials(CAT_DATA); renderMocks(CAT_DATA); renderPyq(CAT_DATA); renderLeaderboard(CAT_DATA);
   renderGdpi(CAT_DATA); renderDomainQA(CAT_DATA); renderMentors(CAT_DATA); renderPricing(CAT_DATA);
 })();

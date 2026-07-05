@@ -447,6 +447,22 @@ const ADMIN_SECTIONS = [
     ]
   },
   {
+    key: 'catAttempts', label: 'Mock Attempts', icon: 'ti-checklist', group: 'CAT / OMETs Portal',
+    desc: 'One row per student per mock paper — created automatically the moment a student submits that paper (nothing to add here yourself). A student can only attempt a given paper once; if someone genuinely needs a retake (e.g. a technical issue mid-exam), delete their row here and they\'ll be able to start that paper again.',
+    fields: [
+      { name: 'Email', label: 'Student email', type: 'text', required: true, col: true },
+      { name: 'Phone', label: 'Contact number', type: 'text', col: true },
+      { name: 'MockID', label: 'Mock Test', type: 'ref', refCollection: 'catMocks', refValue: 'MockID', refLabel: r => `${r.Title} — ${r.MockID}`, required: true, col: true },
+      { name: 'Score', label: 'Score', type: 'number', col: true },
+      { name: 'MaxScore', label: 'Max possible score', type: 'number' },
+      { name: 'Correct', label: 'Correct', type: 'number' },
+      { name: 'Wrong', label: 'Wrong', type: 'number' },
+      { name: 'Skipped', label: 'Skipped', type: 'number' },
+      { name: 'Percentile', label: 'Percentile', type: 'text' },
+      { name: 'submittedAt', label: 'Submitted at', type: 'text', col: true }
+    ]
+  },
+  {
     key: 'catGdpi', label: 'CAT GDPI', icon: 'ti-message-star', group: 'CAT / OMETs Portal',
     desc: 'Mock PI / GD sessions shown on the CAT/OMETs portal.',
     fields: [
